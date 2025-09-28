@@ -20,7 +20,7 @@ RAYLIB_LIBS := $(shell pkg-config --libs raylib 2>/dev/null)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Project build configuration
-CXXFLAGS := -Wall -Wextra -Isrc $(RAYLIB_CFLAGS)
+CXXFLAGS := -Wall -Wextra -Isrc -Isrc/utils -Isrc/core -Isrc/entities -Isrc/game -Isrc/handlers -Isrc/states $(RAYLIB_CFLAGS)
 DEPS := $(RAYLIB_LIBS)
 ASSEMBLYFLAGS := -f elf64
 
