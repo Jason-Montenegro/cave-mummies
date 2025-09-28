@@ -46,7 +46,7 @@ Your score increases with time and by eliminating enemies.
 Winning is not about finishing levels, but about setting and breaking your personal best score. 💪
 
 [[assets]]
-== Game assets
+== Game assets 🌠
 
 === Main menu
 image::doc-assets/game-main-menu.png[Game main menu, width=600, align=center]
@@ -63,22 +63,23 @@ image::doc-assets/mummy_moderate.jpeg[Moderate mummy enemy sprite, width=300, al
 image::doc-assets/mummy_hard.jpeg[Hard mummy enemy sprite, width=300, align=center]
 
 [[user_manual]]
-== User manual
+== User manual 📝
 
 [[build]]
 === Build
-To build the game, run the command `make` in the terminal at the root of the project. This will compile the source code into object code in a `build/` directory and then link it into an executable in a `bin/` directory named `Cat mummies`. You can build the game using `make release` to optimize the executable for a release build. To delete the compiled files and their respective directories, run the `make clean` command.
+To build the game, run the `make` command in the terminal at the root of the project. This will compile the source code into object code in a `build/` directory and then link it into an executable named `Cat mummies` in a `bin/` directory. You can build the game using `make release` to optimize the executable for a release build. To delete the compiled files and their respective directories, run the `make clean` command.
 
 [[usage]]
 === Usage
-To run the game by terminal, execute the command `make run` at the root of the project. Or else, you could move to the `bin/` directory and execute the program directly.
+To run the game by terminal, execute the command `make run` at the root of the project. Or else, you could execute the program directly in the `bin/` directory.
 
 To get help using `make` commands, enter `make help` in the terminal.
 
-The project uses cpplint for formatting the source code, which can be tested using `make lint`. Cpplint must be installed in your machine.
+The project uses cpplint for formatting the source code, which can be tested using `make lint`.
+Cpplint is an additional dependency that must be installed in your machine before use.
 
 [[Functionality]]
-== Functionality
+== Functionality 🛠️
 The following functionalities are intended to be included in the video game.
 [cols="2,2,2,2", options="header"]
 |===
@@ -130,13 +131,24 @@ The following functionalities are intended to be included in the video game.
 | ⏳ TBD
 |===
 
-[[credits]]
-== Credits
+## Dependencies 🤝
+### Required ⚙️
+- **gpass:[++]** C++ compiler
+- **NASM** Assembly compiler for Linux
+- **Raylib** Graphics library
 
-=== Assigned Professor:
+[[credits]]
+== Credits 💫
+
+=== Asset rights
+
+This project is soley conformed by assets created by the development team, and includes addtional copyright-free assets such as sfx audio.
+All assets created by the development team shall not be replicated, nor distributed in any way, shape or form.
+
+=== Assigned Professor
 mailto:sleyter.angulo@ucr.ac.cr[MSc. Sleyter Angulo Chavarría]
 
-=== Students:
+=== Students
 |===
 |Student Name | Student ID
 
