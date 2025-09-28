@@ -11,7 +11,7 @@
  * @brief Game configuration parameters.
  */
 namespace Config {
-
+  constexpr const char *LOG_FILENAME{"cat_mummies.log"};
 }
 
 #endif  // CONFIG_HPP
