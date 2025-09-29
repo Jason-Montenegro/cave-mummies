@@ -2,6 +2,8 @@
 
 #include <cstdlib>
 
+#include "raylib.h"
+
 /**
  * @brief Start program execution.
  *

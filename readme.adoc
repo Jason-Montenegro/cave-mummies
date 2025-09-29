@@ -58,9 +58,9 @@ image::doc-assets/cat.jpeg[Main Cat sprite, width=300, align=center]
 image::doc-assets/projectile.jpeg[Cat projectile, width=200, align=center]
 
 === Enemies
-image::doc-assets/mummy_easy.jpeg[Easy mummy enemy sprite, width=300, align=center]
-image::doc-assets/mummy_moderate.jpeg[Moderate mummy enemy sprite, width=300, align=center]
-image::doc-assets/mummy_hard.jpeg[Hard mummy enemy sprite, width=300, align=center]
+image::doc-assets/mummy-easy.jpeg[Easy mummy enemy sprite, width=300, align=center]
+image::doc-assets/mummy-moderate.jpeg[Moderate mummy enemy sprite, width=300, align=center]
+image::doc-assets/mummy-hard.jpeg[Hard mummy enemy sprite, width=300, align=center]
 
 [[user_manual]]
 == User manual 📝
@@ -152,11 +152,11 @@ mailto:sleyter.angulo@ucr.ac.cr[MSc. Sleyter Angulo Chavarría]
 |===
 |Student Name | Student ID
 
-| mailto:christian.cedenomora@ucr.ac.cr[Carlos Alvarado Meneses] | C4C337
+| mailto:carlos.alvaradomeneses@ucr.ac.cr[Carlos Alvarado Meneses] | C4C337
 
-| mailto:sawyer.dixon@ucr.ac.cr[Jocsan Fernández Salas] | C4F122
+| mailto:jocsan.fernandezsalas@ucr.ac.cr[Jocsan Fernández Salas] | C4F122
 
 | mailto:jason.montenegro@ucr.ac.cr[Jason Montenegro Navarro] | C4H386
 
-| mailto:joseht.rios@ucr.ac.cr[May Retana Delgado] | C16409
+| mailto:may.retana@ucr.ac.cr[May Retana Delgado] | C16409
 |===
