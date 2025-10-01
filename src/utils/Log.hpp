@@ -52,7 +52,7 @@ class Log final {
    * @brief Message types for documenting log messages.
    */
   enum MessageType {
-    DEBUG,
+    DEBUGGING,
     INFO,
     WARNING,
     ERROR
