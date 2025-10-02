@@ -3,6 +3,8 @@
 #ifndef GAME_STATE_HPP
 #define GAME_STATE_HPP
 
+#include "raylib.h"
+
 /**
  * @brief Set of identifiers for every game state available.
  */

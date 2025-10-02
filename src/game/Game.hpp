@@ -118,13 +118,20 @@ class Game : public Application {
     Log::append(Log::DEBUGGING, "Raylib", raylibMsg);
   }
 
+  /**
+   * @brief Creates all game state objects for this game
+   */
   inline void createGameStates() {
-    // TODO(jason): create actual game state objects and change all nullptrs
-    this->gameStateController.registerState(GameStateID::MainMenu, nullptr);
-    this->gameStateController.registerState(GameStateID::AboutMenu, nullptr);
-    this->gameStateController.registerState(GameStateID::Paused, nullptr);
-    this->gameStateController.registerState(GameStateID::GameOver, nullptr);
-    this->gameStateController.registerState(GameStateID::LevelOne, nullptr);
+    this->gameStateController.registerState(GameStateID::MainMenu
+      , std::make_shared<MainMenuState>());
+    this->gameStateController.registerState(GameStateID::AboutMenu
+      , std::make_shared<AboutMenuState>());
+    this->gameStateController.registerState(GameStateID::Paused
+      , std::make_shared<PausedGameState>());
+    this->gameStateController.registerState(GameStateID::GameOver
+      , std::make_shared<GameOverState>());
+      this->gameStateController.registerState(GameStateID::LevelOne
+      , std::make_shared<LevelOneState>());
   }
 };
 
