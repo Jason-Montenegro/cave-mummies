@@ -7,6 +7,7 @@
 #include <string>
 
 #include "Application.hpp"
+#include "GameStateController.hpp"
 #include "Log.hpp"
 
 /**
@@ -25,6 +26,8 @@ class Game : public Application {
   std::string windowTitle{""};
   /// @brief Log raylib messages
   static Log &log;
+  /// @brief Game states controller
+  GameStateController gameStateController;
 
  public:
   /**
@@ -36,9 +39,11 @@ class Game : public Application {
   explicit Game(const int32_t windowWidth = Game::defaultWindowWidth
     , const int32_t windowHeight = Game::defaultWindowHeight
     , std::string_view windowTitle = Game::defaultWindowTitle)
-    : isWindowFullscreen(false), windowTitle(windowTitle) {
+    : isWindowFullscreen(false), windowTitle(windowTitle)
+    , gameStateController() {
     setWindowWidth(windowWidth);
     setWindowHeight(windowHeight);
+    this->createGameStates();
   }
 
   /**
@@ -46,7 +51,10 @@ class Game : public Application {
    * @param windowTitle Game window title
    */
   explicit Game(std::string_view windowTitle = Game::defaultWindowTitle)
-    : isWindowFullscreen(true), windowTitle(windowTitle) { }
+    : isWindowFullscreen(true), windowTitle(windowTitle)
+    , gameStateController() {
+    this->createGameStates();
+  }
 
   /**
    * @brief Starts the game loop.
@@ -108,6 +116,15 @@ class Game : public Application {
   static inline void traceLogCallback(int /* logType */, const char *raylibMsg
     , va_list /* va_list */) {
     Log::append(Log::DEBUGGING, "Raylib", raylibMsg);
+  }
+
+  inline void createGameStates() {
+    // TODO(jason): create actual game state objects and change all nullptrs
+    this->gameStateController.registerState(GameStateID::MainMenu, nullptr);
+    this->gameStateController.registerState(GameStateID::AboutMenu, nullptr);
+    this->gameStateController.registerState(GameStateID::Paused, nullptr);
+    this->gameStateController.registerState(GameStateID::GameOver, nullptr);
+    this->gameStateController.registerState(GameStateID::LevelOne, nullptr);
   }
 };
 

@@ -8,6 +8,11 @@
 #include <utility>
 
 #include "GameState.hpp"
+#include "MainMenuState.hpp"
+#include "AboutMenuState.hpp"
+#include "GameOverState.hpp"
+#include "PausedGameState.hpp"
+#include "PlayingGameState.hpp"
 
 /**
  * @brief Game state controller for switching game states or screens.
