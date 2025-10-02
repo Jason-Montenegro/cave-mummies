@@ -17,38 +17,41 @@
  * "Programación paralela y concurrente".
  */
 class Log final {
+ private:
   /**
    * @brief Copy constructor disabled.
-   * @param other Ignored
+   * @param other Other log
    */
-  Log(const Log& /* other */) = delete;
+  Log(const Log& other) = delete;
   
   /**
    * @brief Move constructor disabled.
-   * @param other Ignored
+   * @param other Other log
    */
-  Log(Log&& /* other */) = delete;
+  Log(Log&& other) = delete;
   
   /**
    * @brief Copy assignment operator disabled.
-   * @param other Ignored
+   * @param other Other log
    */
-  Log& operator=(const Log& /* other */) = delete;
+  Log& operator=(const Log& other) = delete;
   
   /**
    * @brief Move assignment constructor disabled.
-   * @param other Ignored
+   * @param other Other log
    */
-  Log& operator=(Log&& /* other */) = delete;
+  Log& operator=(Log&& other) = delete;
 
  private:
   std::mutex mutex;  ///< Operations lock
-  std::ostream output;  ///< Stream that holds all sent messaged.
-  std::string filename;  ///< Log file name. If empty, std::cout is used.
-  std::ofstream file;  ///< The log file if using named files.
+  std::ostream output;  ///< Stream that holds all sent messaged
+  std::string filename;  ///< Log file name
+  std::ofstream file;  ///< The log file if using named files
+  static const char* const MESSAGE_TYPE_LABEL[]; ///< Labels for message types
+  static constexpr const char *const defaultLogFilename{"cat_mummies.log"};
 
  public:
-  /**
+   /**
    * @brief Message types for documenting log messages.
    */
   enum MessageType {
@@ -58,19 +61,18 @@ class Log final {
     ERROR
   };
 
-  static const char* const MESSAGE_TYPE_LABEL[]; ///< Labels for message types.
-
   /**
    * @brief Get the singleton Log instance.
    * @return Singleton Log instante
    */
   static Log& getInstance();
+
   /**
    * @brief Opens the log file for use.
-   * @param logFilename Log filename. If empty, std::cout is used.
-   * @throw std::runtime_error if passed file name does not match with any file.
+   * @param logFilename Log filename
+   * @throw std::runtime_error if passed file name does not match with any file
    */
-  void start(const std::string_view logFilename = std::string());
+  void start(const std::string_view logFilename = Log::defaultLogFilename);
 
   /**
    * @brief Closes the log file.
@@ -79,10 +81,10 @@ class Log final {
 
   /**
    * @brief Appends a record to the log file.
-   * @throw std::runtime_error if operation failed.
+   * @throw std::runtime_error if operation failed
    * @see append()
    */
-  void write(MessageType type, const std::string_view category
+  void write(Log::MessageType type, const std::string_view category
     , const std::string_view message);
 
   /**
@@ -93,10 +95,10 @@ class Log final {
    * @param message Message to log
    * @remark Do not abuse escape characters or the resulting log file may appear
    * malformed.
-   * @throw std::runtime_error if operation failed.
+   * @throw std::runtime_error if operation failed
    */
-  static inline void append(MessageType type, const std::string_view category
-    , const std::string_view message) {
+  static inline void append(Log::MessageType type
+    , const std::string_view category, const std::string_view message) {
     return Log::getInstance().write(type, category, message);
   }
 
