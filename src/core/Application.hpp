@@ -44,7 +44,7 @@ class Application {
 
   /**
    * @brief Starts running application.
-   * @return EXIT_SUCCESS on successful run, EXIT_FAILURE otherwise.
+   * @return EXIT_SUCCESS on successful run, EXIT_FAILURE otherwise
    */
   virtual int run() = 0;
 
