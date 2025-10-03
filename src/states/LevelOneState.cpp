@@ -6,8 +6,9 @@ LevelOneState::~LevelOneState() {
   // TODO(any): implement if necessary
 }
 
-void LevelOneState::update() {
+GameStateID LevelOneState::update() {
   // TODO(any): implement
+  return this->stateID;
 }
 
 void LevelOneState::draw() {

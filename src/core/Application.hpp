@@ -56,8 +56,9 @@ class Application {
 
   /**
    * @brief Updates state of application.
+   * @return true if an update was possible, false otherwise (program close)
    */
-  virtual void update() = 0;
+  virtual bool update() = 0;
 
   /**
    * @brief Draws application to screen.

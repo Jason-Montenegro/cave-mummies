@@ -24,6 +24,7 @@ class GameState {
  protected:
   /// @brief State identifier
   GameStateID stateID{GameStateID::Null};
+  bool loaded{false};
 
  public:
   /**
@@ -56,8 +57,18 @@ class GameState {
 
   /**
    * @brief Updates its internal object state.
+   * @return Next state that this game state transitions to.
+   * @note The return value should return this state ID if no transition
+   * is required.
    */
-  virtual void update() = 0;
+  virtual GameStateID update() {
+    return this->stateID;
+  };
+
+  /**
+   * @brief Initializes this object members.
+   */
+  virtual void init() {}
 
   /**
    * @brief Draws its internal object state to window.

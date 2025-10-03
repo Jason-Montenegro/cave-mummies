@@ -6,8 +6,9 @@ GameOverState::~GameOverState() {
   // TODO(any): implement if necessary
 }
 
-void GameOverState::update() {
+GameStateID GameOverState::update() {
   // TODO(any): implement
+  return this->stateID;
 }
 
 void GameOverState::draw() {

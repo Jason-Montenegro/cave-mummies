@@ -7,6 +7,6 @@
  * @return EXIT_SUCCESS on successful run, EXIT_FAILURE otherwise
  */
 int main() {
-  Game game(720, 720, "Cat Mummies");
+  Game game("Cat Mummies");
   return game.run();
 }

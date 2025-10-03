@@ -6,8 +6,9 @@ PausedGameState::~PausedGameState() {
   // TODO(any): implement if necessary
 }
 
-void PausedGameState::update() {
+GameStateID PausedGameState::update() {
   // TODO(any): implement
+  return this->stateID;
 }
 
 void PausedGameState::draw() {

@@ -65,6 +65,7 @@ class GameStateController {
   inline void setCurrentState(GameStateID stateID) {
     if (this->states.find(stateID) != this->states.end()) {
       this->currentState = this->states[stateID];
+      initCurrentState();
     }
   }
 
@@ -94,6 +95,17 @@ class GameStateController {
   }
 
   /**
+   * @brief Cleans all stored states from memory.
+   */
+  inline void cleanStates() {
+    for (auto &pair : this->states) {
+      pair.second.reset();
+    }
+    this->states.clear();
+    this->currentState = nullptr;
+  }
+
+  /**
    * @brief Commands that the current state draws its state.
    */
   inline void draw() {
@@ -105,10 +117,36 @@ class GameStateController {
   /**
    * @brief Commands that the current state updates its state.
    */
-  inline void update() {
-    if (this->currentState) {
-      this->currentState->update();
+  inline bool update() {
+    if (!this->currentState) {
+      return true;
     }
+    GameStateID nextState{this->currentState->update()};
+
+    // Close game
+    if (nextState == GameStateID::Null) {
+      return false;
+    }
+
+    // Change game state
+    if (nextState != this->currentState->getStateID()) {
+      setCurrentState(nextState);
+    }
+
+    return true;
+  }
+
+ private:
+  /**
+   * @brief Initializes current state.
+   * @return true if the state was initialized, false otherwise
+   */
+  inline bool initCurrentState() {
+    if (this->currentState) {
+      this->currentState->init();
+      return true;
+    }
+    return false;
   }
 };
 

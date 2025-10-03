@@ -28,7 +28,7 @@ class AboutMenuState : public GameState {
   /**
    * @brief Updates the about menu state objects.
    */
-  void update() override;
+  GameStateID update() override;
 
   /**
    * @brief Draws the about menu on the screen.

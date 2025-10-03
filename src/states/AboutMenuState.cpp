@@ -6,8 +6,9 @@ AboutMenuState::~AboutMenuState() {
   // TODO(any): implement if necessary
 }
 
-void AboutMenuState::update() {
+GameStateID AboutMenuState::update() {
   // TODO(any): implement
+  return this->stateID;
 }
 
 void AboutMenuState::draw() {

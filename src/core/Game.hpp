@@ -28,6 +28,7 @@ class Game : public Application {
   static Log &log;
   /// @brief Game states controller
   GameStateController gameStateController;
+  bool loadedGame{false};
 
  public:
   /**
@@ -40,7 +41,7 @@ class Game : public Application {
     , const int32_t windowHeight = Game::defaultWindowHeight
     , std::string_view windowTitle = Game::defaultWindowTitle)
     : isWindowFullscreen(false), windowTitle(windowTitle)
-    , gameStateController() {
+    , gameStateController(), loadedGame(false) {
     setWindowWidth(windowWidth);
     setWindowHeight(windowHeight);
     this->createGameStates();
@@ -52,9 +53,14 @@ class Game : public Application {
    */
   explicit Game(std::string_view windowTitle = Game::defaultWindowTitle)
     : isWindowFullscreen(true), windowTitle(windowTitle)
-    , gameStateController() {
+    , gameStateController(), loadedGame(false) {
     this->createGameStates();
   }
+
+  /**
+   * @brief Destructor
+   */
+  ~Game() override;
 
   /**
    * @brief Starts the game loop.
@@ -95,8 +101,9 @@ class Game : public Application {
 
   /**
    * @brief Updates state of game objects.
+   * @return true if an update was possible, false otherwise (program close)
    */
-  void update() override;
+  bool update() override;
 
   /**
    * @brief Draws game objects sprites to screen.

@@ -28,7 +28,7 @@ class LevelOneState : public GameState {
   /**
    * @brief Updates the level one state objects.
    */
-  void update() override;
+  GameStateID update() override;
 
   /**
    * @brief Draws the level one objects to screen.

@@ -28,7 +28,7 @@ class PausedGameState : public GameState {
   /**
    * @brief Updates the paused state objects.
    */
-  void update() override;
+  GameStateID update() override;
 
   /**
    * @brief Draws the paused menu on screen.

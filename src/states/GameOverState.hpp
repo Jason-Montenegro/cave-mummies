@@ -28,7 +28,7 @@ class GameOverState : public GameState {
   /**
    * @brief Updates the game over state objects.
    */
-  void update() override;
+  GameStateID update() override;
 
   /**
    * @brief Draws game over menu to screen.
