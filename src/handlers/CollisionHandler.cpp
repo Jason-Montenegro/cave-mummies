@@ -1,5 +1,7 @@
 // Copyright 2025 (author)
 
+#include <vector>
+
 #include "CollisionHandler.hpp"
 
 bool CollisionHandler::checkCollision(const Entity &a, const Entity &b) const {
