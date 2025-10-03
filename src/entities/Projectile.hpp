@@ -11,6 +11,9 @@
  * @brief Projectile entity
  */
 class Projectile : public Entity {
+ protected:
+  Vector2 position;  ///< Screen position
+
  public:
   /**
    * @brief Constructor
@@ -23,6 +26,15 @@ class Projectile : public Entity {
    * @brief Updates this projectile state.
    */
   void update() override;
+
+  /**
+   * @brief Sets the projectile position on screen.
+   * @param pos New position
+   */
+  inline void setPosition(Vector2 pos) {
+    this->position.x = pos.x;
+    this->position.y = pos.y;
+  }
 };
 
 #endif  // PROJECTILE_HPP
