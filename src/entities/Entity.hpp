@@ -27,6 +27,7 @@ class Entity {
  public:
   /**
    * @brief Constructor
+   * @param assetFilename File name of sprite texture
    */
   explicit Entity(const char *const assetFilename)
     : bounds{0, 0, 0, 0}, velocity{0,0} {

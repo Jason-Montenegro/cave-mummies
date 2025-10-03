@@ -52,7 +52,7 @@ class GameState {
    * @brief Gets the state ID of this.
    * @return this state ID
    */
-  inline GameStateID getStateID() const { return stateID; }
+  inline GameStateID getStateID() const { return this->stateID; }
 
   /**
    * @brief Updates its internal object state.

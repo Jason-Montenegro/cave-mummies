@@ -34,9 +34,21 @@ class Player : public Entity {
   /**
    * @brief Constructor
    */
-  explicit Player()
+  Player()
     : Entity(Player::defaultPlayerAssetPath)
     , projectile(Player::defaultProjectileAssetPath) { }
+
+  /**
+   * @brief Constructor
+   * @param playerAssetPath Texture for player object
+   * @param projecileAssetPath Texture for projectile object
+   */
+  explicit Player(
+    const char *const playerAssetPath = Player::defaultPlayerAssetPath
+    , const char *const projectileAssetPath =
+      Player::defaultProjectileAssetPath)
+    : Entity(playerAssetPath)
+    , projectile(projectileAssetPath) { }
 
   /**
    * @brief Updates this player state.
@@ -47,7 +59,7 @@ class Player : public Entity {
    * @brief Checks if this player is alive.
    * @return true if alive, false otherwise
    */
-  inline bool getIsAlive() const { return this->isAlive; }
+  inline bool isPlayerAlive() const { return this->isAlive; }
 
   /**
    * @brief Gets the projectile used by the player.

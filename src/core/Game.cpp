@@ -32,16 +32,17 @@ void Game::init() {
   if (isWindowFullscreen) {
     ToggleFullscreen();
   }
+
+  gameStateController.setCurrentState(GameStateID::MainMenu);
 }
 
 void Game::update() {
-  // Section to update game objects state. No game objects yet.
+  gameStateController.update();
 }
 
 void Game::draw() {
   BeginDrawing();
-  // Section to draw game objects. No game objects yet.
-  // DrawCircle(200, 200, 50, RED);
+  gameStateController.draw();
   EndDrawing();
 }
 

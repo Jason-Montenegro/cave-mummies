@@ -14,13 +14,13 @@ class Projectile : public Entity {
  public:
   /**
    * @brief Constructor
-   * @param assetPath Asset path for texture
+   * @param assetPath Asset path for this object texture
    */
   explicit Projectile(const char *const assetPath)
     : Entity(assetPath) { }
 
   /**
-   * @brief Updates this player state.
+   * @brief Updates this projectile state.
    */
   void update() override;
 };

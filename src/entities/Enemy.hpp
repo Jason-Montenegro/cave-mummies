@@ -43,17 +43,7 @@ class Enemy : public Entity {
   explicit Enemy(Player &objective, EnemyType type = EnemyType::Easy)
       : Entity(defaultEnemyAssetPath[static_cast<int>(type)])
       , objective(objective), type(type) {
-    switch (type) {
-      case EnemyType::Easy:
-        this->velocity = {1.0f, 1.0f};
-        break;
-      case EnemyType::Moderate:
-        this->velocity = {2.0f, 2.0f};
-        break;
-      case EnemyType::Hard:
-        this->velocity = {3.0f, 3.0f};
-        break;
-    }
+    this->setVelocity(type);
     this->isAlive = true;
   }
 
@@ -78,6 +68,25 @@ class Enemy : public Entity {
    * @return EnemyType Type of enemy
    */
   inline EnemyType getType() const { return this->type; }
+
+ private:
+  /**
+   * @brief Sets this object velocity
+   * @param type Enemy type
+   */
+  inline void setVelocity(EnemyType type) {
+    switch (type) {
+      case EnemyType::Easy:
+        this->velocity = {1.0f, 1.0f};
+        break;
+      case EnemyType::Moderate:
+        this->velocity = {2.0f, 2.0f};
+        break;
+      case EnemyType::Hard:
+        this->velocity = {3.0f, 3.0f};
+        break;
+    }
+  }
 };
 
 #endif  // ENEMY_HPP
