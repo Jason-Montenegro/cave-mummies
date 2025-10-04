@@ -3,8 +3,8 @@
 #ifndef GAME_STATE_CONTROLLER_HPP
 #define GAME_STATE_CONTROLLER_HPP
 
-#include <memory>
 #include <map>
+#include <memory>
 #include <utility>
 
 #include "GameState.hpp"
@@ -12,12 +12,13 @@
 #include "AboutMenuState.hpp"
 #include "GameOverState.hpp"
 #include "PausedGameState.hpp"
+#include "ScoreboardState.hpp"
 #include "LevelOneState.hpp"
 
 /**
- * @brief Game state controller for switching game states or screens.
+ * @brief Game state handler for switching game states on screen.
  */
-class GameStateController {
+class GameStateHandler {
  private:
   /// @brief States data members
   std::map<GameStateID, std::shared_ptr<GameState>> states;
@@ -28,35 +29,35 @@ class GameStateController {
    * @brief Deleted copy constructor.
    * @param other Other app
    */
-  GameStateController(const GameStateController &other) = delete;
+  GameStateHandler(const GameStateHandler &other) = delete;
 
   /**
    * @brief Deleted move constructor.
    * @param other Other app
    */
-  GameStateController(GameStateController &&other) = delete;
+  GameStateHandler(GameStateHandler &&other) = delete;
 
   /**
    * @brief Deleted copy-assignment operator.
    * @param other Other app
    */
-  GameStateController& operator=(const GameStateController &other) = delete;
+  GameStateHandler& operator=(const GameStateHandler &other) = delete;
 
   /**
    * @brief Deleted move-assignment operator.
    * @param other Other app
    */
-  GameStateController& operator=(GameStateController &&other) = delete;
+  GameStateHandler& operator=(GameStateHandler &&other) = delete;
 
   /**
    * @brief Constructor
    */
-  GameStateController() = default;
+  GameStateHandler() = default;
 
   /**
    * @brief Destructor
    */
-  ~GameStateController() = default;
+  ~GameStateHandler() = default;
 
   /**
    * @brief Sets the current state to stateID.

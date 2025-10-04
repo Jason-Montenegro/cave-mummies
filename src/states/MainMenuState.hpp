@@ -66,8 +66,9 @@ class MainMenuState : public GameState {
   /**
    * @brief Constructor. Initializes the main title and assigns the state ID.
    */
-  MainMenuState()
-    : mainTitle("Cat mummies", MenuOptionFlag::Highlight1, MenuOptionTag::h1
+  MainMenuState(Game &game)
+    : GameState(game)
+    , mainTitle("Cat mummies", MenuOptionFlag::Highlight1, MenuOptionTag::h1
       , WHITE) {
     this->stateID = GameStateID::MainMenu;
   }

@@ -33,22 +33,14 @@ class Player : public Entity {
  public:
   /**
    * @brief Constructor
-   */
-  Player()
-    : Entity(Player::defaultPlayerAssetPath)
-    , projectile(Player::defaultProjectileAssetPath) { }
-
-  /**
-   * @brief Constructor
    * @param playerAssetPath Texture for player object
    * @param projecileAssetPath Texture for projectile object
    */
-  explicit Player(
-    const char *const playerAssetPath = Player::defaultPlayerAssetPath
+  explicit Player(const char *const playerAssetPath =
+      Player::defaultPlayerAssetPath
     , const char *const projectileAssetPath =
       Player::defaultProjectileAssetPath)
-    : Entity(playerAssetPath)
-    , projectile(projectileAssetPath) { }
+    : Entity(playerAssetPath), projectile(projectileAssetPath) { }
 
   /**
    * @brief Updates this player state.

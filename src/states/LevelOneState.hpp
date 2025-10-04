@@ -16,7 +16,8 @@ class LevelOneState : public GameState {
   /**
    * @brief Constructor
    */
-  LevelOneState() {
+  LevelOneState(Game &game)
+    : GameState(game) {
     this->stateID = GameStateID::LevelOne;
   }
 

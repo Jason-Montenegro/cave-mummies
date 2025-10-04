@@ -1,10 +1,11 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
 #include "raylib.h"
+
 #include "Game.hpp"
 
 Game::~Game() {
-  gameStateController.cleanStates();
+  this->gameStateHandler->cleanStates();
 
   if (this->loadedGame) {
     CloseAudioDevice();
@@ -50,11 +51,11 @@ void Game::init() {
     ToggleFullscreen();
   }
   this->loadedGame = true;
-  gameStateController.setCurrentState(GameStateID::MainMenu);
+  this->gameStateHandler->setCurrentState(GameStateID::MainMenu);
 }
 
 bool Game::update() {
-  if (!gameStateController.update()) {
+  if (!this->gameStateHandler->update()) {
     return false;
   }
   return true;
@@ -62,9 +63,10 @@ bool Game::update() {
 
 void Game::draw() {
   BeginDrawing();
-  gameStateController.draw();
+  this->gameStateHandler->draw();
   EndDrawing();
 }
 
 void Game::cleanup() {
+  // Empty
 }

@@ -1,6 +1,18 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
+#include "Game.hpp"
 #include "MainMenuState.hpp"
+
+MainMenuState::~MainMenuState() {
+  if (this->loaded) {
+    // Unload all loaded game assets
+    UnloadFont(this->menuOptionFont);
+    UnloadTexture(this->background);
+    UnloadSound(this->selectMenuOptionSFX);
+    UnloadMusicStream(this->backgroundMusic);
+  }
+  this->menuOptions.clear();
+}
 
 void MainMenuState::init() {
   if (!this->loaded) {
@@ -24,17 +36,6 @@ void MainMenuState::init() {
   }
 }
 
-MainMenuState::~MainMenuState() {
-  if (this->loaded) {
-    // Unload all loaded game assets
-    UnloadFont(this->menuOptionFont);
-    UnloadTexture(this->background);
-    UnloadSound(this->selectMenuOptionSFX);
-    UnloadMusicStream(this->backgroundMusic);
-  }
-  this->menuOptions.clear();
-}
-
 GameStateID MainMenuState::update() {
   UpdateMusicStream(this->backgroundMusic);
 
@@ -45,7 +46,7 @@ GameStateID MainMenuState::update() {
 
 void MainMenuState::moveMenuOptionHighlight() {
   const size_t optionsSize{this->menuOptions.size()};
-  if (IsKeyPressed(KEY_W)) {
+  if (this->game.getInputHandler().isPressed(KEY_W)) {
     // Move option selector up
     for (size_t index{0}; index < optionsSize; ++index) {
       if (this->menuOptions[index].flag == MenuOptionFlag::Highlight2
@@ -57,7 +58,7 @@ void MainMenuState::moveMenuOptionHighlight() {
       }
     }
   }
-  if (IsKeyPressed(KEY_S)) {
+  if (this->game.getInputHandler().isPressed(KEY_S)) {
     // Move option selector down
     for (size_t index{0}; index < optionsSize; ++index) {
       if (this->menuOptions[index].flag == MenuOptionFlag::Highlight2
@@ -72,14 +73,15 @@ void MainMenuState::moveMenuOptionHighlight() {
 }
 
 GameStateID MainMenuState::addMenuOptionEventListener() {
-  if (IsKeyPressed(KEY_ENTER)) {
+  if (this->game.getInputHandler().isPressed(KEY_ENTER)) {
     // Change game state event listener for every menu option
     for (const auto &option : this->menuOptions) {
       if (option.flag == MenuOptionFlag::Highlight2) {
         if (option.text == "Start") return GameStateID::LevelOne;
         if (option.text == "About") return GameStateID::AboutMenu;
-        if (option.text == "Scoreboard") return GameStateID::Null;
+        if (option.text == "Scoreboard") return GameStateID::Scoreboard;
         if (option.text == "Quit") return GameStateID::Null;
+        // Stop current music
         StopMusicStream(this->backgroundMusic);
       }
     }
@@ -117,27 +119,6 @@ void MainMenuState::drawMainTitle() {
   drawMenuOption(this->mainTitle, {x, y}, fontSize);
 }
 
-void MainMenuState::drawMenuOptionSection() {
-  // Set screen details to position menu option section
-  const float screenW{static_cast<float>(GetScreenWidth())};
-  const float screenH{static_cast<float>(GetScreenHeight())};
-  const float spacing{screenH * 0.08f};
-  const float fontSize{screenH * 0.06f};
-  const float totalHeight{this->menuOptions.size() * spacing};
-  const float startY{(screenH / 2.0f - totalHeight / 2.0f) + 100};
-
-  // Draw options in their respective position
-  size_t index{0};
-  for (const auto &option : this->menuOptions) {
-    const float y{startY + index * spacing};
-    index++;
-    Vector2 textSize{MeasureTextEx(this->menuOptionFont, option.text.data()
-      , fontSize, 1.0f)};
-    const float x{screenW / 2.0f - textSize.x / 2.0f};
-
-    drawMenuOption(option, {x, y}, fontSize);
-  }
-}
 
 void MainMenuState::drawMenuOption(const MenuOption &option, Vector2 coords
   , float fontSize) {
@@ -173,8 +154,30 @@ Color MainMenuState::pickOutlineColor(MenuOptionFlag flag) {
 
 int MainMenuState::pickOutlineThickness(MenuOptionTag tag) {
   switch (tag) {
-  case MenuOptionTag::h1: return 8;
-  case MenuOptionTag::li: return 3;
-  default: return 1;
+  case MenuOptionTag::h1: return 8;  // Thick outline
+  case MenuOptionTag::li: return 3;  // Thin outline
+  default: return 1;  // Default outline value
+  }
+}
+
+void MainMenuState::drawMenuOptionSection() {
+  // Set screen details to position menu option section
+  const float screenW{static_cast<float>(GetScreenWidth())};
+  const float screenH{static_cast<float>(GetScreenHeight())};
+  const float spacing{screenH * 0.08f};
+  const float fontSize{screenH * 0.06f};
+  const float totalHeight{this->menuOptions.size() * spacing};
+  const float startY{(screenH / 2.0f - totalHeight / 2.0f) + 100};
+
+  // Draw options in their respective position
+  size_t index{0};
+  for (const auto &option : this->menuOptions) {
+    const float y{startY + index * spacing};
+    index++;
+    Vector2 textSize{MeasureTextEx(this->menuOptionFont, option.text.data()
+      , fontSize, 1.0f)};
+    const float x{screenW / 2.0f - textSize.x / 2.0f};
+
+    drawMenuOption(option, {x, y}, fontSize);
   }
 }

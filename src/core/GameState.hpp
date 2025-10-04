@@ -5,6 +5,8 @@
 
 #include "raylib.h"
 
+class Game;
+
 /**
  * @brief Set of identifiers for every game state available.
  */
@@ -15,6 +17,7 @@ enum class GameStateID {
   GameOver,
   Paused,
   LevelOne,
+  Scoreboard,
 };
 
 /**
@@ -25,6 +28,7 @@ class GameState {
   /// @brief State identifier
   GameStateID stateID{GameStateID::Null};
   bool loaded{false};
+  Game &game;
 
  public:
   /**
@@ -42,7 +46,8 @@ class GameState {
   /**
    * @brief Constructor
    */
-  GameState() = default;
+  GameState(Game &game)
+    : game(game) { }
 
   /**
    * @brief Destructor

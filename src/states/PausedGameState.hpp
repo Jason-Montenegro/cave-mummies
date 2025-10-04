@@ -16,7 +16,8 @@ class PausedGameState : public GameState {
   /**
    * @brief Constructor
    */
-  PausedGameState() {
+  PausedGameState(Game &game)
+    : GameState(game) {
     this->stateID = GameStateID::Paused;
   }
 

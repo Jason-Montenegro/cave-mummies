@@ -16,7 +16,8 @@ class AboutMenuState : public GameState {
   /**
    * @brief Constructor
    */
-  AboutMenuState() {
+  AboutMenuState(Game &game)
+    : GameState(game) {
     this->stateID = GameStateID::AboutMenu;
   }
 

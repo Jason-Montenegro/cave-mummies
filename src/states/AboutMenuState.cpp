@@ -1,5 +1,6 @@
 // Copyright 2025 (author)
 
+#include "Game.hpp"
 #include "AboutMenuState.hpp"
 
 AboutMenuState::~AboutMenuState() {
