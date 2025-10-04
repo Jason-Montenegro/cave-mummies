@@ -24,9 +24,8 @@ ifeq ($(UNAME_S), Linux)
 endif
 
 ifeq ($(UNAME_S), Darwin)
-	# macOS con Homebrew
-	INCLUDES += -I/usr/local/include
-	LIBS += -L/usr/local/lib -lraylib \
+	INCLUDES += -I/opt/homebrew/include
+  LIBS += -L/opt/homebrew/lib -lraylib \
 		-framework CoreVideo -framework IOKit -framework Cocoa \
 		-framework GLUT -framework OpenGL
 endif
@@ -134,10 +133,4 @@ help:
 	@echo "  - NASM (assembler)"
 	@echo "  - g++ (C++ compiler)"
 	@echo ""
-
-.PHONY: debug-files
-debug-files:
-	@echo "CPP_SRC: $(CPP_SRC)"
-	@echo "ASM_SRC: $(ASM_SRC)"
-	@echo "ASM_OBJ: $(ASM_OBJ)"
-	@echo "OBJ: $(OBJ)"
+	
