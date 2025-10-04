@@ -7,7 +7,7 @@ SRC_DIR := src
 BUILD_DIR := build
 BIN_DIR := bin
 DOC_DIR := doc
-ASM_DIR := asm
+ASM_DIR := src/asm
 CXX := g++
 CXXVER := -std=c++17
 ASSEMBLY := nasm
@@ -15,20 +15,20 @@ INCLUDES := -Isrc -Isrc/utils -Isrc/core -Isrc/entities -Isrc/game -Isrc/handler
 WARNINGS := -Wall -Wextra
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
-# Raylib dependency resolution
-ifeq ($(OS), Windows_NT)
-	INCLUDES += -Ilibs/windows/raylib
-	LIBS += -Llibs/windows/lib -lraylib
-else
-	UNAME_S := $(shell uname -s)
-	ifeq ($(UNAME_S), Linux)
-		INCLUDES += -Ilibs/linux/raylib
-		LIBS += -Llibs/linux/raylib -lraylib -lm -ldl -lpthread
-	endif
-	ifeq ($(UNAME_S), Darwin)
-		INCLUDES += -Ilibs/mac/raylib
-		LIBS += -Llibs/mac/raylib -lraylib -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
-	endif
+# Raylib dependency resolution (global install preferred)
+UNAME_S := $(shell uname -s)
+
+ifeq ($(UNAME_S), Linux)
+	INCLUDES += -I/usr/local/include
+	LIBS += -L/usr/local/lib -lraylib -lm -ldl -lpthread
+endif
+
+ifeq ($(UNAME_S), Darwin)
+	# macOS con Homebrew
+	INCLUDES += -I/usr/local/include
+	LIBS += -L/usr/local/lib -lraylib \
+		-framework CoreVideo -framework IOKit -framework Cocoa \
+		-framework GLUT -framework OpenGL
 endif
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
@@ -43,15 +43,17 @@ CPP_SRC := $(shell find $(SRC_DIR) -name '*.cpp')
 CPP_OBJ := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(CPP_SRC))
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
-# Conditionally include ASM files only if they exist
-ASM_SRC := $(wildcard $(ASM_DIR)/*.asm)
-UNAME_S := $(shell uname -s)
-ifneq ($(ASM_SRC),)
-	ifeq ($(UNAME_S), Linux)
-  	ASM_OBJ := $(patsubst $(ASM_DIR)/%.asm, $(BUILD_DIR)/%.o, $(ASM_SRC))
-	endif
-else
-    ASM_OBJ :=
+# Compile assembly files
+ifeq ($(UNAME_S), Linux)
+# Fetch all .asm files
+    ASM_SRC := $(wildcard $(ASM_DIR)/*.asm)
+# Convert .asm to .o files
+    ASM_OBJ := $(patsubst $(ASM_DIR)/%.asm, $(BUILD_DIR)/asm/%.o, $(ASM_SRC))
+
+    # Compile .asm files
+    $(BUILD_DIR)/asm/%.o: $(ASM_DIR)/%.asm
+		@mkdir -p $(dir $@)
+		$(ASSEMBLY) $(ASSEMBLYFLAGS) $< -o $@
 endif
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
@@ -86,14 +88,6 @@ run: $(BIN_DIR)/$(BINNAME)
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
-# Build Assembly (ASM) object files (only if ASM_SRC is not empty)
-ifneq ($(ASM_SRC),)
-$(BUILD_DIR)/%.o: $(ASM_DIR)/%.asm
-	@mkdir -p $(BUILD_DIR)
-	$(ASSEMBLY) $(ASSEMBLYFLAGS) $< -o $@
-endif
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Link executable
@@ -140,3 +134,10 @@ help:
 	@echo "  - NASM (assembler)"
 	@echo "  - g++ (C++ compiler)"
 	@echo ""
+
+.PHONY: debug-files
+debug-files:
+	@echo "CPP_SRC: $(CPP_SRC)"
+	@echo "ASM_SRC: $(ASM_SRC)"
+	@echo "ASM_OBJ: $(ASM_OBJ)"
+	@echo "OBJ: $(OBJ)"

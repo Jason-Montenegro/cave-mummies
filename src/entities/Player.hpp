@@ -3,7 +3,7 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
-#include <cstdlib>
+#include <cstdint>
 
 #include "Entity.hpp"
 #include "Projectile.hpp"

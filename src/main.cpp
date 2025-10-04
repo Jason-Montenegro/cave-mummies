@@ -7,6 +7,6 @@
  * @return EXIT_SUCCESS on successful run, EXIT_FAILURE otherwise
  */
 int main() {
-  Game game(InputSourceType::Keyboard, "Cat Mummies");
+  Game game(InputSourceType::Keyboard, 680, 480, "Cat Mummies");
   return game.run();
 }
