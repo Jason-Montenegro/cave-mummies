@@ -46,7 +46,8 @@ GameStateID MainMenuState::update() {
 
 void MainMenuState::moveMenuOptionHighlight() {
   const size_t optionsSize{this->menuOptions.size()};
-  if (this->game.getInputHandler().isPressed(KEY_W)) {
+  if (this->game.getInputHandler().isPressed(KEY_W)
+    || this->game.getInputHandler().isPressed(KEY_UP)) {
     // Move option selector up
     for (size_t index{0}; index < optionsSize; ++index) {
       if (this->menuOptions[index].flag == MenuOptionFlag::Highlight2
@@ -58,7 +59,8 @@ void MainMenuState::moveMenuOptionHighlight() {
       }
     }
   }
-  if (this->game.getInputHandler().isPressed(KEY_S)) {
+  if (this->game.getInputHandler().isPressed(KEY_S)
+    || this->game.getInputHandler().isPressed(KEY_DOWN)) {
     // Move option selector down
     for (size_t index{0}; index < optionsSize; ++index) {
       if (this->menuOptions[index].flag == MenuOptionFlag::Highlight2
