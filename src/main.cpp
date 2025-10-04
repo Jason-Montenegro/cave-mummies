@@ -1,14 +1,12 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
-#include <cstdlib>
-
-#include "raylib.h"
+#include "Game.hpp"
 
 /**
- * @brief Start program execution.
- *
- * @return Status code to the operating system, 0 means success.
+ * @brief Starts Cat mummies game.
+ * @return EXIT_SUCCESS on successful run, EXIT_FAILURE otherwise
  */
 int main() {
-  return EXIT_SUCCESS;
+  Game game(InputSourceType::Keyboard, 680, 480, "Cat Mummies");
+  return game.run();
 }

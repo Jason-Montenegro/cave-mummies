@@ -1,0 +1,32 @@
+// Copyright 2025 Jason Montenegro-Navarro
+
+#ifndef INPUT_SOURCE_HPP
+#define INPUT_SOURCE_HPP
+
+#include "raylib.h"
+
+/**
+ * @brief Interface for any source of input in the game. Such as keyboard or
+ * joystick.
+ */
+class InputSource {
+ public:
+  /**
+   * @brief Constructor
+   */
+  InputSource() = default;
+
+  /**
+   * @brief Destructor
+   */
+  virtual ~InputSource() = default;
+
+  /**
+   * @brief Checks if a key/button is currently pressed.
+   * @param key Key or button identifier
+   * @return true if pressed, false otherwise
+   */
+  virtual bool isPressed(int key) const = 0;
+};
+
+#endif  // INPUT_SOURCE_HPP
