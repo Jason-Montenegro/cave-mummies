@@ -210,7 +210,7 @@ The following functionalities are intended to be included in the video game.
 | Yarn Ball Shooting
 | Mouse (left click)
 | Shoots a projectile toward the cursor. Impact eliminates the mummy.
-| ⏳ TBD
+| 🔄 In progress
 
 | Ammo Collection
 | Automatically when touching yarn balls in the scene
@@ -220,7 +220,7 @@ The following functionalities are intended to be included in the video game.
 | Score
 | Automatically with time and when eliminating mummies
 | The highest score is saved.
-| ⏳ TBD
+| 🔄 In progress
 
 | Menu Interface
 | -
@@ -235,12 +235,12 @@ The following functionalities are intended to be included in the video game.
 | Pause Button
 | Esc key
 | Pressing Esc key pauses the current game session.
-| ⏳ TBD
+| 🔄 In progress
 
 | High Score Component
 | -
 | A component in the main menu displaying the highest historical score.
-| ⏳ TBD
+| 🔄 In progress
 |===
 
 == Dependencies
