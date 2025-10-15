@@ -260,10 +260,6 @@ heavily for all the graphic and input actions.
 [[credits]]
 == Credits
 
-=== Asset rights
-This project is solely conformed by assets created by the development team, and includes additional copyright-free assets such as sfx audio.
-All assets created by the development team shall not be replicated, nor distributed in any way, shape or form.
-
 === Professor
 mailto:sleyter.angulo@ucr.ac.cr[MSc. Sleyter Angulo Chavarría]
 
