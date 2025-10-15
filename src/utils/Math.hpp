@@ -1,8 +1,13 @@
-// Copyright (year) (author)
+// Copyright 2025 (author)
 
 #ifndef MATH_HPP
 #define MATH_HPP
 
-// TODO(any): Optional. Should be a general math class. 
+/**
+ * @brief General purpose math routines.
+ */
+namespace Math {
+  
+}
 
 #endif  // MATH_HPP

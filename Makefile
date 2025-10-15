@@ -2,71 +2,72 @@
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Project build configuration
-APPNAME := Cat_mummies
-BINNAME := Cat\ mummies
+BINNAME := CatMummies
 SRC_DIR := src
 BUILD_DIR := build
 BIN_DIR := bin
 DOC_DIR := doc
-ASM_DIR := asm
+ASM_DIR := src/asm
 CXX := g++
 CXXVER := -std=c++17
 ASSEMBLY := nasm
-CXXFLAGS := -Wall -Wextra -Isrc
-LDFLAGS  :=
-DEPS :=#= TODO(any): Add raylib dependencies
-ASSEMBLYFLAGS := -f elf64
+INCLUDES := -Isrc -Isrc/utils -Isrc/core -Isrc/entities -Isrc/game -Isrc/handlers -Isrc/states
+WARNINGS := -Wall -Wextra
 
-# Source files
-CPP_SRC := $(wildcard $(SRC_DIR)/*.cpp)
-CPP_OBJ := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(CPP_SRC))
+# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
+# Raylib dependency resolution (global install preferred)
+UNAME_S := $(shell uname -s)
 
-# Conditionally include ASM files only if they exist
-ASM_SRC := $(wildcard $(ASM_DIR)/*.asm)
-ifneq ($(ASM_SRC),)
-    ASM_OBJ := $(patsubst $(ASM_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRC))
-else
-    ASM_OBJ :=
+ifeq ($(UNAME_S), Linux)
+	INCLUDES += -I/usr/local/include
+	LIBS += -L/usr/local/lib -lraylib -lm -ldl -lpthread
 endif
 
+ifeq ($(UNAME_S), Darwin)
+	INCLUDES += -I/opt/homebrew/include
+  LIBS += -L/opt/homebrew/lib -lraylib \
+		-framework CoreVideo -framework IOKit -framework Cocoa \
+		-framework GLUT -framework OpenGL
+endif
+
+# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
+# Project build configuration
+CXXFLAGS := $(CXXVER) $(INCLUDES) $(WARNINGS)
+LDFLAGS := $(LIBS)
+ASSEMBLYFLAGS := -f elf64
+
+# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
+# Source files
+CPP_SRC := $(shell find $(SRC_DIR) -name '*.cpp')
+CPP_OBJ := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(CPP_SRC))
+
+# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
+# Compile assembly files
+ifeq ($(UNAME_S), Linux)
+# Fetch all .asm files
+    ASM_SRC := $(wildcard $(ASM_DIR)/*.asm)
+# Convert .asm to .o files
+    ASM_OBJ := $(patsubst $(ASM_DIR)/%.asm, $(BUILD_DIR)/asm/%.o, $(ASM_SRC))
+
+    # Compile .asm files
+    $(BUILD_DIR)/asm/%.o: $(ASM_DIR)/%.asm
+		@mkdir -p $(dir $@)
+		$(ASSEMBLY) $(ASSEMBLYFLAGS) $< -o $@
+endif
+
+# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Combine all object files
 OBJ := $(CPP_OBJ) $(ASM_OBJ)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Default target (debug build)
 .PHONY: all
-all: $(BIN_DIR)/$(BINNAME)
-
-# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
-# Build C++ object files
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $(CXXVER) -c $< -o $@
-
-# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
-# Build Assembly (ASM) object files (only if ASM_SRC is not empty)
-ifneq ($(ASM_SRC),)
-$(BUILD_DIR)/%.o: $(ASM_DIR)/%.asm
-	@mkdir -p $(BUILD_DIR)
-	$(ASSEMBLY) $(ASSEMBLYFLAGS) $< -o $@
-endif
-
-# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
-# Link executable
-$(BIN_DIR)/$(BINNAME): $(OBJ)
-	@mkdir -p $(BIN_DIR)
-	$(CXX) $(OBJ) $(LDFLAGS) $(DEPS) -o $(BIN_DIR)/$(BINNAME)
-
-# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
-# Run program in the same directory
-.PHONY: run
-run: $(BIN_DIR)/$(BINNAME)
-	./$(BIN_DIR)/$(BINNAME)
+all: debug
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Compile release build
 .PHONY: release
-release: CXXFLAGS += -O3
+release: CXXFLAGS += -O3 -DNDEBUG
 release: $(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
@@ -76,14 +77,30 @@ debug: CXXFLAGS += -g -DDEBUG
 debug: $(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
+# Run program in the same directory
+.PHONY: run
+run: $(BIN_DIR)/$(BINNAME)
+	./$(BIN_DIR)/$(BINNAME)
+
+# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
+# Build C++ object files
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
+# Link executable
+$(BIN_DIR)/$(BINNAME): $(OBJ)
+	@mkdir -p $(BIN_DIR)
+	$(CXX) -o $(BIN_DIR)/$(BINNAME) $(OBJ) $(LDFLAGS)
+
+# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Lint C++ code
 INPUTFC := $(CPP_SRC)
-LINTC := +whitespace/braces,+runtime/explicit
+LINTC := +whitespace/braces,+runtime/explicit,-build/include_subdir,-build/header_guard
 .PHONY: lint
 lint: ## Check code style conformance using Cpplint
-ifneq ($(INPUTFC),)
 	@-cpplint --filter=$(LINTC) $(INPUTFC)
-endif
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Generate documentation
@@ -110,3 +127,10 @@ help:
 	@echo "  make doc       : Generates doxygen documentation"
 	@echo "  make clean     : Deletes build files"
 	@echo "  make help      : Shows this action list"
+	@echo ""
+	@echo "Dependencies:"
+	@echo "  - Raylib (graphics library)"
+	@echo "  - NASM (assembler)"
+	@echo "  - g++ (C++ compiler)"
+	@echo ""
+	
