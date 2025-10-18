@@ -2,7 +2,7 @@
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Project build configuration
-BINNAME := CatMummies
+BINNAME := CaveMummies
 SRC_DIR := src
 BUILD_DIR := build
 BIN_DIR := bin

@@ -33,7 +33,7 @@ class Game : public Application {
   static constexpr int32_t defaultWindowWidth{640};
   static constexpr int32_t defaultWindowHeight{480};
   ///< Top window title
-  static constexpr const char *const defaultWindowTitle{"My Game"};
+  static constexpr const char *const defaultWindowTitle{"Cave mummies"};
   /// @brief Window related members
   bool isWindowFullscreen{false};
   int32_t windowWidth{Game::defaultWindowWidth};

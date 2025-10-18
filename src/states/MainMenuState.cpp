@@ -17,11 +17,11 @@ MainMenuState::~MainMenuState() {
 void MainMenuState::init() {
   if (!this->loaded) {
     // Load all game assets
-    this->background = LoadTexture("assets/background/main_bg.png");
+    this->background = LoadTexture("assets/background/game_bg.png");
     this->menuOptionFont = LoadFont("assets/fonts/PixelOperatorMono-Bold.ttf");
     this->selectMenuOptionSFX = LoadSound("assets/audio/sfx/throw1-sfx.wav");
     this->backgroundMusic = LoadMusicStream(
-      "assets/audio/music/game-bg-soundtrack.mp3");
+      "assets/audio/music/game_soundtrack.mp3");
     PlayMusicStream(this->backgroundMusic);
     // Create all options that are displayed on main menu
     this->menuOptions.emplace_back("Start", MenuOptionFlag::Highlight2
@@ -148,8 +148,8 @@ void MainMenuState::drawMenuOption(const MenuOption &option, Vector2 coords
 
 Color MainMenuState::pickOutlineColor(MenuOptionFlag flag) {
   switch (flag) {
-  case MenuOptionFlag::Highlight1: return RED;
-  case MenuOptionFlag::Highlight2: return DARKBROWN;
+  case MenuOptionFlag::Highlight1: return DARKGREEN;
+  case MenuOptionFlag::Highlight2: return LIME;
   default: return WHITE;
   }
 }

@@ -33,7 +33,7 @@ int Game::run() {
 }
 
 void Game::init() {
-  Log::getInstance().start("cat_mummies.log");
+  Log::getInstance().start("cave_mummies.log");
   SetTraceLogCallback(Game::traceLogCallback);
 
   if (isWindowFullscreen) {

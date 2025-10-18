@@ -6,7 +6,6 @@
 #include <cstdint>
 
 #include "Entity.hpp"
-#include "Projectile.hpp"
 
 /**
  * @brief Player entity
@@ -15,14 +14,10 @@ class Player : public Entity {
  private:
   /// @brief Default player values
   static constexpr uint32_t defaultAmmunitionQuantity{12};
-  static constexpr const char *const defaultProjectileAssetPath
-    {"assets/textures/projectiles/projectile-sprite.png"};
   static constexpr const char *const defaultPlayerAssetPath
-    {"assets/textures/entities/cat.jpeg"};
+    {"assets/textures/entities/wil_player_skin.png"};
   /// Alive player flag
   bool isAlive{true};
-  /// Type of projectile it uses
-  Projectile projectile;
   /// Enemies kill count
   uint64_t killCount{0};
   /// Quantity of projectiles available
@@ -37,10 +32,7 @@ class Player : public Entity {
    * @param projecileAssetPath Texture for projectile object
    */
   explicit Player(const char *const playerAssetPath =
-      Player::defaultPlayerAssetPath
-    , const char *const projectileAssetPath =
-      Player::defaultProjectileAssetPath)
-    : Entity(playerAssetPath), projectile(projectileAssetPath) { }
+    Player::defaultPlayerAssetPath) : Entity(playerAssetPath) { }
 
   /**
    * @brief Updates this player state.
@@ -52,18 +44,6 @@ class Player : public Entity {
    * @return true if alive, false otherwise
    */
   inline bool isPlayerAlive() const { return this->isAlive; }
-
-  /**
-   * @brief Gets the projectile used by the player.
-   * @return Reference to the projectile object
-   */
-  inline Projectile& getProjectile() { return this->projectile; }
-
-  /**
-   * @brief Gets the projectile used by the player (const version).
-   * @return Const reference to the projectile object
-   */
-  inline const Projectile& getProjectile() const { return this->projectile; }
 
   /**
    * @brief Gets the number of enemies killed by the player.
@@ -90,12 +70,6 @@ class Player : public Entity {
    * @param alive true if alive, false otherwise
    */
   inline void setIsAlive(bool alive) { this->isAlive = alive; }
-
-  /**
-   * @brief Sets the projectile used by the player.
-   * @param p Projectile object to assign
-   */
-  inline void setProjectile(const Projectile &p) { this->projectile = p; }
 
   /**
    * @brief Sets the number of enemies killed.

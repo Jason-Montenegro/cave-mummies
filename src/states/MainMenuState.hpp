@@ -68,7 +68,7 @@ class MainMenuState : public GameState {
    */
   MainMenuState(Game &game)
     : GameState(game)
-    , mainTitle("Cat mummies", MenuOptionFlag::Highlight1, MenuOptionTag::h1
+    , mainTitle("Cave mummies", MenuOptionFlag::Highlight1, MenuOptionTag::h1
       , WHITE) {
     this->stateID = GameStateID::MainMenu;
   }

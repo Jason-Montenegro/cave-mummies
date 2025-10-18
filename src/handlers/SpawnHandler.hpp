@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "Player.hpp"
-#include "Projectile.hpp"
 #include "Enemy.hpp"
 
 /**
@@ -42,21 +41,6 @@ class SpawnHandler {
    */
   inline std::unique_ptr<Player> spawnPlayer() const {
     return std::make_unique<Player>();
-  }
-
-  /**
-   * @brief Spawns a projectile at a given position with a given velocity.
-   * @param position Starting position of the projectile
-   * @param velocity Velocity vector of the projectile
-   * @return Unique pointer to a newly created Projectile entity
-   */
-  inline std::unique_ptr<Projectile> spawnProjectile(const Vector2 &position
-    , const Vector2 &velocity) const {
-    auto projectile{std::make_unique<Projectile>(
-      "assets/textures/projectiles/projectile-sprite.png")};
-    projectile->setPosition(position);
-    projectile->setVelocity(velocity);
-    return projectile;
   }
 };
 
