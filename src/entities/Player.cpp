@@ -45,22 +45,27 @@ void Player::calculateAndDrawJump() {
   const float groundY{this->game.getGameStageFloorHeight()};
   const float gravity{1.5f};
   const float jumpStrength{20.0f};
+  const int maxJumps{2};
+  bool jumpKeyDown{input.isPressed(KEY_W) || input.isPressed(KEY_SPACE)};
 
-  if (input.isPressed(KEY_W) || input.isPressed(KEY_SPACE)) {
+  if (jumpKeyDown && this->jumpCount < maxJumps) {
     this->isJumping = true;
     this->jumpVelocity = -jumpStrength;
+    ++this->jumpCount;
   }
 
   if (this->isJumping) {
     const float newPosition{this->bounds.y + this->jumpVelocity};
     this->jumpVelocity += gravity;
+
     if (newPosition < 0.0f) {
       this->bounds.y = 0.0f;
       this->jumpVelocity = 0.0f;
-    } else if (newPosition >= groundY) {
+    } else if (newPosition >= groundY - this->texture.height) {
       this->bounds.y = groundY - this->texture.height;
-      isJumping = false;
       this->jumpVelocity = 0.0f;
+      this->jumpCount = 0;
+      isJumping = false;
     } else {
       this->bounds.y = newPosition;
     }

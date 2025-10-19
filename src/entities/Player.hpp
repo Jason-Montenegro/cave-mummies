@@ -38,6 +38,7 @@ class Player : public Entity {
   /// @brief Sprite frame count
   int32_t spriteFrameCount{4};
   bool isJumping{false};
+  int32_t jumpCount{0};
   float jumpVelocity{0.0f};
   /// @brief Condition to draw sprite on correct direction
   bool facingLeft{false};
