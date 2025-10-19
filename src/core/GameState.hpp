@@ -5,18 +5,18 @@
 
 #include "raylib.h"
 
-class Game;
+namespace cave_mummies::core {
+  class Game;
 
-/**
- * @brief Set of identifiers for every game state available.
- */
+/// @enum GameStateID
+/// @brief Set of identifiers for every game state available.
 enum class GameStateID {
   Null,
   MainMenu,
   AboutMenu,
   GameOver,
   Paused,
-  LevelOne,
+  StageOne,
   Scoreboard,
 };
 
@@ -28,21 +28,10 @@ class GameState {
   /// @brief State identifier
   GameStateID stateID{GameStateID::Null};
   bool loaded{false};
-  Game &game;
+  /// @brief Game controller object
+  Game& game;
 
  public:
-  /**
-   * @brief Deleted copy constructor.
-   * @param other Other app
-   */
-  GameState(const GameState &other) = delete;
-
-  /**
-   * @brief Deleted copy-assignment operator.
-   * @param other Other app
-   */
-  GameState& operator=(const GameState &other) = delete;
-
   /**
    * @brief Constructor
    */
@@ -56,9 +45,11 @@ class GameState {
 
   /**
    * @brief Gets the state ID of this.
-   * @return this state ID
+   * @return this StateID
    */
-  inline GameStateID getStateID() const { return this->stateID; }
+  inline GameStateID getStateID() const {
+    return this->stateID;
+  }
 
   /**
    * @brief Updates its internal object state.
@@ -68,7 +59,7 @@ class GameState {
    */
   virtual GameStateID update() {
     return this->stateID;
-  };
+  }
 
   /**
    * @brief Initializes this object members.
@@ -80,5 +71,7 @@ class GameState {
    */
   virtual void draw() = 0;
 };
+
+}  // namespace cave_mummies::core
 
 #endif  // GAME_STATE_HPP

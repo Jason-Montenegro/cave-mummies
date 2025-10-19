@@ -6,6 +6,15 @@
 #include <memory>
 
 #include "InputSource.hpp"
+#include "JoystickSource.hpp"
+#include "KeyboardSource.hpp"
+
+/**
+ * @brief PENDING
+ * 
+ * PENDING
+ */
+namespace cave_mummies::handlers {
 
 /**
  * @brief Interface for handling player input via an input source.
@@ -13,28 +22,30 @@
  */
 class InputHandler {
  private:
-    std::shared_ptr<InputSource> source;  ///< Input source to fetch data from
+    std::unique_ptr<InputSource> source;  ///< Input source to fetch data from
 
  public:
   /**
    * @brief Constructor
    * @param source Pointer to an input source (keyboard, joystick, etc.)
    */
-  explicit InputHandler(std::shared_ptr<InputSource> source)
-    : source(std::move(source)) { }
+  explicit InputHandler(InputSourceType source) {
+    switch (source) {
+    case InputSourceType::Joystick:
+      this->source = std::make_unique<JoystickSource>();
+      break;
+    case InputSourceType::Keyboard:
+    [[fallthrough]];
+    default:
+      this->source = std::make_unique<KeyboardSource>();
+      break;
+    }
+  }
 
   /**
    * @brief Destructor
    */
   ~InputHandler() = default;
-
-  /**
-   * @brief Sets a new input source.
-   * @param newSource Shared pointer to the new input source
-   */
-  inline void setInputSource(std::shared_ptr<InputSource> newSource) {
-      source = std::move(newSource);
-  }
 
   /**
    * @brief Queries whether a specific key/button is pressed.
@@ -45,5 +56,7 @@ class InputHandler {
     return (source) ? source->isPressed(key) : false;
   }
 };
+
+}  // namespace cave_mummies::handlers
 
 #endif  // INPUT_HANDLER_HPP

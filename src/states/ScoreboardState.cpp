@@ -3,11 +3,13 @@
 #include "Game.hpp"
 #include "ScoreboardState.hpp"
 
+namespace cave_mummies::states {
+
 ScoreboardState::~ScoreboardState() {
   // TODO(any): implement if necessary
 }
 
-GameStateID ScoreboardState::update() {
+cave_mummies::core::GameStateID ScoreboardState::update() {
   // TODO(any): implement
   return this->stateID;
 }
@@ -15,3 +17,5 @@ GameStateID ScoreboardState::update() {
 void ScoreboardState::draw() {
   // TODO(any): implement
 }
+
+}  // namespace cave_mummies::states

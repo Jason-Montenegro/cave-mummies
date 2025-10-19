@@ -4,39 +4,19 @@
 #define APPLICATION_HPP
 
 /**
+ * @namespace cave_mummies::core
+ * @brief Core application framework.
+ *
+ * Contains the base interfaces for managing the application's
+ * lifecycle, state, and execution flow.
+ */
+namespace cave_mummies::core {
+
+/**
  * @brief Abstract application interface. Sets window application API.
  */
 class Application {
  public:
-  /**
-   * @brief Deleted copy constructor.
-   * @param other Other app
-   */
-  Application(const Application &other) = delete;
-
-  /**
-   * @brief Deleted move constructor.
-   * @param other Other app
-   */
-  Application(const Application &&other) = delete;
-
-  /**
-   * @brief Deleted copy-assignment operator.
-   * @param other Other app
-   */
-  const Application& operator=(const Application &other) = delete;
-
-  /**
-   * @brief Deleted move-assignment operator.
-   * @param other Other app
-   */
-  const Application& operator=(const Application &&other) = delete;
-
-  /**
-   * @brief Constructor
-   */
-  Application() = default;
-
   /**
    * @brief Destructor
    */
@@ -70,5 +50,7 @@ class Application {
    */
   virtual void cleanup() = 0;
 };
+
+}  // namespace cavemummies::core
 
 #endif  // APPLICATION_HPP

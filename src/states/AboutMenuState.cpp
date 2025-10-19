@@ -3,11 +3,13 @@
 #include "Game.hpp"
 #include "AboutMenuState.hpp"
 
+namespace cave_mummies::states {
+
 AboutMenuState::~AboutMenuState() {
   // TODO(any): implement if necessary
 }
 
-GameStateID AboutMenuState::update() {
+cave_mummies::core::GameStateID AboutMenuState::update() {
   // TODO(any): implement
   return this->stateID;
 }
@@ -15,3 +17,5 @@ GameStateID AboutMenuState::update() {
 void AboutMenuState::draw() {
   // TODO(any): implement
 }
+
+}  // namespace cave_mummies::states

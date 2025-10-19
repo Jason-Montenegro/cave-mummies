@@ -5,10 +5,12 @@
 
 #include "GameState.hpp"
 
+namespace cave_mummies::states {
+
 /**
  * @brief Game state for about menu screen in game.
  */
-class AboutMenuState : public GameState {
+class AboutMenuState : public cave_mummies::core::GameState {
  private:
   /// @brief Private members of state
 
@@ -16,9 +18,9 @@ class AboutMenuState : public GameState {
   /**
    * @brief Constructor
    */
-  AboutMenuState(Game &game)
+  AboutMenuState(cave_mummies::core::Game &game)
     : GameState(game) {
-    this->stateID = GameStateID::AboutMenu;
+    this->stateID = cave_mummies::core::GameStateID::AboutMenu;
   }
 
   /**
@@ -29,12 +31,14 @@ class AboutMenuState : public GameState {
   /**
    * @brief Updates the about menu state objects.
    */
-  GameStateID update() override;
+  cave_mummies::core::GameStateID update() override;
 
   /**
    * @brief Draws the about menu on the screen.
    */
   void draw() override;
 };
+
+}  // namespace cave_mummies::states
 
 #endif  // ABOUT_MENU_STATE_HPP

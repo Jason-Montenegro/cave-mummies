@@ -5,6 +5,8 @@
 
 #include "InputSource.hpp"
 
+namespace cave_mummies::handlers {
+
 /**
  * @brief Interface for keyboard input in the game.
  */
@@ -17,5 +19,7 @@ class KeyboardSource : public InputSource {
    */
   bool isPressed(int key) const override;
 };
+
+} // namespace cave_mummies::handlers
 
 #endif  // KEYBOARD_SOURCE_HPP

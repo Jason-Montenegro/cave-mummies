@@ -3,7 +3,6 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include <cstdlib>
 #include <memory>
 #include <string>
 
@@ -11,67 +10,19 @@
 #include "CollisionHandler.hpp"
 #include "GameStateHandler.hpp"
 #include "InputHandler.hpp"
-#include "JoystickSource.hpp"
-#include "KeyboardSource.hpp"
+#include "InputSource.hpp"
 #include "Log.hpp"
 #include "SpawnHandler.hpp"
 
-/**
- * @brief Input source type for playing the game.
- */
-enum class InputSourceType {
-  Keyboard,
-  Joystick
-};
+using InputSourceType = cave_mummies::handlers::InputSourceType;
+namespace cave_mummies::core {
 
 /**
- * @brief Game application that acts as a game controller. Holds the game loop.
+ * @brief Game application that acts as a game controller.
+ * Manages the game loop.
  */
-class Game : public Application {
- private:
-  /// @brief Default game configurations
-  static constexpr int32_t defaultWindowWidth{640};
-  static constexpr int32_t defaultWindowHeight{480};
-  ///< Top window title
-  static constexpr const char *const defaultWindowTitle{"Cave mummies"};
-  /// @brief Window related members
-  bool isWindowFullscreen{false};
-  int32_t windowWidth{Game::defaultWindowWidth};
-  int32_t windowHeight{Game::defaultWindowHeight};
-  std::string windowTitle{""};
-  /// @brief Log raylib messages
-  static Log &log;
-  /// @brief Game handlers
-  std::unique_ptr<GameStateHandler> gameStateHandler;
-  std::unique_ptr<InputHandler> inputHandler;
-  std::unique_ptr<CollisionHandler> collisionHandler;
-  std::unique_ptr<SpawnHandler> spawnHandler;
-  bool loadedGame{false};
-
+class Game : public cave_mummies::core::Application {
  public:
-  /**
-   * @brief Windowed game constructor
-   * @param inputType User input type for game
-   * @param windowWidth Game window width
-   * @param windowHeight Game window height
-   * @param windowTitle Game window title
-   */
-  explicit Game(InputSourceType inputType = InputSourceType::Keyboard
-    ,const int32_t windowWidth = Game::defaultWindowWidth
-    , const int32_t windowHeight = Game::defaultWindowHeight
-    , std::string_view windowTitle = Game::defaultWindowTitle)
-    : isWindowFullscreen(false), windowTitle(windowTitle)
-    , gameStateHandler(std::make_unique<GameStateHandler>())
-    , inputHandler(nullptr)
-    , collisionHandler(std::make_unique<CollisionHandler>())
-    , spawnHandler(std::make_unique<SpawnHandler>())
-    , loadedGame(false) {
-    this->setWindowWidth(windowWidth);
-    this->setWindowHeight(windowHeight);
-    this->setInputSource(inputType);
-    this->createGameStates();
-  }
-
   /**
    * @brief Fullscreen game constructor
    * @param inputType User input type for game
@@ -79,9 +30,10 @@ class Game : public Application {
    */
   explicit Game(InputSourceType inputType
     , std::string_view windowTitle = Game::defaultWindowTitle)
-    : isWindowFullscreen(true), windowTitle(windowTitle)
+    : windowTitle(windowTitle)
     , gameStateHandler(std::make_unique<GameStateHandler>())
-    , inputHandler(nullptr)
+    , inputHandler(std::make_unique<cave_mummies::handlers::InputHandler>(
+        InputSourceType::Keyboard))
     , collisionHandler(std::make_unique<CollisionHandler>())
     , spawnHandler(std::make_unique<SpawnHandler>())
     , loadedGame(false) {
@@ -96,25 +48,9 @@ class Game : public Application {
 
   /**
    * @brief Starts the game loop.
-   * @return EXIT_SUCCESS on successful run, EXIT_FAILURE otherwise
+   * @return EXIT_SUCCESS
    */
   int run() override;
-
-  /**
-   * @brief Sets the Window Width.
-   * @param windowWidth New window width
-   */
-  inline void setWindowWidth(int32_t windowWidth) {
-    this->windowWidth = (windowWidth < 0) ? -windowWidth : windowWidth;
-  }
-
-  /**
-   * @brief Sets the Window Height.
-   * @param windowHeight New window height
-   */
-  inline void setWindowHeight(int32_t windowHeight) {
-    this->windowHeight = (windowHeight < 0) ? -windowHeight : windowHeight;
-  }
 
   /**
    * @brief Getter for GameStateHandler
@@ -126,7 +62,7 @@ class Game : public Application {
   /**
    * @brief Getter for InputHandler
    */
-  inline InputHandler& getInputHandler() {
+  inline cave_mummies::handlers::InputHandler& getInputHandler() {
     return *this->inputHandler;
   }
 
@@ -145,21 +81,30 @@ class Game : public Application {
   }
 
  private:
+  /// @brief Default top window title
+  static constexpr const char* const defaultWindowTitle{"Cave mummies"};
+  std::string windowTitle{Game::defaultWindowTitle};
+  int32_t windowWidth;
+  int32_t windowHeight;
+  /// @brief Log raylib messages
+  static Log& log;
+  /// @brief Game state handler
+  std::unique_ptr<GameStateHandler> gameStateHandler;
+  /// @brief Player input handler
+  std::unique_ptr<cave_mummies::handlers::InputHandler> inputHandler;
+  /// @brief Collision handler
+  std::unique_ptr<CollisionHandler> collisionHandler;
+  /// @brief Entitiy spawn handler
+  std::unique_ptr<SpawnHandler> spawnHandler;
+  bool loadedGame{false};
+
   /**
    * @brief Sets the input source for playing the game.
    * @param type Input source (Keyboard or joystick)
    */
   inline void setInputSource(InputSourceType type = InputSourceType::Keyboard) {
-    std::shared_ptr<InputSource> source;
-    switch (type) {
-    case InputSourceType::Keyboard:
-      source = std::make_shared<KeyboardSource>(); break;
-    case InputSourceType::Joystick:
-      source = std::make_shared<JoystickSource>(); break;
-    default: 
-      source = std::make_shared<KeyboardSource>(); break;
-    }
-    this->inputHandler = std::make_unique<InputHandler>(source);
+    this->inputHandler =
+      std::make_unique<cave_mummies::handlers::InputHandler>(type);
   }
 
   /**
@@ -168,13 +113,9 @@ class Game : public Application {
   void init() override;
 
   /**
-   * @brief Checks if the set window dimensions are valid.
-   * @return true Dimensions are greater than zero
-   * @return false Any other case
+   * @brief Creates all game state objects for this game
    */
-  inline bool validWindowDimension() const {
-    return this->windowWidth > 0 && this->windowHeight > 0;
-  }
+  void createGameStates();
 
   /**
    * @brief Updates state of game objects.
@@ -197,30 +138,12 @@ class Game : public Application {
    * log object.
    * @param raylibMsg Raylib log message
    */
-  static inline void traceLogCallback(int /* logType */, const char *raylibMsg
+  static inline void traceLogCallback(int /* logType */, const char* raylibMsg
     , va_list /* va_list */) {
     Log::append(Log::DEBUGGING, "Raylib", raylibMsg);
   }
-
-  /**
-   * @brief Creates all game state objects for this game
-   */
-  inline void createGameStates() {
-    if (this->gameStateHandler) {
-      this->gameStateHandler->registerState(GameStateID::MainMenu
-        , std::make_shared<MainMenuState>(*this));
-      this->gameStateHandler->registerState(GameStateID::AboutMenu
-        , std::make_shared<AboutMenuState>(*this));
-      this->gameStateHandler->registerState(GameStateID::Scoreboard
-        , std::make_shared<ScoreboardState>(*this));
-      this->gameStateHandler->registerState(GameStateID::Paused
-        , std::make_shared<PausedGameState>(*this));
-      this->gameStateHandler->registerState(GameStateID::GameOver
-        , std::make_shared<GameOverState>(*this));
-        this->gameStateHandler->registerState(GameStateID::LevelOne
-        , std::make_shared<LevelOneState>(*this));
-    }
-  }
 };
+
+}  // namespace cave_mummies::core
 
 #endif  // GAME_HPP

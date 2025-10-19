@@ -9,17 +9,23 @@
 #include "GameState.hpp"
 
 /**
- * @brief Visual state flags for each menu option.
+ * @namespace cave_mummies::entities
+ * @brief Game entities
+ *
+ * Contains the state classes that act as screens in the game.
  */
+namespace cave_mummies::states {
+
+/// @enum MenuOptionFlag
+/// @brief Visual state flags for each menu option.
 enum class MenuOptionFlag {
   Highlight1,  ///< Primary highlight
   Highlight2,  ///< Secondary highlight
   None  ///< No effect
 };
 
-/**
- * @brief Types of elements that can be displayed in the menu.
- */
+/// @enum MenuOptionFlag
+/// @brief Types of elements that can be displayed in the menu.
 enum class MenuOptionTag {
   h1, ///< Main header
   li  ///< List item
@@ -28,7 +34,7 @@ enum class MenuOptionTag {
 /**
  * @brief Game state for main menu screen in game.
  */
-class MainMenuState : public GameState {
+class MainMenuState : public cave_mummies::core::GameState {
  private:
   /**
    * @brief Represents a single option in the main menu.
@@ -66,11 +72,12 @@ class MainMenuState : public GameState {
   /**
    * @brief Constructor. Initializes the main title and assigns the state ID.
    */
-  MainMenuState(Game &game)
+  MainMenuState(cave_mummies::core::Game& game)
     : GameState(game)
-    , mainTitle("Cave mummies", MenuOptionFlag::Highlight1, MenuOptionTag::h1
-      , WHITE) {
-    this->stateID = GameStateID::MainMenu;
+    , mainTitle("Cave mummies"
+    , MenuOptionFlag::Highlight1, MenuOptionTag::h1
+    , WHITE) {
+    this->stateID = cave_mummies::core::GameStateID::MainMenu;
   }
 
   /**
@@ -82,7 +89,7 @@ class MainMenuState : public GameState {
    * @brief Updates main menu logic.
    * @return New game state ID if a transition occurs.
    */
-  GameStateID update() override;
+  cave_mummies::core::GameStateID update() override;
 
   /**
    * @brief Initializes resources (textures, fonts, sounds).
@@ -104,7 +111,7 @@ class MainMenuState : public GameState {
    * @brief Handles selection events (e.g., pressing Enter).
    * @return ID of the next game state if an option is selected.
    */
-  GameStateID addMenuOptionEventListener();
+  cave_mummies::core::GameStateID addMenuOptionEventListener();
 
   /**
    * @brief Draws the menu background.
@@ -122,7 +129,7 @@ class MainMenuState : public GameState {
    * @param coords Screen coordinates
    * @param fontSize Font size to use
    */
-  void drawMenuOption(const MenuOption &option, Vector2 coords, float fontSize);
+  void drawMenuOption(const MenuOption& option, Vector2 coords, float fontSize);
 
   /**
    * @brief Draws all interactive menu options.
@@ -139,5 +146,7 @@ class MainMenuState : public GameState {
    */
   int pickOutlineThickness(MenuOptionTag tag);
 };
+
+}  // namespace cave_mummies::states
 
 #endif  // MAIN_MENU_STATE_HPP

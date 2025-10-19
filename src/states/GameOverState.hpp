@@ -5,10 +5,12 @@
 
 #include "GameState.hpp"
 
+namespace cave_mummies::states {
+
 /**
  * @brief Game state for game over screen in game.
  */
-class GameOverState : public GameState {
+class GameOverState : public cave_mummies::core::GameState {
  private:
   /// @brief Private members of state
 
@@ -16,9 +18,9 @@ class GameOverState : public GameState {
   /**
    * @brief Constructor
    */
-  GameOverState(Game &game)
+  GameOverState(cave_mummies::core::Game &game)
     : GameState(game) {
-    this->stateID = GameStateID::GameOver;
+    this->stateID = cave_mummies::core::GameStateID::GameOver;
   }
 
   /**
@@ -29,12 +31,14 @@ class GameOverState : public GameState {
   /**
    * @brief Updates the game over state objects.
    */
-  GameStateID update() override;
+  cave_mummies::core::GameStateID update() override;
 
   /**
    * @brief Draws game over menu to screen.
    */
   void draw() override;
 };
+
+} // namespace cave_mummies::states
 
 #endif  // GAME_OVER_STATE_HPP

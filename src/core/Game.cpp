@@ -1,8 +1,12 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
+#include <memory>
+
 #include "raylib.h"
 
 #include "Game.hpp"
+
+namespace cave_mummies::core {
 
 Game::~Game() {
   this->gameStateHandler->cleanStates();
@@ -17,39 +21,29 @@ Game::~Game() {
 }
 
 int Game::run() {
-  if (this->validWindowDimension()) {
-    this->init();
+  this->init();
 
-    while (!WindowShouldClose()) {
-      if (!this->update()) {
-        break;
-      }
-      this->draw();
+  while (!WindowShouldClose()) {
+    if (!this->update()) {
+      break;
     }
-    this->cleanup();
-    return EXIT_SUCCESS;
+    this->draw();
   }
-  return EXIT_FAILURE;
+  this->cleanup();
+  return EXIT_SUCCESS;
 }
 
 void Game::init() {
   Log::getInstance().start("cave_mummies.log");
   SetTraceLogCallback(Game::traceLogCallback);
-
-  if (isWindowFullscreen) {
-    this->windowWidth = GetMonitorWidth(0);
-    this->windowHeight = GetMonitorWidth(0);
-  }
-
-  InitWindow(this->windowWidth, this->windowWidth, this->windowTitle.c_str());
+  this->windowWidth = GetMonitorWidth(0);
+  this->windowHeight = GetMonitorHeight(0);
+  InitWindow(this->windowWidth, this->windowHeight, this->windowTitle.c_str());
+  ToggleFullscreen();
   SetTargetFPS(60);
   SetExitKey(0);
   InitAudioDevice();
-  SetMasterVolume(1.0f);  // 1.0 = 100%
-
-  if (isWindowFullscreen) {
-    ToggleFullscreen();
-  }
+  SetMasterVolume(1.0f);  /// 1.0 = 100%
   this->loadedGame = true;
   this->gameStateHandler->setCurrentState(GameStateID::MainMenu);
 }
@@ -68,5 +62,24 @@ void Game::draw() {
 }
 
 void Game::cleanup() {
-  // Empty
+  /// @brief Currently nothing to clean up
 }
+
+void Game::createGameStates() {
+  if (this->gameStateHandler) {
+    this->gameStateHandler->registerState(GameStateID::MainMenu
+      , std::make_shared<cave_mummies::states::MainMenuState>(*this));
+    this->gameStateHandler->registerState(GameStateID::AboutMenu
+      , std::make_shared<cave_mummies::states::AboutMenuState>(*this));
+    this->gameStateHandler->registerState(GameStateID::Scoreboard
+      , std::make_shared<cave_mummies::states::ScoreboardState>(*this));
+    this->gameStateHandler->registerState(GameStateID::Paused
+      , std::make_shared<cave_mummies::states::PausedGameState>(*this));
+    this->gameStateHandler->registerState(GameStateID::GameOver
+      , std::make_shared<cave_mummies::states::GameOverState>(*this));
+    this->gameStateHandler->registerState(GameStateID::StageOne
+      , std::make_shared<cave_mummies::states::StageOneState>(*this));
+  }
+}
+
+}  // namespace cave_mummies::core

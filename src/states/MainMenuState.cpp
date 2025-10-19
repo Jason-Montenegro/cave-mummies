@@ -3,6 +3,8 @@
 #include "Game.hpp"
 #include "MainMenuState.hpp"
 
+namespace cave_mummies::states {
+
 MainMenuState::~MainMenuState() {
   if (this->loaded) {
     // Unload all loaded game assets
@@ -36,26 +38,25 @@ void MainMenuState::init() {
   }
 }
 
-GameStateID MainMenuState::update() {
+cave_mummies::core::GameStateID MainMenuState::update() {
   UpdateMusicStream(this->backgroundMusic);
-
   moveMenuOptionHighlight();
-  GameStateID newState{addMenuOptionEventListener()};
+  cave_mummies::core::GameStateID newState{addMenuOptionEventListener()};
   return newState;
 }
 
 void MainMenuState::moveMenuOptionHighlight() {
   const size_t optionsSize{this->menuOptions.size()};
   if (this->game.getInputHandler().isPressed(KEY_W)
-    || this->game.getInputHandler().isPressed(KEY_UP)) {
+      || this->game.getInputHandler().isPressed(KEY_UP)) {
     // Move option selector up
     for (size_t index{0}; index < optionsSize; ++index) {
       if (this->menuOptions[index].flag == MenuOptionFlag::Highlight2
           && index > 0) {
-          this->menuOptions[index].flag = MenuOptionFlag::None;
-          this->menuOptions[index - 1].flag = MenuOptionFlag::Highlight2;
-          PlaySound(this->selectMenuOptionSFX);
-          break;
+        this->menuOptions[index].flag = MenuOptionFlag::None;
+        this->menuOptions[index - 1].flag = MenuOptionFlag::Highlight2;
+        PlaySound(this->selectMenuOptionSFX);
+        break;
       }
     }
   }
@@ -65,24 +66,28 @@ void MainMenuState::moveMenuOptionHighlight() {
     for (size_t index{0}; index < optionsSize; ++index) {
       if (this->menuOptions[index].flag == MenuOptionFlag::Highlight2
           && index + 1 < optionsSize) {
-          this->menuOptions[index].flag = MenuOptionFlag::None;
-          this->menuOptions[index + 1].flag = MenuOptionFlag::Highlight2;
-          PlaySound(this->selectMenuOptionSFX);
-          break;
+        this->menuOptions[index].flag = MenuOptionFlag::None;
+        this->menuOptions[index + 1].flag = MenuOptionFlag::Highlight2;
+        PlaySound(this->selectMenuOptionSFX);
+        break;
       }
     }
   }
 }
 
-GameStateID MainMenuState::addMenuOptionEventListener() {
+cave_mummies::core::GameStateID MainMenuState::addMenuOptionEventListener() {
   if (this->game.getInputHandler().isPressed(KEY_ENTER)) {
     // Change game state event listener for every menu option
     for (const auto &option : this->menuOptions) {
       if (option.flag == MenuOptionFlag::Highlight2) {
-        if (option.text == "Start") return GameStateID::LevelOne;
-        if (option.text == "About") return GameStateID::AboutMenu;
-        if (option.text == "Scoreboard") return GameStateID::Scoreboard;
-        if (option.text == "Quit") return GameStateID::Null;
+        if (option.text == "Start")
+          return cave_mummies::core::GameStateID::StageOne;
+        if (option.text == "About")
+          return cave_mummies::core::GameStateID::AboutMenu;
+        if (option.text == "Scoreboard")
+          return cave_mummies::core::GameStateID::Scoreboard;
+        if (option.text == "Quit")
+          return cave_mummies::core::GameStateID::Null;
         // Stop current music
         StopMusicStream(this->backgroundMusic);
       }
@@ -127,7 +132,7 @@ void MainMenuState::drawMenuOption(const MenuOption &option, Vector2 coords
   if (!option.text.empty()) {
     Vector2 pos{coords};
     if (option.flag == MenuOptionFlag::Highlight2
-      || option.flag == MenuOptionFlag::Highlight1) {
+        || option.flag == MenuOptionFlag::Highlight1) {
       Color outlineColor{this->pickOutlineColor(option.flag)};
       const int outlineThickness{this->pickOutlineThickness(option.tag)};
       // Draw the same text to simulate an outline effect on texts
@@ -175,7 +180,7 @@ void MainMenuState::drawMenuOptionSection() {
   size_t index{0};
   for (const auto &option : this->menuOptions) {
     const float y{startY + index * spacing};
-    index++;
+    ++index;
     Vector2 textSize{MeasureTextEx(this->menuOptionFont, option.text.data()
       , fontSize, 1.0f)};
     const float x{screenW / 2.0f - textSize.x / 2.0f};
@@ -183,3 +188,5 @@ void MainMenuState::drawMenuOptionSection() {
     drawMenuOption(option, {x, y}, fontSize);
   }
 }
+
+}  // namespace cave_mummies::states

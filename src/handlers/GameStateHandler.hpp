@@ -13,7 +13,9 @@
 #include "GameOverState.hpp"
 #include "PausedGameState.hpp"
 #include "ScoreboardState.hpp"
-#include "LevelOneState.hpp"
+#include "StageOneState.hpp"
+
+using GameStateID = cave_mummies::core::GameStateID;
 
 /**
  * @brief Game state handler for switching game states on screen.
@@ -21,8 +23,8 @@
 class GameStateHandler {
  private:
   /// @brief States data members
-  std::map<GameStateID, std::shared_ptr<GameState>> states;
-  std::shared_ptr<GameState> currentState{nullptr};
+  std::map<GameStateID, std::shared_ptr<cave_mummies::core::GameState>> states;
+  std::shared_ptr<cave_mummies::core::GameState> currentState{nullptr};
 
  public:
   /**
@@ -89,7 +91,7 @@ class GameStateHandler {
    * @param gameState New game state object
    */
   inline void registerState(GameStateID stateID
-    , std::shared_ptr<GameState> gameState) {
+    , std::shared_ptr<cave_mummies::core::GameState> gameState) {
     if (this->states.find(stateID) == this->states.end()) {
       this->states[stateID] = std::move(gameState);
     }

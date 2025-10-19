@@ -5,10 +5,12 @@
 
 #include "GameState.hpp"
 
+namespace cave_mummies::states {
+
 /**
  * @brief Game state for paused screen in game.
  */
-class PausedGameState : public GameState {
+class PausedGameState : public cave_mummies::core::GameState {
  private:
   /// @brief Private members of state
 
@@ -16,9 +18,9 @@ class PausedGameState : public GameState {
   /**
    * @brief Constructor
    */
-  PausedGameState(Game &game)
+  PausedGameState(cave_mummies::core::Game &game)
     : GameState(game) {
-    this->stateID = GameStateID::Paused;
+    this->stateID = cave_mummies::core::GameStateID::Paused;
   }
 
   /**
@@ -29,12 +31,14 @@ class PausedGameState : public GameState {
   /**
    * @brief Updates the paused state objects.
    */
-  GameStateID update() override;
+  cave_mummies::core::GameStateID update() override;
 
   /**
    * @brief Draws the paused menu on screen.
    */
   void draw() override;
 };
+
+}  // namespace cave_mummies::states
 
 #endif  // PAUSED_GAME_STATE_HPP

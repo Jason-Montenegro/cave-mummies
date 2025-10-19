@@ -5,10 +5,12 @@
 
 #include "InputSource.hpp"
 
+namespace cave_mummies::handlers {
+
 /**
  * @brief Interface for joystick input in the game.
  */
-class JoystickSource : public InputSource {
+class JoystickSource : public cave_mummies::handlers::InputSource {
  public:
   /**
    * @brief Checks if a key is currently pressed.
@@ -17,5 +19,7 @@ class JoystickSource : public InputSource {
    */
   bool isPressed(int key) const override;
 };
+
+}  // namespace cave_mummies::handlers
 
 #endif  // JOYSTICK_SOURCE_HPP

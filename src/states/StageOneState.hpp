@@ -1,14 +1,16 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
-#ifndef PLAYING_GAME_STATE_HPP
-#define PLAYING_GAME_STATE_HPP
+#ifndef STAGE_ONE_STATE_HPP
+#define STAGE_ONE_STATE_HPP
 
 #include "GameState.hpp"
+
+namespace cave_mummies::states {
 
 /**
  * @brief Game state for level one screen in game.
  */
-class LevelOneState : public GameState {
+class StageOneState : public cave_mummies::core::GameState {
  private:
   /// @brief Private members of state
 
@@ -16,20 +18,21 @@ class LevelOneState : public GameState {
   /**
    * @brief Constructor
    */
-  LevelOneState(Game &game)
+  StageOneState(cave_mummies::core::Game &game)
     : GameState(game) {
-    this->stateID = GameStateID::LevelOne;
+    this->stateID = cave_mummies::core::GameStateID::StageOne
+    ;
   }
 
   /**
    * @brief Destructor
    */
-  ~LevelOneState() override;
+  ~StageOneState() override;
 
   /**
    * @brief Updates the level one state objects.
    */
-  GameStateID update() override;
+  cave_mummies::core::GameStateID update() override;
 
   /**
    * @brief Draws the level one objects to screen.
@@ -37,4 +40,6 @@ class LevelOneState : public GameState {
   void draw() override;
 };
 
-#endif  // PLAYING_GAME_STATE_HPP
+}  // namespace cave_mummies::states
+
+#endif  // STAGE_ONE_STATE_HPP
