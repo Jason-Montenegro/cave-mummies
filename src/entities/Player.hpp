@@ -6,6 +6,7 @@
 #include <cstdint>
 
 #include "Entity.hpp"
+#include "Game.hpp"
 
 namespace cave_mummies::entities {
 
@@ -28,19 +29,37 @@ class Player : public Entity {
   static constexpr uint32_t reloadingSpeedInSeconds{2};
   /// @brief Current game score
   uint64_t currentScore{0};
+  /// @brief Sprint increment in velocity
+  const float sprint_velocity_boost{1.8};
+  /// @brief Sprite pixel width
+  static constexpr float spritePixelWidth{32.0};
+  /// @brief Sprite frame
+  int32_t currentSpriteFrame{0};
+  /// @brief Sprite frame count
+  int32_t spriteFrameCount{4};
+  bool isJumping{false};
+  float jumpVelocity{0.0f};
+  /// @brief Condition to draw sprite on correct direction
+  bool facingLeft{false};
 
  public:
   /**
    * @brief Constructor
    * @param playerAssetPath Texture for player object
    */
-  explicit Player(const char* const playerAssetPath =
-    Player::defaultPlayerAssetPath) : Entity(playerAssetPath) { }
+  explicit Player(cave_mummies::core::Game& game
+    , const char* const playerAssetPath = Player::defaultPlayerAssetPath)
+    : Entity(game, playerAssetPath) { }
 
   /**
    * @brief Updates this player state.
    */
   void update() override;
+
+  /**
+   * @brief Draws player sprite to screen.
+   */
+  void draw() override;
 
   /**
    * @brief Checks if this player is alive.
@@ -108,6 +127,13 @@ class Player : public Entity {
   inline void setCurrentScore(int64_t score) {
     this->currentScore = (score < 0) ? -score : score;
   }
+
+ private:
+  /**
+   * @brief Calculates how much should the player jump, and updates
+   * its position.
+   */
+  void calculateAndDrawJump();
 };
 
 }  // cave_mummies::entities

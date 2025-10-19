@@ -1,11 +1,12 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
-#include "ScoreboardHandler.hpp"
-#include <vector>
-#include <cstring>
 #include <algorithm>
+#include <cstring>
+#include <string>
 #include <iostream>
+#include <vector>
 
+#include "ScoreboardHandler.hpp"
 namespace cave_mummies::handlers {
 
 ScoreboardHandler::ScoreboardHandler() {

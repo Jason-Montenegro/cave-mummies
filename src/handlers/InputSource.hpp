@@ -26,11 +26,25 @@ class InputSource {
   virtual ~InputSource() = default;
 
   /**
-   * @brief Checks if a key/button is currently pressed.
+   * @brief Checks if a key / button is pressed once.
    * @param key Key or button identifier
    * @return true if pressed, false otherwise
    */
   virtual bool isPressed(int key) const = 0;
+
+  /**
+   * @brief Checks if a key / button is currently pressed.
+   * @param key Key or button identifier
+   * @return true if down, false otherwise
+   */
+  virtual bool isKeyDown(int key) const = 0;
+
+  /**
+   * @brief Checks if a key / button was released.
+   * @param key Key or button identifier
+   * @return true if released, false otherwise
+   */ 
+  virtual bool isKeyReleased(int key) const = 0;
 };
 
 }  // namespace cave_mummies::handlers

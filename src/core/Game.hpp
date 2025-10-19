@@ -101,6 +101,13 @@ class Game : public cave_mummies::core::Application {
     return this->scoreboardHandler;
   }
 
+  /**
+   * @brief Getter for game stage floor height.
+   */
+  inline float getGameStageFloorHeight() {
+    return (GetScreenHeight() / 2) + GetScreenHeight() * 0.3f;
+  }
+
  private:
   /**
    * @brief Initializes application configuration.

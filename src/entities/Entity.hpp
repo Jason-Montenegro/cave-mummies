@@ -5,6 +5,10 @@
 
 #include "raylib.h"
 
+namespace cave_mummies::core {
+class Game;
+}
+
 namespace cave_mummies::entities {
 
 /// @brief Direction
@@ -25,16 +29,21 @@ class Entity {
   Rectangle bounds;
   /// @brief Image texture
   Texture2D texture;
-  /// @brief Moving velocity
-  Vector2 velocity;
+  /// @brief Speed velocity
+  float velocity;
+  /// @brief Game controller
+  cave_mummies::core::Game& game;
+  /// @brief Current entity speed
+  float current_speed{1.0};
 
  public:
   /**
    * @brief Constructor
    * @param assetFilename File name of sprite texture
    */
-  explicit Entity(const char* const assetFilename)
-    : bounds{0, 0, 0, 0}, velocity{0,0} {
+  explicit Entity(cave_mummies::core::Game& game
+    , const char* const assetFilename)
+    : bounds{0, 0, 0, 0}, velocity{1.0}, game(game) {
     this->texture = LoadTexture(assetFilename);
   }
 
@@ -54,7 +63,7 @@ class Entity {
    * @brief Draws texture to screen.
    */
   inline virtual void draw() {
-    DrawTexture(texture, static_cast<int>(this->bounds.x)
+    DrawTexture(this->texture, static_cast<int>(this->bounds.x)
       , static_cast<int>(this->bounds.y), RAYWHITE);
   }
 
@@ -78,7 +87,7 @@ class Entity {
    * @brief Gets the velocity member
    * @return this velocity object
    */
-  inline Vector2 getVelocity() const {
+  inline float getVelocity() const {
     return this->velocity;
   }
 
@@ -86,7 +95,7 @@ class Entity {
    * @brief Sets the velocity member
    * @param b New velocity object
    */
-  inline void setVelocity(const Vector2& v) {
+  inline void setVelocity(float v) {
     this->velocity = v;
   }
 

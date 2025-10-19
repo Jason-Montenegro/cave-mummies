@@ -43,12 +43,30 @@ class InputHandler {
   ~InputHandler() = default;
 
   /**
-   * @brief Queries whether a specific key/button is pressed.
-   * @param key Key/button identifier
+   * @brief Queries whether a specific key / button is pressed once.
+   * @param key Key / button identifier
    * @return true if pressed, false otherwise
    */
   inline bool isPressed(int key) const {
     return (source) ? source->isPressed(key) : false;
+  }
+
+  /**
+   * @brief Queries whether a specific key / button is currently pressed.
+   * @param key Key / button identifier
+   * @return true if down, false otherwise
+   */
+  inline bool isKeyDown(int key) const {
+    return (source) ? source->isKeyDown(key) : false;
+  }
+
+  /**
+   * @brief Queries whether a specific key / button was released.
+   * @param key Key / button identifier
+   * @return true if released, false otherwise
+   */
+  inline bool isKeyReleased(int key) const {
+    return (source) ? source->isKeyReleased(key) : false;
   }
 };
 

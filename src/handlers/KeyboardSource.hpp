@@ -20,6 +20,24 @@ class KeyboardSource : public InputSource {
   inline bool isPressed(int key) const override {
     return IsKeyPressed(key);
   }
+
+  /**
+   * @brief Checks if a key / button is currently pressed.
+   * @param key Key or button identifier
+   * @return true if down, false otherwise
+   */
+  inline bool isKeyDown(int key) const override {
+    return IsKeyDown(key);
+  }
+
+  /**
+   * @brief Checks if a key / button was released.
+   * @param key Key or button identifier
+   * @return true if released, false otherwise
+   */ 
+  bool isKeyReleased(int key) const override {
+    return IsKeyReleased(key);
+  }
 };
 
 }  // namespace cave_mummies::handlers

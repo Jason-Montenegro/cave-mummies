@@ -1,6 +1,8 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
 #include "Enemy.hpp"
+#include "Player.hpp"
+#include "Game.hpp"
 
 namespace cave_mummies::entities {
 

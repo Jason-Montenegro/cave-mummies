@@ -6,9 +6,10 @@
 #include <cstdlib>
 
 #include "Entity.hpp"
-#include "Player.hpp"
 
 namespace cave_mummies::entities {
+
+class Player;
 
 /**
  * @brief Enemy classification type
@@ -23,32 +24,34 @@ enum class EnemyDifficulty {
  * @brief Enemy entity that attacks the player
  */
 class Enemy : public Entity {
- private:
+ protected:
   /// @brief Default enemy values
   static constexpr uint32_t defaultEnemyVelocity{5};
   static constexpr const char* const defaultEnemyAssetPath[3]{
-    "",
-    "",
-    ""
+    "assets/textures/entities/wil_player_skin.png",
+    "assets/textures/entities/wil_player_skin.png",
+    "assets/textures/entities/wil_player_skin.png"
   };
   /// @brief Alive player flag
   bool isAlive{true};
   /// @brief Target objective
-  Player& objective;
+  cave_mummies::entities::Player& objective;
   /// @brief Enemy difficulty type
-  EnemyDifficulty type{EnemyDifficulty::Easy};
+  EnemyDifficulty difficultyType{EnemyDifficulty::Easy};
 
  public:
   /**
    * @brief Constructor
    * @param objective Target objective this will follow
-   * @param type Enemy type
+   * @param diff Enemy difficulty type
    */
-  explicit Enemy(Player &objective
-    , EnemyDifficulty type = EnemyDifficulty::Easy)
-    : Entity(defaultEnemyAssetPath[static_cast<int>(type)])
-    , objective(objective), type(type) {
-    this->setVelocity(type);
+  explicit Enemy(cave_mummies::core::Game& game
+    , cave_mummies::entities::Player &objective
+    , EnemyDifficulty diff = EnemyDifficulty::Easy)
+    : Entity(game, defaultEnemyAssetPath[static_cast<int>(diff)])
+    , objective(objective)
+    , difficultyType(diff) {
+    this->setVelocity(diff);
     this->isAlive = true;
   }
 
@@ -78,10 +81,10 @@ class Enemy : public Entity {
    * @return EnemyType Type of enemy
    */
   inline EnemyDifficulty getDifficulty() const {
-    return this->type;
+    return this->difficultyType;
   }
 
- private:
+ protected:
   /**
    * @brief Sets this object velocity.
    * @param type Enemy type
@@ -89,13 +92,13 @@ class Enemy : public Entity {
   inline void setVelocity(EnemyDifficulty type) {
     switch (type) {
     case EnemyDifficulty::Easy:
-      this->velocity = {1.0f, 1.0f};
+      this->velocity = 1.0f;
       break;
     case EnemyDifficulty::Moderate:
-      this->velocity = {2.0f, 2.0f};
+      this->velocity = 2.0f;
       break;
     case EnemyDifficulty::Hard:
-      this->velocity = {3.0f, 3.0f};
+      this->velocity = 3.0f;
       break;
     }
   }

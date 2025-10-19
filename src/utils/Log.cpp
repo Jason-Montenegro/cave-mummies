@@ -23,7 +23,7 @@ Log& Log::getInstance() {
 }
 
 Log::Log()
-  : output{std::cout.rdbuf()} {}
+: output{std::cout.rdbuf()} {}
 
 void Log::start(const std::string_view logFilename) {
   const std::lock_guard<std::mutex> lock(this->mutex);

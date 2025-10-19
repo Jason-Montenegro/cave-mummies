@@ -28,4 +28,4 @@ void CollisionHandler::handleCollision(cave_mummies::entities::Entity& a
   // TODO(any): implement
 }
 
-}  // cave_mummies::handlers
+}  // namespace cave_mummies::handlers

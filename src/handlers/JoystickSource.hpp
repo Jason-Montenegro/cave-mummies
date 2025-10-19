@@ -18,6 +18,20 @@ class JoystickSource : public cave_mummies::handlers::InputSource {
    * @return true if pressed, false otherwise
    */
   bool isPressed(int key) const override;
+
+  /**
+   * @brief Checks if a key / button is currently pressed.
+   * @param key Key or button identifier
+   * @return true if down, false otherwise
+   */
+  bool isKeyDown(int key) const override;
+
+  /**
+   * @brief Checks if a key / button was released.
+   * @param key Key or button identifier
+   * @return true if released, false otherwise
+   */ 
+  bool isKeyReleased(int key) const override;
 };
 
 }  // namespace cave_mummies::handlers
