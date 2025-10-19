@@ -33,7 +33,6 @@ class Player : public Entity {
   /**
    * @brief Constructor
    * @param playerAssetPath Texture for player object
-   * @param projecileAssetPath Texture for projectile object
    */
   explicit Player(const char* const playerAssetPath =
     Player::defaultPlayerAssetPath) : Entity(playerAssetPath) { }

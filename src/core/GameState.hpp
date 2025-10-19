@@ -27,6 +27,7 @@ class GameState {
  protected:
   /// @brief State identifier
   GameStateID stateID{GameStateID::Null};
+  /// @brief Is state currently loaded
   bool loaded{false};
   /// @brief Game controller object
   Game& game;

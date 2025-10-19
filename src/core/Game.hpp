@@ -12,6 +12,7 @@
 #include "InputHandler.hpp"
 #include "InputSource.hpp"
 #include "Log.hpp"
+#include "ScoreboardHandler.hpp"
 
 using InputSourceType = cave_mummies::handlers::InputSourceType;
 
@@ -26,10 +27,10 @@ class Game : public cave_mummies::core::Application {
   /// @brief Default top window title
   static constexpr const char* const defaultWindowTitle{"Cave mummies"};
   std::string windowTitle{Game::defaultWindowTitle};
-  int32_t windowWidth;
-  int32_t windowHeight;
   /// @brief Log raylib messages
   static cave_mummies::utils::Log& log;
+  /// @brief Current background soundtrack
+  Music backgroundSoundtrack;
   /// @brief Game state handler
   std::unique_ptr<cave_mummies::handlers::GameStateHandler> gameStateHandler;
   /// @brief Player input handler
@@ -37,14 +38,8 @@ class Game : public cave_mummies::core::Application {
   /// @brief Collision handler
   std::unique_ptr<cave_mummies::handlers::CollisionHandler> collisionHandler;
   bool loadedGame{false};
-  /**
-   * @brief Sets the input source for playing the game.
-   * @param type Input source (Keyboard or joystick)
-   */
-  inline void setInputSource(InputSourceType type = InputSourceType::Keyboard) {
-    this->inputHandler =
-      std::make_unique<cave_mummies::handlers::InputHandler>(type);
-  }
+  /// @brief Game scoreboard
+  cave_mummies::handlers::ScoreboardHandler& scoreboardHandler;
 
  public:
   /**
@@ -52,16 +47,17 @@ class Game : public cave_mummies::core::Application {
    * @param inputType User input type for game
    * @param windowTitle Game window title
    */
-  explicit Game(InputSourceType inputType
-    , std::string_view windowTitle = Game::defaultWindowTitle)
-    : windowTitle(windowTitle)
+  explicit Game(InputSourceType inputType)
+    : windowTitle(Game::defaultWindowTitle)
     , gameStateHandler(
         std::make_unique<cave_mummies::handlers::GameStateHandler>())
     , inputHandler(std::make_unique<cave_mummies::handlers::InputHandler>(
         InputSourceType::Keyboard))
     , collisionHandler(
-      std::make_unique<cave_mummies::handlers::CollisionHandler>())
-    , loadedGame(false) {
+        std::make_unique<cave_mummies::handlers::CollisionHandler>())
+    , loadedGame(false)
+    , scoreboardHandler(
+        cave_mummies::handlers::ScoreboardHandler::getInstance()) {
     this->setInputSource(inputType);
     this->createGameStates();
   }
@@ -96,6 +92,13 @@ class Game : public cave_mummies::core::Application {
    */
   inline cave_mummies::handlers::CollisionHandler& getCollisionHandler() {
     return *this->collisionHandler;
+  }
+
+  /**
+   * @brief Getter for ScoreboardHandler
+   */
+  inline cave_mummies::handlers::ScoreboardHandler& getScoreboardHandler() {
+    return this->scoreboardHandler;
   }
 
  private:
@@ -134,6 +137,15 @@ class Game : public cave_mummies::core::Application {
     , va_list /* va_list */) {
     cave_mummies::utils::Log::append(
       cave_mummies::utils::Log::DEBUGGING, "Raylib", raylibMsg);
+  }
+
+  /**
+   * @brief Sets the input source for playing the game.
+   * @param type Input source (Keyboard or joystick)
+   */
+  inline void setInputSource(InputSourceType type = InputSourceType::Keyboard) {
+    this->inputHandler =
+      std::make_unique<cave_mummies::handlers::InputHandler>(type);
   }
 };
 

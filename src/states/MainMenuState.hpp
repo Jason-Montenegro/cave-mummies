@@ -58,7 +58,6 @@ class MainMenuState : public cave_mummies::core::GameState {
   Texture2D background;  ///< Main menu background texture
   Font menuOptionFont;  ///< Font used for menu options
   Sound selectMenuOptionSFX;  ///< Sound played when switching options
-  Music backgroundMusic;  ///< Music played in main menu
   MenuOption mainTitle;  ///< Main menu title
   std::vector<MenuOption> menuOptions;  ///< List of interactive menu options
 

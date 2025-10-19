@@ -12,6 +12,7 @@ Game::~Game() {
   this->gameStateHandler->cleanStates();
 
   if (this->loadedGame) {
+    UnloadMusicStream(this->backgroundSoundtrack);
     CloseAudioDevice();
     CloseWindow();
     this->loadedGame = false;
@@ -22,11 +23,16 @@ Game::~Game() {
 
 int Game::run() {
   this->init();
+  PlayMusicStream(this->backgroundSoundtrack);
 
   while (!WindowShouldClose()) {
     if (!this->update()) {
       break;
     }
+    if (IsMusicStreamPlaying(this->backgroundSoundtrack) == 0) {
+      PlayMusicStream(this->backgroundSoundtrack);
+    }
+    UpdateMusicStream(this->backgroundSoundtrack);
     this->draw();
   }
   this->cleanup();
@@ -36,14 +42,15 @@ int Game::run() {
 void Game::init() {
   cave_mummies::utils::Log::getInstance().start("cave_mummies.log");
   SetTraceLogCallback(Game::traceLogCallback);
-  this->windowWidth = GetMonitorWidth(0);
-  this->windowHeight = GetMonitorHeight(0);
-  InitWindow(this->windowWidth, this->windowHeight, this->windowTitle.c_str());
-  ToggleFullscreen();
+  // InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), this->windowTitle.c_str());
+  InitWindow(1280, 720, this->windowTitle.c_str());
+  // ToggleFullscreen();
   SetTargetFPS(60);
   SetExitKey(0);
   InitAudioDevice();
   SetMasterVolume(1.0f);  /// 1.0 = 100%
+  this->backgroundSoundtrack = LoadMusicStream(
+    "assets/audio/music/game_soundtrack.mp3");
   this->loadedGame = true;
   this->gameStateHandler->setCurrentState(GameStateID::MainMenu);
 }
@@ -62,7 +69,7 @@ void Game::draw() {
 }
 
 void Game::cleanup() {
-  /// @brief Currently nothing to clean up
+  // Currently nothing to clean up
 }
 
 void Game::createGameStates() {
