@@ -17,7 +17,9 @@ class KeyboardSource : public InputSource {
    * @param key Key identifier
    * @return true if pressed, false otherwise
    */
-  bool isPressed(int key) const override;
+  inline bool isPressed(int key) const override {
+    return IsKeyPressed(key);
+  }
 };
 
 }  // namespace cave_mummies::handlers

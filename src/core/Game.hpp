@@ -12,7 +12,6 @@
 #include "InputHandler.hpp"
 #include "InputSource.hpp"
 #include "Log.hpp"
-#include "SpawnHandler.hpp"
 
 using InputSourceType = cave_mummies::handlers::InputSourceType;
 
@@ -37,10 +36,7 @@ class Game : public cave_mummies::core::Application {
   std::unique_ptr<cave_mummies::handlers::InputHandler> inputHandler;
   /// @brief Collision handler
   std::unique_ptr<cave_mummies::handlers::CollisionHandler> collisionHandler;
-  /// @brief Entitiy spawn handler
-  std::unique_ptr<cave_mummies::handlers::SpawnHandler> spawnHandler;
   bool loadedGame{false};
-
   /**
    * @brief Sets the input source for playing the game.
    * @param type Input source (Keyboard or joystick)
@@ -64,9 +60,7 @@ class Game : public cave_mummies::core::Application {
     , inputHandler(std::make_unique<cave_mummies::handlers::InputHandler>(
         InputSourceType::Keyboard))
     , collisionHandler(
-        std::make_unique<cave_mummies::handlers::CollisionHandler>())
-    , spawnHandler(
-        std::make_unique<cave_mummies::handlers::SpawnHandler>())
+      std::make_unique<cave_mummies::handlers::CollisionHandler>())
     , loadedGame(false) {
     this->setInputSource(inputType);
     this->createGameStates();
@@ -102,13 +96,6 @@ class Game : public cave_mummies::core::Application {
    */
   inline cave_mummies::handlers::CollisionHandler& getCollisionHandler() {
     return *this->collisionHandler;
-  }
-
-  /**
-   * @brief Getter for SpawnHandler
-   */
-  inline cave_mummies::handlers::SpawnHandler& getSpawnHandler() {
-    return *this->spawnHandler;
   }
 
  private:

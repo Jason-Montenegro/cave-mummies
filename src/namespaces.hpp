@@ -44,7 +44,6 @@
  * Key classes:
  * - CollisionHandler
  * - InputHandler
- * - SpawnHandler
  * - GameStateHandler
  * - InputSource (KeyboardSource, JoystickSource)
  */
