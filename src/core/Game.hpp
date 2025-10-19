@@ -23,6 +23,33 @@ namespace cave_mummies::core {
  * Manages the game loop.
  */
 class Game : public cave_mummies::core::Application {
+ private:
+  /// @brief Default top window title
+  static constexpr const char* const defaultWindowTitle{"Cave mummies"};
+  std::string windowTitle{Game::defaultWindowTitle};
+  int32_t windowWidth;
+  int32_t windowHeight;
+  /// @brief Log raylib messages
+  static cave_mummies::utils::Log& log;
+  /// @brief Game state handler
+  std::unique_ptr<cave_mummies::handlers::GameStateHandler> gameStateHandler;
+  /// @brief Player input handler
+  std::unique_ptr<cave_mummies::handlers::InputHandler> inputHandler;
+  /// @brief Collision handler
+  std::unique_ptr<cave_mummies::handlers::CollisionHandler> collisionHandler;
+  /// @brief Entitiy spawn handler
+  std::unique_ptr<cave_mummies::handlers::SpawnHandler> spawnHandler;
+  bool loadedGame{false};
+
+  /**
+   * @brief Sets the input source for playing the game.
+   * @param type Input source (Keyboard or joystick)
+   */
+  inline void setInputSource(InputSourceType type = InputSourceType::Keyboard) {
+    this->inputHandler =
+      std::make_unique<cave_mummies::handlers::InputHandler>(type);
+  }
+
  public:
   /**
    * @brief Fullscreen game constructor
@@ -85,32 +112,6 @@ class Game : public cave_mummies::core::Application {
   }
 
  private:
-  /// @brief Default top window title
-  static constexpr const char* const defaultWindowTitle{"Cave mummies"};
-  std::string windowTitle{Game::defaultWindowTitle};
-  int32_t windowWidth;
-  int32_t windowHeight;
-  /// @brief Log raylib messages
-  static cave_mummies::utils::Log& log;
-  /// @brief Game state handler
-  std::unique_ptr<cave_mummies::handlers::GameStateHandler> gameStateHandler;
-  /// @brief Player input handler
-  std::unique_ptr<cave_mummies::handlers::InputHandler> inputHandler;
-  /// @brief Collision handler
-  std::unique_ptr<cave_mummies::handlers::CollisionHandler> collisionHandler;
-  /// @brief Entitiy spawn handler
-  std::unique_ptr<cave_mummies::handlers::SpawnHandler> spawnHandler;
-  bool loadedGame{false};
-
-  /**
-   * @brief Sets the input source for playing the game.
-   * @param type Input source (Keyboard or joystick)
-   */
-  inline void setInputSource(InputSourceType type = InputSourceType::Keyboard) {
-    this->inputHandler =
-      std::make_unique<cave_mummies::handlers::InputHandler>(type);
-  }
-
   /**
    * @brief Initializes application configuration.
    */

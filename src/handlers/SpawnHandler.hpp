@@ -32,17 +32,18 @@ class SpawnHandler {
    * @param type Enemy difficulty/type
    * @return Unique pointer to a newly created Enemy entity
    */
-  inline std::unique_ptr<Enemy> spawnMummy(Player &objective
-    , EnemyType type) const {
-    return std::make_unique<Enemy>(objective, type);
+  inline std::unique_ptr<cave_mummies::entities::Enemy> spawnMummy(
+      cave_mummies::entities::Player &objective
+    , cave_mummies::entities::EnemyDifficulty type) const {
+    return std::make_unique<cave_mummies::entities::Enemy>(objective, type);
   }
 
   /**
    * @brief Spawns the player character (Cat).
    * @return Unique pointer to a newly created Player entity
    */
-  inline std::unique_ptr<Player> spawnPlayer() const {
-    return std::make_unique<Player>();
+  inline std::unique_ptr<cave_mummies::entities::Player> spawnPlayer() const {
+    return std::make_unique<cave_mummies::entities::Player>();
   }
 };
 

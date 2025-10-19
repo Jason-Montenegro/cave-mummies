@@ -1,3 +1,5 @@
+// Copyright 2025 Jason Montenegro-Navarro
+
 #ifndef ENEMY_HPP
 #define ENEMY_HPP
 
@@ -6,33 +8,35 @@
 #include "Entity.hpp"
 #include "Player.hpp"
 
+namespace cave_mummies::entities {
+
 /**
  * @brief Enemy classification type
  */
-enum class EnemyType {
+enum class EnemyDifficulty {
   Easy,
   Moderate,
   Hard
 };
 
 /**
- * @brief Enemy entity
+ * @brief Enemy entity that attacks the player
  */
 class Enemy : public Entity {
  private:
   /// @brief Default enemy values
   static constexpr uint32_t defaultEnemyVelocity{5};
-  static constexpr const char *const defaultEnemyAssetPath[3]{
-    "assets/textures/entities/mummy-easy-diff-sprite.png",
-    "assets/textures/entities/mummy-moderate-diff-sprite.png",
-    "assets/textures/entities/mummy-hard-diff-sprite.png",
+  static constexpr const char* const defaultEnemyAssetPath[3]{
+    "",
+    "",
+    ""
   };
-  /// Alive player flag
+  /// @brief Alive player flag
   bool isAlive{true};
-  /// Target objective
-  Player &objective;
-  /// Enemy type
-  EnemyType type{EnemyType::Easy};
+  /// @brief Target objective
+  Player& objective;
+  /// @brief Enemy difficulty type
+  EnemyDifficulty type{EnemyDifficulty::Easy};
 
  public:
   /**
@@ -40,9 +44,10 @@ class Enemy : public Entity {
    * @param objective Target objective this will follow
    * @param type Enemy type
    */
-  explicit Enemy(Player &objective, EnemyType type = EnemyType::Easy)
-      : Entity(defaultEnemyAssetPath[static_cast<int>(type)])
-      , objective(objective), type(type) {
+  explicit Enemy(Player &objective
+    , EnemyDifficulty type = EnemyDifficulty::Easy)
+    : Entity(defaultEnemyAssetPath[static_cast<int>(type)])
+    , objective(objective), type(type) {
     this->setVelocity(type);
     this->isAlive = true;
   }
@@ -56,37 +61,46 @@ class Enemy : public Entity {
    * @brief Checks if this enemy is alive.
    * @return true if alive, false otherwise
    */
-  inline bool getIsAlive() const { return this->isAlive; }
+  inline bool getIsAlive() const {
+    return this->isAlive;
+  }
+
   /**
    * @brief Sets this enemy alive condition.
    * @param alive Alive condition
    */
-  inline void setIsAlive(bool alive) { this->isAlive = alive; }
+  inline void setIsAlive(bool alive) {
+    this->isAlive = alive;
+  }
 
   /**
-   * @brief Gets the type of enemy
+   * @brief Gets the enemy difficulty.
    * @return EnemyType Type of enemy
    */
-  inline EnemyType getType() const { return this->type; }
+  inline EnemyDifficulty getDifficulty() const {
+    return this->type;
+  }
 
  private:
   /**
-   * @brief Sets this object velocity
+   * @brief Sets this object velocity.
    * @param type Enemy type
    */
-  inline void setVelocity(EnemyType type) {
+  inline void setVelocity(EnemyDifficulty type) {
     switch (type) {
-      case EnemyType::Easy:
-        this->velocity = {1.0f, 1.0f};
-        break;
-      case EnemyType::Moderate:
-        this->velocity = {2.0f, 2.0f};
-        break;
-      case EnemyType::Hard:
-        this->velocity = {3.0f, 3.0f};
-        break;
+    case EnemyDifficulty::Easy:
+      this->velocity = {1.0f, 1.0f};
+      break;
+    case EnemyDifficulty::Moderate:
+      this->velocity = {2.0f, 2.0f};
+      break;
+    case EnemyDifficulty::Hard:
+      this->velocity = {3.0f, 3.0f};
+      break;
     }
   }
 };
+
+}  // namespace cave_mummies::entities
 
 #endif  // ENEMY_HPP

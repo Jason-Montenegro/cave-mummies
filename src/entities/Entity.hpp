@@ -5,9 +5,10 @@
 
 #include "raylib.h"
 
-/**
- * @brief Set of possible entity directions.
- */
+namespace cave_mummies::entities {
+
+/// @brief Direction
+/// @brief Set of possible entity directions.
 enum class Direction {
   Up,
   Down,
@@ -20,8 +21,11 @@ enum class Direction {
  */
 class Entity {
  protected:
-  Rectangle bounds;  ///< Includes (x, y) coordinates, width and height
-  Texture2D texture;  ///< Image texture
+  /// @brief Includes (x, y) coordinates, width and height
+  Rectangle bounds;
+  /// @brief Image texture
+  Texture2D texture;
+  /// @brief Moving velocity
   Vector2 velocity;
 
  public:
@@ -29,7 +33,7 @@ class Entity {
    * @brief Constructor
    * @param assetFilename File name of sprite texture
    */
-  explicit Entity(const char *const assetFilename)
+  explicit Entity(const char* const assetFilename)
     : bounds{0, 0, 0, 0}, velocity{0,0} {
     this->texture = LoadTexture(assetFilename);
   }
@@ -58,37 +62,51 @@ class Entity {
    * @brief Gets the bounds member
    * @return this bounds object
    */
-  inline Rectangle getBounds() const { return this->bounds; }
+  inline Rectangle getBounds() const {
+    return this->bounds;
+  }
 
   /**
    * @brief Sets the bounds member
    * @param b New bounds object
    */
-  inline void setBounds(const Rectangle &b) { this->bounds = b; }
+  inline void setBounds(const Rectangle& b) {
+    this->bounds = b;
+  }
 
   /**
    * @brief Gets the velocity member
    * @return this velocity object
    */
-  inline Vector2 getVelocity() const { return this->velocity; }
+  inline Vector2 getVelocity() const {
+    return this->velocity;
+  }
 
   /**
    * @brief Sets the velocity member
    * @param b New velocity object
    */
-  inline void setVelocity(const Vector2 &v) { this->velocity = v; }
+  inline void setVelocity(const Vector2& v) {
+    this->velocity = v;
+  }
 
   /**
    * @brief Gets the texture member
    * @return this texture object
    */
-  inline Texture2D getTexture() const { return this->texture; }
+  inline Texture2D getTexture() const {
+    return this->texture;
+  }
   
   /**
    * @brief Sets the texture member
    * @param b New texture object
    */
-  inline void setTexture(const Texture2D &t) { this->texture = t; }
+  inline void setTexture(const Texture2D& t) {
+    this->texture = t;
+  }
 };
+
+}  // cave_mummies::entities
 
 #endif  // ENTITY_HPP

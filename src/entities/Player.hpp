@@ -7,22 +7,26 @@
 
 #include "Entity.hpp"
 
+namespace cave_mummies::entities {
+
 /**
- * @brief Player entity
+ * @brief Entity that the player uses
  */
 class Player : public Entity {
  private:
   /// @brief Default player values
   static constexpr uint32_t defaultAmmunitionQuantity{12};
-  static constexpr const char *const defaultPlayerAssetPath
+  static constexpr const char* const defaultPlayerAssetPath
     {"assets/textures/entities/wil_player_skin.png"};
-  /// Alive player flag
+  /// @brief Alive player flag
   bool isAlive{true};
-  /// Enemies kill count
+  /// @brief Entity kill count
   uint64_t killCount{0};
-  /// Quantity of projectiles available
-  uint64_t ammunitionQuantity{Player::defaultAmmunitionQuantity};
-  /// Current reached score
+  /// @brief loaded ammunition remaining for shooting
+  uint64_t loadedAmmunitionRemaining{Player::defaultAmmunitionQuantity};
+  /// @brief Reload speed
+  static constexpr uint32_t reloadingSpeedInSeconds{2};
+  /// @brief Current game score
   uint64_t currentScore{0};
 
  public:
@@ -31,7 +35,7 @@ class Player : public Entity {
    * @param playerAssetPath Texture for player object
    * @param projecileAssetPath Texture for projectile object
    */
-  explicit Player(const char *const playerAssetPath =
+  explicit Player(const char* const playerAssetPath =
     Player::defaultPlayerAssetPath) : Entity(playerAssetPath) { }
 
   /**
@@ -43,33 +47,41 @@ class Player : public Entity {
    * @brief Checks if this player is alive.
    * @return true if alive, false otherwise
    */
-  inline bool isPlayerAlive() const { return this->isAlive; }
+  inline bool isPlayerAlive() const {
+    return this->isAlive;
+  }
 
   /**
    * @brief Gets the number of enemies killed by the player.
    * @return Kill count
    */
-  inline uint64_t getKillCount() const { return this->killCount; }
+  inline uint64_t getKillCount() const {
+    return this->killCount;
+  }
 
   /**
-   * @brief Gets the current amount of ammunition.
-   * @return Ammunition quantity
+   * @brief Gets the current amount of ammunition loaded to shoot.
+   * @return Loaded ammunition remaining
    */
-  inline uint64_t getAmmunitionQuantity() const {
-    return this->ammunitionQuantity;
+  inline uint64_t getLoadedAmmunitionRemaining() const {
+    return this->loadedAmmunitionRemaining;
   }
 
   /**
    * @brief Gets the current score of the player.
    * @return Current score
    */
-  inline uint64_t getCurrentScore() const { return this->currentScore; }
+  inline uint64_t getCurrentScore() const {
+    return this->currentScore;
+  }
 
   /**
    * @brief Sets whether the player is alive.
    * @param alive true if alive, false otherwise
    */
-  inline void setIsAlive(bool alive) { this->isAlive = alive; }
+  inline void setIsAlive(bool alive) {
+    this->isAlive = alive;
+  }
 
   /**
    * @brief Sets the number of enemies killed.
@@ -81,19 +93,24 @@ class Player : public Entity {
   }
 
   /**
-   * @brief Sets the current amount of ammunition.
+   * @brief Sets the current amount of ammunition loaded to shoot.
    * @param qty Ammunition quantity
    * @remark If qty is < 0, it is converted to -qty.
    */
-  inline void setAmmunitionQuantity(int32_t qty) {
-    this->ammunitionQuantity = (qty < 0) ? -qty : qty;
+  inline void setLoadedAmmunitionRemaining(int32_t qty) {
+    this->loadedAmmunitionRemaining = (qty < 0) ? -qty : qty;
   }
 
   /**
    * @brief Sets the current score of the player.
    * @param score New score
+   * @remark If score is < 0, it is converted to -score.
    */
-  inline void setCurrentScore(uint64_t score) { this->currentScore = score; }
+  inline void setCurrentScore(int64_t score) {
+    this->currentScore = (score < 0) ? -score : score;
+  }
 };
+
+}  // cave_mummies::entities
 
 #endif  // PLAYER_HPP

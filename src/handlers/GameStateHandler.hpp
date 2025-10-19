@@ -24,45 +24,12 @@ namespace cave_mummies::handlers {
  */
 class GameStateHandler {
  private:
-  /// @brief States data members
+  /// @brief All states collection
   std::map<GameStateID, std::shared_ptr<cave_mummies::core::GameState>> states;
+  /// @brief Current loaded state
   std::shared_ptr<cave_mummies::core::GameState> currentState{nullptr};
 
  public:
-  /**
-   * @brief Deleted copy constructor.
-   * @param other Other app
-   */
-  GameStateHandler(const GameStateHandler &other) = delete;
-
-  /**
-   * @brief Deleted move constructor.
-   * @param other Other app
-   */
-  GameStateHandler(GameStateHandler &&other) = delete;
-
-  /**
-   * @brief Deleted copy-assignment operator.
-   * @param other Other app
-   */
-  GameStateHandler& operator=(const GameStateHandler &other) = delete;
-
-  /**
-   * @brief Deleted move-assignment operator.
-   * @param other Other app
-   */
-  GameStateHandler& operator=(GameStateHandler &&other) = delete;
-
-  /**
-   * @brief Constructor
-   */
-  GameStateHandler() = default;
-
-  /**
-   * @brief Destructor
-   */
-  ~GameStateHandler() = default;
-
   /**
    * @brief Sets the current state to stateID.
    * @param stateID New state to set
@@ -103,7 +70,7 @@ class GameStateHandler {
    * @brief Cleans all stored states from memory.
    */
   inline void cleanStates() {
-    for (auto &pair : this->states) {
+    for (auto& pair : this->states) {
       pair.second.reset();
     }
     this->states.clear();
