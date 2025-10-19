@@ -17,7 +17,7 @@ Game::~Game() {
     this->loadedGame = false;
   }
 
-  Log::getInstance().stop();
+  cave_mummies::utils::Log::getInstance().stop();
 }
 
 int Game::run() {
@@ -34,7 +34,7 @@ int Game::run() {
 }
 
 void Game::init() {
-  Log::getInstance().start("cave_mummies.log");
+  cave_mummies::utils::Log::getInstance().start("cave_mummies.log");
   SetTraceLogCallback(Game::traceLogCallback);
   this->windowWidth = GetMonitorWidth(0);
   this->windowHeight = GetMonitorHeight(0);

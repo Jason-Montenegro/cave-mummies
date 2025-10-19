@@ -8,12 +8,6 @@
 
 #include "GameState.hpp"
 
-/**
- * @namespace cave_mummies::entities
- * @brief Game entities
- *
- * Contains the state classes that act as screens in the game.
- */
 namespace cave_mummies::states {
 
 /// @enum MenuOptionFlag

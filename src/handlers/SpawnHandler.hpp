@@ -8,6 +8,8 @@
 #include "Player.hpp"
 #include "Enemy.hpp"
 
+namespace cave_mummies::handlers {
+
 /**
  * @brief Spawn handler for entity creation.
  * Provides an interface to spawn all types of entities.
@@ -43,5 +45,7 @@ class SpawnHandler {
     return std::make_unique<Player>();
   }
 };
+
+}  // cave_mummies::handlers
 
 #endif  // SPAWN_HANDLER_HPP

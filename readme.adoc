@@ -108,28 +108,8 @@ image::doc-assets/wil_player_skin.png[main player character, width=200, align=ce
 
 [[game_settings]]
 ==== Game settings
-The game can be played in a windowed and full-screen setting. This setting is not set
-in-game, but rather is set in `main.cpp`.
-
-If you prefer a windowed version of the game, change `line 10` using the following syntax:
-
-[source,delphi]
-----
-Game game(InputSourceType::Keyboard, height_value, width_value, "Cave Mummies");
-----
-
-- height_value: must be an integer value lower or equal to your screen height resolution.
-- width_value: must be an integer value lower or equal to your screen width resolution.
-
-If you prefer a full-screen version of the game, change `line 10` using the following syntax:
-
-[source,delphi]
-----
-Game game(InputSourceType::Keyboard, "Cave Mummies");
-----
-
 If you prefer to utilize a joystick for playing the game, change `line 10` using the following syntax:
-
+Otherwise, use `InputSourceType::Keyboard` for standard input with the keyboard.
 [source,delphi]
 ----
 Game game(InputSourceType::Joystick, "Cave Mummies");

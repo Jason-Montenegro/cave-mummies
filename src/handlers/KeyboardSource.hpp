@@ -20,6 +20,6 @@ class KeyboardSource : public InputSource {
   bool isPressed(int key) const override;
 };
 
-} // namespace cave_mummies::handlers
+}  // namespace cave_mummies::handlers
 
 #endif  // KEYBOARD_SOURCE_HPP

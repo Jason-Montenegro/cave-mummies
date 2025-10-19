@@ -15,6 +15,7 @@
 #include "SpawnHandler.hpp"
 
 using InputSourceType = cave_mummies::handlers::InputSourceType;
+
 namespace cave_mummies::core {
 
 /**
@@ -31,11 +32,14 @@ class Game : public cave_mummies::core::Application {
   explicit Game(InputSourceType inputType
     , std::string_view windowTitle = Game::defaultWindowTitle)
     : windowTitle(windowTitle)
-    , gameStateHandler(std::make_unique<GameStateHandler>())
+    , gameStateHandler(
+        std::make_unique<cave_mummies::handlers::GameStateHandler>())
     , inputHandler(std::make_unique<cave_mummies::handlers::InputHandler>(
         InputSourceType::Keyboard))
-    , collisionHandler(std::make_unique<CollisionHandler>())
-    , spawnHandler(std::make_unique<SpawnHandler>())
+    , collisionHandler(
+        std::make_unique<cave_mummies::handlers::CollisionHandler>())
+    , spawnHandler(
+        std::make_unique<cave_mummies::handlers::SpawnHandler>())
     , loadedGame(false) {
     this->setInputSource(inputType);
     this->createGameStates();
@@ -55,7 +59,7 @@ class Game : public cave_mummies::core::Application {
   /**
    * @brief Getter for GameStateHandler
    */
-  inline GameStateHandler& getGameStateHandler() {
+  inline cave_mummies::handlers::GameStateHandler& getGameStateHandler() {
     return *this->gameStateHandler;
   }
 
@@ -69,14 +73,14 @@ class Game : public cave_mummies::core::Application {
   /**
    * @brief Getter for CollisionHandler
    */
-  inline CollisionHandler& getCollisionHandler() {
+  inline cave_mummies::handlers::CollisionHandler& getCollisionHandler() {
     return *this->collisionHandler;
   }
 
   /**
    * @brief Getter for SpawnHandler
    */
-  inline SpawnHandler& getSpawnHandler() {
+  inline cave_mummies::handlers::SpawnHandler& getSpawnHandler() {
     return *this->spawnHandler;
   }
 
@@ -87,15 +91,15 @@ class Game : public cave_mummies::core::Application {
   int32_t windowWidth;
   int32_t windowHeight;
   /// @brief Log raylib messages
-  static Log& log;
+  static cave_mummies::utils::Log& log;
   /// @brief Game state handler
-  std::unique_ptr<GameStateHandler> gameStateHandler;
+  std::unique_ptr<cave_mummies::handlers::GameStateHandler> gameStateHandler;
   /// @brief Player input handler
   std::unique_ptr<cave_mummies::handlers::InputHandler> inputHandler;
   /// @brief Collision handler
-  std::unique_ptr<CollisionHandler> collisionHandler;
+  std::unique_ptr<cave_mummies::handlers::CollisionHandler> collisionHandler;
   /// @brief Entitiy spawn handler
-  std::unique_ptr<SpawnHandler> spawnHandler;
+  std::unique_ptr<cave_mummies::handlers::SpawnHandler> spawnHandler;
   bool loadedGame{false};
 
   /**
@@ -140,7 +144,8 @@ class Game : public cave_mummies::core::Application {
    */
   static inline void traceLogCallback(int /* logType */, const char* raylibMsg
     , va_list /* va_list */) {
-    Log::append(Log::DEBUGGING, "Raylib", raylibMsg);
+    cave_mummies::utils::Log::append(
+      cave_mummies::utils::Log::DEBUGGING, "Raylib", raylibMsg);
   }
 };
 

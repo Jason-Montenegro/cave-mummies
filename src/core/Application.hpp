@@ -3,13 +3,6 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
-/**
- * @namespace cave_mummies::core
- * @brief Core application framework.
- *
- * Contains the base interfaces for managing the application's
- * lifecycle, state, and execution flow.
- */
 namespace cave_mummies::core {
 
 /**

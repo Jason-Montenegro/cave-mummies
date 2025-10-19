@@ -11,6 +11,8 @@
 using CollidingEntityPair =
   std::vector<std::pair<Entity*, Entity*>>;
 
+namespace cave_mummies::handlers {
+
 /**
  * @brief Interface for handling collisions between game entities.
  */
@@ -49,5 +51,7 @@ class CollisionHandler {
    */
   void handleCollision(Entity &a, Entity &b);
 };
+
+}  // cave_mummies::handlers
 
 #endif  // COLLISION_HANDLER_HPP

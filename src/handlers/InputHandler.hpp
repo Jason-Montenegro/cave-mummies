@@ -9,11 +9,6 @@
 #include "JoystickSource.hpp"
 #include "KeyboardSource.hpp"
 
-/**
- * @brief PENDING
- * 
- * PENDING
- */
 namespace cave_mummies::handlers {
 
 /**

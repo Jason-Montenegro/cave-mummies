@@ -9,6 +9,8 @@
 #include <mutex>
 #include <string>
 
+namespace cave_mummies::utils {
+
 /**
  * @brief Thread-safe log manager
  * @author Jeisson Hidalgo-Céspedes
@@ -113,5 +115,7 @@ class Log final {
    */
   ~Log() = default;
 };
+
+}  // namespace cave_mummies::utils
 
 #endif  // LOG_HPP

@@ -1,8 +1,10 @@
-// Copyright 2025 (author)
+// Copyright 2025 Jason Montenegro-Navarro
 
 #include <vector>
 
 #include "CollisionHandler.hpp"
+
+namespace cave_mummies::handlers {
 
 bool CollisionHandler::checkCollision(const Entity &a, const Entity &b) const {
   (void)a;  // Remove once method is implemented
@@ -23,3 +25,5 @@ void CollisionHandler::handleCollision(Entity &a, Entity &b) {
   (void)b;  // Remove once method is implemented
   // TODO(any): implement
 }
+
+}  // cave_mummies::handlers

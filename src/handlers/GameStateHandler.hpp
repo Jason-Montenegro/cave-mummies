@@ -17,6 +17,8 @@
 
 using GameStateID = cave_mummies::core::GameStateID;
 
+namespace cave_mummies::handlers {
+
 /**
  * @brief Game state handler for switching game states on screen.
  */
@@ -152,5 +154,7 @@ class GameStateHandler {
     return false;
   }
 };
+
+}  // cave_mummies::handlers
 
 #endif  // GAME_STATE_CONTROLLER_HPP

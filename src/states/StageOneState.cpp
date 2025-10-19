@@ -1,4 +1,4 @@
-// Copyright 2025 (author)
+// Copyright 2025 Jason Montenegro-Navarro
 
 #include "Game.hpp"
 #include "StageOneState.hpp"

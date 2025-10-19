@@ -1,13 +1,10 @@
-// Copyright 2025 (author)
+// Copyright 2025 Jason Montenegro-Navarro
 
 #ifndef MATH_HPP
 #define MATH_HPP
 
-/**
- * @brief General purpose math routines.
- */
-namespace Math {
+namespace cave_mummies::utils {
   
-}
+}  // namespace cave_mummies::utils::math
 
 #endif  // MATH_HPP
