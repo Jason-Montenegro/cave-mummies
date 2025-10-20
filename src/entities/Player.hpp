@@ -19,8 +19,6 @@ class Player : public Entity {
   static constexpr uint32_t defaultAmmunitionQuantity{12};
   static constexpr const char* const defaultPlayerAssetPath
     {"assets/textures/entities/wil_player_skin.png"};
-  /// @brief Alive player flag
-  bool isAlive{true};
   /// @brief Entity kill count
   uint64_t killCount{0};
   /// @brief loaded ammunition remaining for shooting
@@ -60,11 +58,10 @@ class Player : public Entity {
   void draw() override;
 
   /**
-   * @brief Checks if this player is alive.
-   * @return true if alive, false otherwise
+   * @brief Decrements jump count by one.
    */
-  inline bool isPlayerAlive() const {
-    return this->isAlive;
+  inline void reduceJumpCount() {
+    --this->jumpCount;
   }
 
   /**
@@ -89,14 +86,6 @@ class Player : public Entity {
    */
   inline uint64_t getCurrentScore() const {
     return this->currentScore;
-  }
-
-  /**
-   * @brief Sets whether the player is alive.
-   * @param alive true if alive, false otherwise
-   */
-  inline void setIsAlive(bool alive) {
-    this->isAlive = alive;
   }
 
   /**

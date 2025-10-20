@@ -1,5 +1,6 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
+#include <memory>
 #include <string>
 
 #include "Game.hpp"

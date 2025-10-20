@@ -32,6 +32,7 @@
  * - Entity
  * - Player
  * - Enemy
+ * - Projectile
  */
 
 /**
@@ -53,14 +54,14 @@
  * @brief Concrete game states inheriting from GameState.
  *
  * Contains the different application states such as menus,
- * gameplay screens, and pause screens, each implementing its own logic.
+ * gameplay screen, and pause screen, each implementing its own logic.
  *
  * Key classes:
  * - MainMenuState
  * - AboutMenuState
  * - ScoreboardState
  * - StageOneState
- * - PausedGameState
+ * - PausedMenuGameState
  * - GameOverState
  */
 
@@ -74,3 +75,14 @@
  * - Log
  * - Math functions (optional: namespace cave_mummies::utils::math)
  */
+
+ /**
+  * @namespace cave_mummies::states::menu
+  * @brief Helper functions and aggregate structures for building menu states
+  * 
+  * Contains menu option enum attributes such as MenuOptionFlag and
+  * MenuOptionTag.
+  * 
+  * Key class:
+  * - MenuOption
+  */

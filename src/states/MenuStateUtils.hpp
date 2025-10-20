@@ -17,7 +17,7 @@ enum class MenuOptionFlag {
   None  ///< No effect
 };
 
-/// @enum MenuOptionFlag
+/// @enum MenuOptionTag
 /// @brief Types of elements that can be displayed in the menu.
 enum class MenuOptionTag {
   h1, ///< Main header

@@ -8,6 +8,7 @@
 
 #include "GameState.hpp"
 #include "Player.hpp"
+#include "Projectile.hpp"
 #include "Enemy.hpp"
 
 namespace cave_mummies::states {
@@ -37,6 +38,10 @@ class StageOneState : public cave_mummies::core::GameState {
   std::chrono::time_point<std::chrono::high_resolution_clock> pausedTime;
   /// @brief Game paused condition
   bool isGamePaused{false};
+  /// @brief Game over condition
+  bool isPlayerDead{false};
+  /// @brief Current projectiles shot
+  std::vector<cave_mummies::entities::Projectile> projectiles;
 
  public:
   /**
@@ -77,6 +82,11 @@ class StageOneState : public cave_mummies::core::GameState {
    * @brief Pauses the current game time.
    */
   void continueGameTime();
+
+  /**
+   * @brief Checks if the player shot a bullet, and checks if it impacted.
+   */
+  void checkPlayerGunshot();
 
   /**
    * @brief Draws floor tiles on the stage screen.

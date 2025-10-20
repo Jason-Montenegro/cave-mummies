@@ -133,6 +133,14 @@ class Entity {
   inline void setTexture(const Texture2D& t) {
     this->texture = t;
   }
+
+  /**
+   * @brief Gets the current sprite direction.
+   * @return Current direction
+   */
+  inline Direction getDirection() const {
+    return this->spriteDirection;
+  }
 };
 
 }  // cave_mummies::entities

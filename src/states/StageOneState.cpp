@@ -4,9 +4,12 @@
 #include <memory>
 #include <string>
 #include <random>
+#include <vector>
 
 #include "Game.hpp"
 #include "StageOneState.hpp"
+
+using Direction = cave_mummies::entities::Direction;
 
 namespace cave_mummies::states {
 
@@ -18,6 +21,7 @@ StageOneState::~StageOneState() {
     UnloadFont(this->textFont);
     this->loaded = false;
   }
+  this->projectiles.clear();
 }
 
 void StageOneState::init() {
@@ -33,8 +37,12 @@ void StageOneState::init() {
     this->player = std::make_unique<cave_mummies::entities::Player>(this->game,
       "../assets/textures/entities/wil_player_skin.png");
     this->player->setVelocity(8.0);
-    Rectangle playerBounds{.height = 32.0
-      , .width = 32.0
+    const float height{static_cast<float>(this->player->getTexture().height)};
+    const int32_t frameCount{4};
+    const float width{static_cast<float>(
+      this->player->getTexture().width / frameCount)};
+    Rectangle playerBounds{.height = height
+      , .width = width
       , .x = static_cast<float>(GetScreenWidth() / 2)
       , .y = this->game.getGameStageFloorHeight()
         - player->getTexture().height};
@@ -54,23 +62,66 @@ cave_mummies::core::GameStateID StageOneState::update() {
     this->continueGameTime();
   }
   this->player->update();
+  this->checkPlayerGunshot();
+  for (auto& p : this->projectiles) {
+    p.update();
+  }
+
+  std::vector<std::shared_ptr<cave_mummies::entities::Enemy>> shotEnemies;
   for (auto& enemy : this->enemyCollection) {
     enemy->update();
+
+    if (this->game.getCollisionHandler().checkCollision(
+      this->player->getBounds(), enemy->getBounds())) {
+      this->isPlayerDead = true;
+    }
+
+    for (auto& p : this->projectiles) {
+      if (this->game.getCollisionHandler().checkCollision(p.getBounds()
+        , enemy->getBounds())) {
+        shotEnemies.push_back(enemy);
+        this->player->reduceJumpCount();
+      }
+    }
   }
+
+  // Kill all shot enemies
+  for (auto& enemy : shotEnemies) {
+    this->enemyCollection.remove(enemy);
+  }
+  shotEnemies.clear();
+
   cave_mummies::core::GameStateID newState{this->stateID};
-  if (this->game.getInputHandler().isPressed(KEY_ESCAPE)) {
-    this->pauseGameTime();
-    this->game.getGameStateHandler().registerState(GameStateID::PausedMenu
-      , std::make_shared<cave_mummies::states::PausedMenuGameState>(
+  if (this->isPlayerDead) {
+    // Temporary line. This block should transition to Game Over state.
+    this->game.getGameStateHandler().removeState(GameStateID::StageOne);
+    this->game.getGameStateHandler().registerState(GameStateID::MainMenu
+      , std::make_shared<cave_mummies::states::MainMenuState>(
         this->game));
-    newState = cave_mummies::core::GameStateID::PausedMenu;
+    newState = cave_mummies::core::GameStateID::MainMenu;
+  } else {
+    if (this->game.getInputHandler().isPressed(KEY_ESCAPE)) {
+      this->pauseGameTime();
+      this->game.getGameStateHandler().registerState(GameStateID::PausedMenu
+        , std::make_shared<cave_mummies::states::PausedMenuGameState>(
+          this->game));
+      newState = cave_mummies::core::GameStateID::PausedMenu;
+    }
   }
+
+  // Erase stray bullets that traveled beyond the screen borders
+  projectiles.erase(
+    std::remove_if(projectiles.begin(), projectiles.end(), [](const auto& p) {
+      return p.position.x < 0 || p.position.x > GetScreenWidth();
+    })
+    , projectiles.end());
+
   return newState;
 }
 
 void StageOneState::pauseGameTime() {
   this->pausedTime = std::chrono::high_resolution_clock::now();
-  isGamePaused = true;
+  this->isGamePaused = true;
 }
 
 void StageOneState::continueGameTime() {
@@ -81,6 +132,39 @@ void StageOneState::continueGameTime() {
   isGamePaused = false;
 }
 
+void StageOneState::checkPlayerGunshot() {
+  if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+    // Update current loaded gun ammunition
+    this->player->setLoadedAmmunitionRemaining(
+      this->player->getLoadedAmmunitionRemaining() - 1);
+    if (this->player->getLoadedAmmunitionRemaining() == 0)  {
+      this->player->setLoadedAmmunitionRemaining(12);
+    }
+    // Calculate start position of bullet
+    Vector2 mousePosition{GetMousePosition()};
+    Rectangle playerBounds{this->player->getBounds()};
+    const float yCoord{playerBounds.y + playerBounds.height * 0.3f};
+    const float xCoord{(this->player->getDirection() == Direction::Right)
+      ? playerBounds.x + playerBounds.width : playerBounds.x};
+    Vector2 startPosition{xCoord, yCoord};
+
+    // Direction to mouse coordinate
+    Vector2 dir{mousePosition.x - startPosition.x
+      , mousePosition.y - startPosition.y};
+    // Normalize vector direction
+    const float length = sqrtf(dir.x * dir.x + dir.y * dir.y);
+    if (length != 0) {
+        dir.x /= length;
+        dir.y /= length;
+    }
+    // Amplify bullet speed
+    const float bulletSpeed{20.0f};
+    Vector2 velocity{dir.x * bulletSpeed, dir.y * bulletSpeed};
+    cave_mummies::entities::Projectile p{startPosition, velocity, 8.0f, MAROON};
+    projectiles.push_back(p);
+  }
+}
+
 void StageOneState::draw() {
   GameState::drawBackground();
   this->drawFloor();
@@ -88,6 +172,9 @@ void StageOneState::draw() {
   this->drawClock();
   this->drawAmmunitionLabel();
   this->player->draw();
+  for (auto& p : projectiles) {
+    p.draw();
+  }
   this->spawnEnemies();
 }
 
@@ -190,10 +277,17 @@ void StageOneState::generateEnemies() {
       }
       auto enemy{std::make_shared<cave_mummies::entities::Enemy>(this->game
         , *this->player, enemyDifficulty)};
+
       // Set spawn points
       const float enemyY{floorY - enemy->getTexture().height};
-      enemy->setBounds(Rectangle{xCoord, enemyY, enemy->getBounds().width
-        , enemy->getBounds().height});
+      // Sets sizes to enemy sprite
+      const float height{static_cast<float>(enemy->getTexture().height)};
+      const int32_t frameCount{4};
+      const float width{static_cast<float>(
+        enemy->getTexture().width / frameCount)};
+
+      enemy->setBounds(Rectangle{.x = xCoord
+        , .y = enemyY, .width = width, .height = height});
       this->enemyCollection.push_back(enemy);
     }
   }
