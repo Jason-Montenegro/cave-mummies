@@ -27,6 +27,12 @@ class StageOneState : public cave_mummies::core::GameState {
   std::unique_ptr<cave_mummies::entities::Player> player{nullptr};
   /// @brief Current enemy collection
   std::list<std::shared_ptr<cave_mummies::entities::Enemy>> enemyCollection;
+  /// @brief Game start time clock
+  std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
+  /// @brief Label font size
+  static constexpr float fontSize{36.0f};
+  /// @brief Label text height
+  float textHeight{0.0f};
 
  public:
   /**
@@ -67,6 +73,21 @@ class StageOneState : public cave_mummies::core::GameState {
    * @brief Draws floor tiles on the stage screen.
    */
   void drawFloor();
+
+  /**
+   * @brief Draws score label on the stage screen.
+   */
+  void drawScore();
+
+  /**
+   * @brief Draws duration clock on the stage screen.
+   */
+  void drawClock();
+
+  /**
+   * @brief Draws ammunition label on the stage screen.
+   */
+  void drawAmmunitionLabel();
 };
 
 }  // namespace cave_mummies::states
