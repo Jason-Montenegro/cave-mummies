@@ -36,10 +36,14 @@ class MainMenuState : public cave_mummies::core::GameState {
    * needed to render and interact with a menu item.
    */
   struct MenuOption {
-    std::string text;  ///< Displayed text
-    MenuOptionFlag flag;  ///< Highlight state
-    MenuOptionTag tag;  ///< Element type
-    Color color;  ///< Base text color
+    /// @brief Displayed text
+    std::string text;
+    /// @brief Highlight state
+    MenuOptionFlag flag;
+    /// @brief Element type
+    MenuOptionTag tag;
+    /// @brief Base text color
+    Color color;
 
     /**
      * @brief Constructor
@@ -55,11 +59,18 @@ class MainMenuState : public cave_mummies::core::GameState {
       : text(text), flag(flag), tag(tag), color(color) { }
   };
 
-  Texture2D background;  ///< Main menu background texture
-  Font menuOptionFont;  ///< Font used for menu options
-  Sound selectMenuOptionSFX;  ///< Sound played when switching options
-  MenuOption mainTitle;  ///< Main menu title
-  std::vector<MenuOption> menuOptions;  ///< List of interactive menu options
+  /// @brief Main menu background texture
+  Texture2D background;
+  /// @brief Font used for menu options
+  Font menuOptionFont;
+  /// @brief Sound played when switching options
+  Sound selectMenuOptionSFX;
+  /// @brief Sound played when menu option is submitted with return key
+  Sound submitMenuOptionSFX;
+  /// @brief Main menu title
+  MenuOption mainTitle;
+  /// @brief List of interactive menu options
+  std::vector<MenuOption> menuOptions;
 
  public:
   /**

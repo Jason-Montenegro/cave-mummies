@@ -35,6 +35,7 @@ void StageOneState::init() {
     this->player->setBounds(playerBounds);
     this->startTime = std::chrono::high_resolution_clock::now();
     this->loaded = true;
+    this->fontSize = GetScreenWidth() * 0.04f;
     this->textHeight = MeasureTextEx(this->textFont, "A", this->fontSize
       , 1.0f).y;
   }

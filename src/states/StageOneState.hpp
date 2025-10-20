@@ -30,7 +30,7 @@ class StageOneState : public cave_mummies::core::GameState {
   /// @brief Game start time clock
   std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
   /// @brief Label font size
-  static constexpr float fontSize{36.0f};
+  float fontSize{36.0f};
   /// @brief Label text height
   float textHeight{0.0f};
 

@@ -10,6 +10,7 @@ MainMenuState::~MainMenuState() {
     // Unload all loaded game assets
     UnloadFont(this->menuOptionFont);
     UnloadTexture(this->background);
+    UnloadSound(this->submitMenuOptionSFX);
     UnloadSound(this->selectMenuOptionSFX);
     this->loaded = false;
   }
@@ -23,6 +24,7 @@ void MainMenuState::init() {
     this->background = LoadTexture("assets/background/game_bg.png");
     this->menuOptionFont = LoadFont("assets/fonts/PixelOperatorMono-Bold.ttf");
     this->selectMenuOptionSFX = LoadSound("assets/audio/sfx/throw1-sfx.wav");
+    this->submitMenuOptionSFX = LoadSound("assets/audio/sfx/throw5-sfx.wav");
     // Create all options that are displayed on main menu
     this->menuOptions.emplace_back("Start", MenuOptionFlag::Highlight2
       , MenuOptionTag::li, WHITE);
@@ -75,6 +77,7 @@ void MainMenuState::moveMenuOptionHighlight() {
 cave_mummies::core::GameStateID MainMenuState::addMenuOptionEventListener() {
   if (this->game.getInputHandler().isPressed(KEY_ENTER)) {
     // Change game state event listener for every menu option
+    PlaySound(this->submitMenuOptionSFX);
     for (const auto &option : this->menuOptions) {
       if (option.flag == MenuOptionFlag::Highlight2) {
         if (option.text == "Start")
@@ -85,7 +88,6 @@ cave_mummies::core::GameStateID MainMenuState::addMenuOptionEventListener() {
           return cave_mummies::core::GameStateID::Scoreboard;
         if (option.text == "Quit")
           return cave_mummies::core::GameStateID::Null;
-        // Stop current music
       }
     }
   }
