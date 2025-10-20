@@ -8,14 +8,15 @@
  * experience during gameplay, through unlimited gameplay with an infinite time
  * game mode featuring the main character Wil.
  *
- * Wil is stranded in a cave where his owner went missing. He must survive hordes
+ * Wil is stranded in a cave where his owner went missing. He must survive
+ * hordes
  * of mummies using a gun left by his owner. Enemies only perform melee attacks,
  * so ranged combat is crucial for survival.
  *
  * @section Game-specification
- * Cave Mummies is a single-player desktop game built in C++ and NASM (x86_64 Assembly),
- * using Raylib as the graphics and input library. The Linux release benefits from NASM
- * optimizations.
+ * Cave Mummies is a single-player desktop game built in C++ and NASM
+ * (x86_64 Assembly), using Raylib as the graphics and input library. The Linux
+ * release benefits from NASM optimizations.
  *
  * The core mechanic is time-based survival with score progression.
  *
@@ -27,8 +28,8 @@
  * - Menu interface and scoreboard
  *
  * @section How-to-play How to Play
- * Navigate the menu using `W` / `UP` keys to move up, and `S` / `DOWN` keys to move down.
- * Select an option with the `Return` key.
+ * Navigate the menu using `W` / `UP` keys to move up, and `S` / `DOWN` keys to
+ * move down. Select an option with the `Return` key.
  *
  * Controls during gameplay:
  * - Movement: A / D keys
