@@ -1,5 +1,6 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
+#include <memory>
 #include <string>
 
 #include "Game.hpp"
@@ -33,14 +34,14 @@ void MainMenuState::init() {
     this->submitMenuOptionSFX = LoadSound((std::string(basePath)
       + "../assets/audio/sfx/throw5-sfx.wav").c_str());
     // Create all options that are displayed on main menu
-    this->menuOptions.emplace_back("Start", MenuOptionFlag::Highlight2
-      , MenuOptionTag::li, WHITE);
-    this->menuOptions.emplace_back("About", MenuOptionFlag::None
-      , MenuOptionTag::li, WHITE);
-    this->menuOptions.emplace_back("Scoreboard", MenuOptionFlag::None
-      , MenuOptionTag::li, WHITE);
-    this->menuOptions.emplace_back("Quit", MenuOptionFlag::None
-      , MenuOptionTag::li, WHITE);
+    this->menuOptions.emplace_back("Start", menu::MenuOptionFlag::Highlight2
+      , menu::MenuOptionTag::li, WHITE);
+    this->menuOptions.emplace_back("About", menu::MenuOptionFlag::None
+      , menu::MenuOptionTag::li, WHITE);
+    this->menuOptions.emplace_back("Scoreboard", menu::MenuOptionFlag::None
+      , menu::MenuOptionTag::li, WHITE);
+    this->menuOptions.emplace_back("Quit", menu::MenuOptionFlag::None
+      , menu::MenuOptionTag::li, WHITE);
     this->loaded = true;
   }
 }
@@ -52,29 +53,26 @@ cave_mummies::core::GameStateID MainMenuState::update() {
 }
 
 void MainMenuState::moveMenuOptionHighlight() {
-  const size_t optionsSize{this->menuOptions.size()};
-  if (this->game.getInputHandler().isPressed(KEY_W)
-      || this->game.getInputHandler().isPressed(KEY_UP)) {
-    // Move option selector up
-    for (size_t index{0}; index < optionsSize; ++index) {
-      if (this->menuOptions[index].flag == MenuOptionFlag::Highlight2
-          && index > 0) {
-        this->menuOptions[index].flag = MenuOptionFlag::None;
-        this->menuOptions[index - 1].flag = MenuOptionFlag::Highlight2;
-        PlaySound(this->selectMenuOptionSFX);
-        break;
-      }
-    }
+  auto& input{this->game.getInputHandler()};
+
+  const int32_t optionsSize{static_cast<int32_t>(this->menuOptions.size())};
+  int32_t direction{0};  // -1 = up, +1 = down
+  if (input.isPressed(KEY_W) || input.isPressed(KEY_UP)) {
+    direction = -1;
+  } else if (input.isPressed(KEY_S) || input.isPressed(KEY_DOWN)) {
+    direction = 1;
   }
-  if (this->game.getInputHandler().isPressed(KEY_S)
-    || this->game.getInputHandler().isPressed(KEY_DOWN)) {
-    // Move option selector down
-    for (size_t index{0}; index < optionsSize; ++index) {
-      if (this->menuOptions[index].flag == MenuOptionFlag::Highlight2
-          && index + 1 < optionsSize) {
-        this->menuOptions[index].flag = MenuOptionFlag::None;
-        this->menuOptions[index + 1].flag = MenuOptionFlag::Highlight2;
-        PlaySound(this->selectMenuOptionSFX);
+
+  if (direction != 0) {
+    for (int32_t index{0}; index < optionsSize; ++index) {
+      if (menuOptions[index].flag == menu::MenuOptionFlag::Highlight2) {
+        menuOptions[index].flag = menu::MenuOptionFlag::None;
+        // Calculates the next menu option without overflow
+        const int32_t nextIndex{std::clamp<int32_t>(index + direction
+          , 0, optionsSize - 1)};
+        menuOptions[nextIndex].flag = menu::MenuOptionFlag::Highlight2;
+
+        PlaySound(selectMenuOptionSFX);
         break;
       }
     }
@@ -85,16 +83,37 @@ cave_mummies::core::GameStateID MainMenuState::addMenuOptionEventListener() {
   if (this->game.getInputHandler().isPressed(KEY_ENTER)) {
     // Change game state event listener for every menu option
     PlaySound(this->submitMenuOptionSFX);
-    for (const auto &option : this->menuOptions) {
-      if (option.flag == MenuOptionFlag::Highlight2) {
-        if (option.text == "Start")
+    for (const auto& option : this->menuOptions) {
+      if (option.flag == menu::MenuOptionFlag::Highlight2) {
+        if (option.text == "Start") {
+          this->game.getGameStateHandler().removeState(
+            cave_mummies::core::GameStateID::MainMenu);
+          this->game.getGameStateHandler().registerState(GameStateID::StageOne
+            , std::make_shared<cave_mummies::states::StageOneState>(
+              this->game));
           return cave_mummies::core::GameStateID::StageOne;
-        if (option.text == "About")
+        }
+        if (option.text == "About") {
+          this->game.getGameStateHandler().removeState(
+            cave_mummies::core::GameStateID::MainMenu);
+          this->game.getGameStateHandler().registerState(GameStateID::AboutMenu
+            , std::make_shared<cave_mummies::states::AboutMenuState>(
+              this->game));
           return cave_mummies::core::GameStateID::AboutMenu;
-        if (option.text == "Scoreboard")
+        }
+        if (option.text == "Scoreboard") {
+          this->game.getGameStateHandler().removeState(
+            cave_mummies::core::GameStateID::MainMenu);
+          this->game.getGameStateHandler().registerState(GameStateID::Scoreboard
+            , std::make_shared<cave_mummies::states::ScoreboardState>(
+              this->game));
           return cave_mummies::core::GameStateID::Scoreboard;
-        if (option.text == "Quit")
+        }
+        if (option.text == "Quit") {
+          this->game.getGameStateHandler().removeState(
+            cave_mummies::core::GameStateID::MainMenu);
           return cave_mummies::core::GameStateID::Null;
+        }
       }
     }
   }
@@ -102,20 +121,9 @@ cave_mummies::core::GameStateID MainMenuState::addMenuOptionEventListener() {
 }
 
 void MainMenuState::draw() {
-  drawBackground();
-  drawMainTitle();
-  drawMenuOptionSection();
-}
-
-void MainMenuState::drawBackground() {
-  ClearBackground(BLACK);
-  // Calculate the math for extending background to whole game screen
-  Rectangle sourceRec{0.0f, 0.0f, static_cast<float>(this->background.width)
-    , static_cast<float>(this->background.height)};
-  Rectangle destRec{0.0f, 0.0f, static_cast<float>(GetScreenWidth())
-    , static_cast<float>(GetScreenHeight())};
-  Vector2 origin{0.0f, 0.0f};
-  DrawTexturePro(this->background, sourceRec, destRec, origin, 0.0f, WHITE);
+  GameState::drawBackground();
+  this->drawMainTitle();
+  this->drawMenuOptionSection();
 }
 
 void MainMenuState::drawMainTitle() {
@@ -128,18 +136,18 @@ void MainMenuState::drawMainTitle() {
 
   const float x{screenW / 2.0f - textSize.x / 2.0f};
   const float y{screenH * 0.1f};  // Upper side margin of 10%
-  drawMenuOption(this->mainTitle, {x, y}, fontSize);
+  this->drawMenuOption(this->mainTitle, {x, y}, fontSize);
 }
 
 
-void MainMenuState::drawMenuOption(const MenuOption &option, Vector2 coords
-  , float fontSize) {
+void MainMenuState::drawMenuOption(const menu::MenuOption& option
+  , Vector2 coords, float fontSize) {
   if (!option.text.empty()) {
     Vector2 pos{coords};
-    if (option.flag == MenuOptionFlag::Highlight2
-        || option.flag == MenuOptionFlag::Highlight1) {
-      Color outlineColor{this->pickOutlineColor(option.flag)};
-      const int outlineThickness{this->pickOutlineThickness(option.tag)};
+    if (option.flag == menu::MenuOptionFlag::Highlight2
+        || option.flag == menu::MenuOptionFlag::Highlight1) {
+      Color outlineColor{menu::pickOutlineColor(option.flag)};
+      const int outlineThickness{menu::pickOutlineThickness(option.tag)};
       // Draw the same text to simulate an outline effect on texts
       for (int x{-outlineThickness}; x <= outlineThickness; ++x) {
         for (int y{-outlineThickness}; y <= outlineThickness; ++y) {
@@ -153,22 +161,6 @@ void MainMenuState::drawMenuOption(const MenuOption &option, Vector2 coords
     // Draw text to screen
     DrawTextEx(this->menuOptionFont, option.text.data(), pos, fontSize, 1.0f
       , option.color);
-  }
-}
-
-Color MainMenuState::pickOutlineColor(MenuOptionFlag flag) {
-  switch (flag) {
-  case MenuOptionFlag::Highlight1: return DARKGREEN;
-  case MenuOptionFlag::Highlight2: return LIME;
-  default: return WHITE;
-  }
-}
-
-int MainMenuState::pickOutlineThickness(MenuOptionTag tag) {
-  switch (tag) {
-  case MenuOptionTag::h1: return 8;  // Thick outline
-  case MenuOptionTag::li: return 3;  // Thin outline
-  default: return 1;  // Default outline value
   }
 }
 

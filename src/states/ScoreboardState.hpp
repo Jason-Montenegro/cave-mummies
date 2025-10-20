@@ -20,7 +20,7 @@ class ScoreboardState : public cave_mummies::core::GameState {
    */
   ScoreboardState(cave_mummies::core::Game &game)
     : GameState(game) {
-    this->stateID = cave_mummies::core::GameStateID::Paused;
+    this->stateID = cave_mummies::core::GameStateID::Scoreboard;
   }
 
   /**

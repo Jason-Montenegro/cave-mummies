@@ -14,8 +14,8 @@ enum class GameStateID {
   Null,
   MainMenu,
   AboutMenu,
+  PausedMenu,
   GameOver,
-  Paused,
   StageOne,
   Scoreboard,
 };
@@ -27,6 +27,8 @@ class GameState {
  protected:
   /// @brief State identifier
   GameStateID stateID{GameStateID::Null};
+  /// @brief Main menu background texture
+  Texture2D background;
   /// @brief Is state currently loaded
   bool loaded{false};
   /// @brief Game controller object
@@ -71,6 +73,21 @@ class GameState {
    * @brief Draws its internal object state to window.
    */
   virtual void draw() = 0;
+
+ protected:
+  /**
+   * @brief Draws background image to state screen.
+   */
+  virtual void drawBackground() {
+    ClearBackground(BLACK);
+    // Calculate the math for extending background to whole game screen
+    Rectangle sourceRec{0.0f, 0.0f, static_cast<float>(this->background.width)
+      , static_cast<float>(this->background.height)};
+    Rectangle destRec{0.0f, 0.0f, static_cast<float>(GetScreenWidth())
+      , static_cast<float>(GetScreenHeight())};
+    Vector2 origin{0.0f, 0.0f};
+    DrawTexturePro(this->background, sourceRec, destRec, origin, 0.0f, WHITE);
+  };
 };
 
 }  // namespace cave_mummies::core

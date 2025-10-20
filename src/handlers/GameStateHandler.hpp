@@ -11,7 +11,7 @@
 #include "MainMenuState.hpp"
 #include "AboutMenuState.hpp"
 #include "GameOverState.hpp"
-#include "PausedGameState.hpp"
+#include "PausedMenuGameState.hpp"
 #include "ScoreboardState.hpp"
 #include "StageOneState.hpp"
 
@@ -75,6 +75,12 @@ class GameStateHandler {
     }
     this->states.clear();
     this->currentState = nullptr;
+  }
+
+  inline void removeState(GameStateID stateID) {
+    if (this->states.find(stateID) != this->states.end()) {
+      this->states.erase(stateID);
+    }
   }
 
   /**

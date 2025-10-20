@@ -60,7 +60,10 @@ class Game : public cave_mummies::core::Application {
     , scoreboardHandler(
         cave_mummies::handlers::ScoreboardHandler::getInstance()) {
     this->setInputSource(inputType);
-    this->createGameStates();
+    if (this->gameStateHandler) {
+      this->gameStateHandler->registerState(GameStateID::MainMenu
+        , std::make_shared<cave_mummies::states::MainMenuState>(*this));
+    }
   }
 
   /**

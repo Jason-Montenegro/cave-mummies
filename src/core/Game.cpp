@@ -83,21 +83,4 @@ void Game::cleanup() {
   // Currently nothing to clean up
 }
 
-void Game::createGameStates() {
-  if (this->gameStateHandler) {
-    this->gameStateHandler->registerState(GameStateID::MainMenu
-      , std::make_shared<cave_mummies::states::MainMenuState>(*this));
-    this->gameStateHandler->registerState(GameStateID::AboutMenu
-      , std::make_shared<cave_mummies::states::AboutMenuState>(*this));
-    this->gameStateHandler->registerState(GameStateID::Scoreboard
-      , std::make_shared<cave_mummies::states::ScoreboardState>(*this));
-    this->gameStateHandler->registerState(GameStateID::Paused
-      , std::make_shared<cave_mummies::states::PausedGameState>(*this));
-    this->gameStateHandler->registerState(GameStateID::GameOver
-      , std::make_shared<cave_mummies::states::GameOverState>(*this));
-    this->gameStateHandler->registerState(GameStateID::StageOne
-      , std::make_shared<cave_mummies::states::StageOneState>(*this));
-  }
-}
-
 }  // namespace cave_mummies::core

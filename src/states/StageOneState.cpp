@@ -13,7 +13,7 @@ namespace cave_mummies::states {
 StageOneState::~StageOneState() {
   if (this->loaded) {
     // Unload all loaded game assets
-    UnloadTexture(this->stageBackground);
+    UnloadTexture(this->background);
     UnloadTexture(this->floorTile);
     UnloadFont(this->textFont);
     this->loaded = false;
@@ -24,7 +24,7 @@ void StageOneState::init() {
   if (!this->loaded) {
     // Load all game assets
     const char* basePath{GetApplicationDirectory()};
-    this->stageBackground = LoadTexture((std::string(basePath)
+    this->background = LoadTexture((std::string(basePath)
     + "../assets/background/game_bg.png").c_str());
     this->floorTile = LoadTexture((std::string(basePath)
       + "../assets/textures/scene/floor_tile.png").c_str());
@@ -50,38 +50,45 @@ void StageOneState::init() {
 
 cave_mummies::core::GameStateID StageOneState::update() {
   // when Esc is pressed, go back to main menu
+  if (this->isGamePaused) {
+    this->continueGameTime();
+  }
   this->player->update();
   for (auto& enemy : this->enemyCollection) {
     enemy->update();
   }
+  cave_mummies::core::GameStateID newState{this->stateID};
   if (this->game.getInputHandler().isPressed(KEY_ESCAPE)) {
-    return cave_mummies::core::GameStateID::MainMenu;
+    this->pauseGameTime();
+    this->game.getGameStateHandler().registerState(GameStateID::PausedMenu
+      , std::make_shared<cave_mummies::states::PausedMenuGameState>(
+        this->game));
+    newState = cave_mummies::core::GameStateID::PausedMenu;
   }
-  return this->stateID;
+  return newState;
+}
+
+void StageOneState::pauseGameTime() {
+  this->pausedTime = std::chrono::high_resolution_clock::now();
+  isGamePaused = true;
+}
+
+void StageOneState::continueGameTime() {
+  auto now{std::chrono::high_resolution_clock::now()};
+  auto pausedDuration{std::chrono::duration_cast<
+    std::chrono::high_resolution_clock::duration>(now - this->pausedTime)};
+  this->startTime += pausedDuration;
+  isGamePaused = false;
 }
 
 void StageOneState::draw() {
-  drawBackground();
-  drawFloor();
-  drawScore();
-  drawClock();
-  drawAmmunitionLabel();
+  GameState::drawBackground();
+  this->drawFloor();
+  this->drawScore();
+  this->drawClock();
+  this->drawAmmunitionLabel();
   this->player->draw();
-  spawnEnemies();
-}
-
-void StageOneState::drawBackground() {
-  // Draw background
-  ClearBackground(BLACK);
-  // Calculate the math for extending background to whole game screen
-  Rectangle sourceRec{0.0f, 0.0f
-    , static_cast<float>(this->stageBackground.width)
-    , static_cast<float>(this->stageBackground.height)};
-  Rectangle destRec{0.0f, 0.0f, static_cast<float>(GetScreenWidth())
-    , static_cast<float>(GetScreenHeight())};
-  Vector2 origin{0.0f, 0.0f};
-  DrawTexturePro(this->stageBackground, sourceRec, destRec, origin, 0.0f
-    , WHITE);
+  this->spawnEnemies();
 }
 
 void StageOneState::drawFloor() {

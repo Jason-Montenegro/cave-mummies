@@ -17,8 +17,6 @@ namespace cave_mummies::states {
  */
 class StageOneState : public cave_mummies::core::GameState {
  private:
-  /// @brief Stage one background
-  Texture2D stageBackground;
   /// @brief Floor tile component
   Texture2D floorTile;
   /// @brief Text fond  
@@ -35,6 +33,10 @@ class StageOneState : public cave_mummies::core::GameState {
   float textHeight{0.0f};
   /// @brief Minute counter for enemy spawn pattern
   double lastSpawnMinute{0};
+  /// @brief Paused time difference
+  std::chrono::time_point<std::chrono::high_resolution_clock> pausedTime;
+  /// @brief Game paused condition
+  bool isGamePaused{false};
 
  public:
   /**
@@ -67,9 +69,14 @@ class StageOneState : public cave_mummies::core::GameState {
 
  private:
   /**
-   * @brief Draws the background to the stage screen.
+   * @brief Pauses the current game time.
    */
-  void drawBackground();
+  void pauseGameTime();
+
+  /**
+   * @brief Pauses the current game time.
+   */
+  void continueGameTime();
 
   /**
    * @brief Draws floor tiles on the stage screen.

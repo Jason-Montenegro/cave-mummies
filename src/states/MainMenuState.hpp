@@ -7,60 +7,15 @@
 #include <vector>
 
 #include "GameState.hpp"
+#include "MenuStateUtils.hpp"
 
 namespace cave_mummies::states {
-
-/// @enum MenuOptionFlag
-/// @brief Visual state flags for each menu option.
-enum class MenuOptionFlag {
-  Highlight1,  ///< Primary highlight
-  Highlight2,  ///< Secondary highlight
-  None  ///< No effect
-};
-
-/// @enum MenuOptionFlag
-/// @brief Types of elements that can be displayed in the menu.
-enum class MenuOptionTag {
-  h1, ///< Main header
-  li  ///< List item
-};
 
 /**
  * @brief Game state for main menu screen in game.
  */
 class MainMenuState : public cave_mummies::core::GameState {
  private:
-  /**
-   * @brief Represents a single option in the main menu.
-   * Stores the text, highlight state, type, and color information
-   * needed to render and interact with a menu item.
-   */
-  struct MenuOption {
-    /// @brief Displayed text
-    std::string text;
-    /// @brief Highlight state
-    MenuOptionFlag flag;
-    /// @brief Element type
-    MenuOptionTag tag;
-    /// @brief Base text color
-    Color color;
-
-    /**
-     * @brief Constructor
-     * @param text The text to display for this menu option
-     * @param flag The initial highlight state of the option
-     * @param tag The type of menu element
-     * @param color The base color of the text
-     * @see MenuOptionTag
-     * @see MenuOptionFlag
-     */
-    explicit MenuOption(std::string_view text, MenuOptionFlag flag
-      , MenuOptionTag tag, Color color)
-      : text(text), flag(flag), tag(tag), color(color) { }
-  };
-
-  /// @brief Main menu background texture
-  Texture2D background;
   /// @brief Font used for menu options
   Font menuOptionFont;
   /// @brief Sound played when switching options
@@ -68,18 +23,18 @@ class MainMenuState : public cave_mummies::core::GameState {
   /// @brief Sound played when menu option is submitted with return key
   Sound submitMenuOptionSFX;
   /// @brief Main menu title
-  MenuOption mainTitle;
+  menu::MenuOption mainTitle;
   /// @brief List of interactive menu options
-  std::vector<MenuOption> menuOptions;
+  std::vector<menu::MenuOption> menuOptions;
 
  public:
   /**
-   * @brief Constructor. Initializes the main title and assigns the state ID.
+   * @brief Constructor
    */
   MainMenuState(cave_mummies::core::Game& game)
     : GameState(game)
     , mainTitle("Cave mummies"
-    , MenuOptionFlag::Highlight1, MenuOptionTag::h1
+    , menu::MenuOptionFlag::Highlight1, menu::MenuOptionTag::h1
     , WHITE) {
     this->stateID = cave_mummies::core::GameStateID::MainMenu;
   }
@@ -118,11 +73,6 @@ class MainMenuState : public cave_mummies::core::GameState {
   cave_mummies::core::GameStateID addMenuOptionEventListener();
 
   /**
-   * @brief Draws the menu background.
-   */
-  void drawBackground();
-
-  /**
    * @brief Draws the main title text.
    */
   void drawMainTitle();
@@ -133,22 +83,13 @@ class MainMenuState : public cave_mummies::core::GameState {
    * @param coords Screen coordinates
    * @param fontSize Font size to use
    */
-  void drawMenuOption(const MenuOption& option, Vector2 coords, float fontSize);
+  void drawMenuOption(const menu::MenuOption& option, Vector2 coords
+    , float fontSize);
 
   /**
    * @brief Draws all interactive menu options.
    */
   void drawMenuOptionSection();
-
-  /**
-   * @brief Returns the outline color based on the highlight flag.
-   */
-  Color pickOutlineColor(MenuOptionFlag flag);
-
-  /**
-   * @brief Returns the outline thickness based on the element type.
-   */
-  int pickOutlineThickness(MenuOptionTag tag);
 };
 
 }  // namespace cave_mummies::states
