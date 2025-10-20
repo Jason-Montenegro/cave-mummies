@@ -28,9 +28,9 @@ class Enemy : public Entity {
   /// @brief Default enemy values
   static constexpr uint32_t defaultEnemyVelocity{5};
   static constexpr const char* const defaultEnemyAssetPath[3]{
-    "assets/textures/entities/wil_player_skin.png",
-    "assets/textures/entities/wil_player_skin.png",
-    "assets/textures/entities/wil_player_skin.png"
+    "../assets/textures/entities/wil_player_skin.png",
+    "../assets/textures/entities/wil_player_skin.png",
+    "../assets/textures/entities/wil_player_skin.png"
   };
   /// @brief Alive player flag
   bool isAlive{true};
@@ -38,11 +38,16 @@ class Enemy : public Entity {
   cave_mummies::entities::Player& objective;
   /// @brief Enemy difficulty type
   EnemyDifficulty difficultyType{EnemyDifficulty::Easy};
+  /// @brief Sprite frame
+  int32_t currentSpriteFrame{0};
+  /// @brief Sprite frame count
+  int32_t spriteFrameCount{4};
 
  public:
   /**
    * @brief Constructor
-   * @param objective Target objective this will follow
+   * @param game Game controller
+   * @param objective Target objective this enemy will follow
    * @param diff Enemy difficulty type
    */
   explicit Enemy(cave_mummies::core::Game& game
@@ -52,6 +57,7 @@ class Enemy : public Entity {
     , objective(objective)
     , difficultyType(diff) {
     this->setVelocity(diff);
+    this->setSpeed(diff);
     this->isAlive = true;
   }
 
@@ -59,6 +65,11 @@ class Enemy : public Entity {
    * @brief Updates this enemy state.
    */
   void update() override;
+
+  /**
+   * @brief Draws enemy sprite on the screen.
+   */
+  void draw() override;
 
   /**
    * @brief Checks if this enemy is alive.
@@ -92,13 +103,31 @@ class Enemy : public Entity {
   inline void setVelocity(EnemyDifficulty type) {
     switch (type) {
     case EnemyDifficulty::Easy:
-      this->velocity = 1.0f;
+      this->velocity = 1.5f;
       break;
     case EnemyDifficulty::Moderate:
       this->velocity = 2.0f;
       break;
     case EnemyDifficulty::Hard:
       this->velocity = 3.0f;
+      break;
+    }
+  }
+
+  /**
+   * @brief Sets this object speed.
+   * @param type Enemy type
+   */
+  inline void setSpeed(EnemyDifficulty type) {
+    switch (type) {
+    case EnemyDifficulty::Easy:
+      this->setCurrentSpeed(1.5f);
+      break;
+    case EnemyDifficulty::Moderate:
+      this->setCurrentSpeed(1.7f);
+      break;
+    case EnemyDifficulty::Hard:
+      this->setCurrentSpeed(2.0f);
       break;
     }
   }

@@ -33,6 +33,8 @@ class StageOneState : public cave_mummies::core::GameState {
   float fontSize{36.0f};
   /// @brief Label text height
   float textHeight{0.0f};
+  /// @brief Minute counter for enemy spawn pattern
+  double lastSpawnMinute{0};
 
  public:
   /**
@@ -88,6 +90,17 @@ class StageOneState : public cave_mummies::core::GameState {
    * @brief Draws ammunition label on the stage screen.
    */
   void drawAmmunitionLabel();
+
+  /**
+   * @brief Generates game enemies, depending on the elapsed time and current
+   * enemy count on the stage screen.
+   */
+  void generateEnemies();
+
+  /**
+   * @brief Spawns enemies on the stage screen.
+   */
+  void spawnEnemies();
 };
 
 }  // namespace cave_mummies::states

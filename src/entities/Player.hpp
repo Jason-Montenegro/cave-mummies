@@ -30,9 +30,7 @@ class Player : public Entity {
   /// @brief Current game score
   uint64_t currentScore{0};
   /// @brief Sprint increment in velocity
-  const float sprint_velocity_boost{1.8};
-  /// @brief Sprite pixel width
-  static constexpr float spritePixelWidth{32.0};
+  const float sprint_velocity_boost{1.1f};
   /// @brief Sprite frame
   int32_t currentSpriteFrame{0};
   /// @brief Sprite frame count
@@ -40,12 +38,11 @@ class Player : public Entity {
   bool isJumping{false};
   int32_t jumpCount{0};
   float jumpVelocity{0.0f};
-  /// @brief Condition to draw sprite on correct direction
-  bool facingLeft{false};
 
  public:
   /**
    * @brief Constructor
+   * @param game Game controller
    * @param playerAssetPath Texture for player object
    */
   explicit Player(cave_mummies::core::Game& game

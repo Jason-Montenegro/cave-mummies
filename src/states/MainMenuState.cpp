@@ -1,5 +1,7 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
+#include <string>
+
 #include "Game.hpp"
 #include "MainMenuState.hpp"
 
@@ -21,10 +23,15 @@ MainMenuState::~MainMenuState() {
 void MainMenuState::init() {
   if (!this->loaded) {
     // Load all game assets
-    this->background = LoadTexture("assets/background/game_bg.png");
-    this->menuOptionFont = LoadFont("assets/fonts/PixelOperatorMono-Bold.ttf");
-    this->selectMenuOptionSFX = LoadSound("assets/audio/sfx/throw1-sfx.wav");
-    this->submitMenuOptionSFX = LoadSound("assets/audio/sfx/throw5-sfx.wav");
+    const char* basePath{GetApplicationDirectory()};
+    this->background = LoadTexture((std::string(basePath)
+      + "../assets/background/game_bg.png").c_str());
+    this->menuOptionFont = LoadFont((std::string(basePath)
+      + "../assets/fonts/PixelOperatorMono-Bold.ttf").c_str());
+    this->selectMenuOptionSFX = LoadSound((std::string(basePath)
+      + "../assets/audio/sfx/throw1-sfx.wav").c_str());
+    this->submitMenuOptionSFX = LoadSound((std::string(basePath)
+      + "../assets/audio/sfx/throw5-sfx.wav").c_str());
     // Create all options that are displayed on main menu
     this->menuOptions.emplace_back("Start", MenuOptionFlag::Highlight2
       , MenuOptionTag::li, WHITE);

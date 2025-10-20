@@ -3,7 +3,10 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 
+#include <string>
+
 #include "raylib.h"
+
 
 namespace cave_mummies::core {
 class Game;
@@ -34,17 +37,25 @@ class Entity {
   /// @brief Game controller
   cave_mummies::core::Game& game;
   /// @brief Current entity speed
-  float current_speed{1.0};
+  float currentSpeed{1.0};
+  /// @brief Sprite pixel width
+  static constexpr float spritePixelWidth{32.0};
+  /// @brief Sprite direction
+  cave_mummies::entities::Direction spriteDirection{
+    cave_mummies::entities::Direction::Right};
 
  public:
   /**
    * @brief Constructor
+   * @param game Game controller
    * @param assetFilename File name of sprite texture
    */
   explicit Entity(cave_mummies::core::Game& game
     , const char* const assetFilename)
     : bounds{0, 0, 0, 0}, velocity{1.0}, game(game) {
-    this->texture = LoadTexture(assetFilename);
+    const char* basePath{GetApplicationDirectory()};
+    this->texture = LoadTexture((std::string(basePath)
+      + assetFilename).c_str());
   }
 
   /**
@@ -93,10 +104,18 @@ class Entity {
 
   /**
    * @brief Sets the velocity member
-   * @param b New velocity object
+   * @param v New velocity value
    */
   inline void setVelocity(float v) {
     this->velocity = v;
+  }
+
+  /**
+   * @brief Sets the currentSpeed member
+   * @param speed New speed value
+   */
+  inline void setCurrentSpeed(float speed) {
+    this->currentSpeed = speed;
   }
 
   /**
@@ -109,7 +128,7 @@ class Entity {
   
   /**
    * @brief Sets the texture member
-   * @param b New texture object
+   * @param t New texture object
    */
   inline void setTexture(const Texture2D& t) {
     this->texture = t;

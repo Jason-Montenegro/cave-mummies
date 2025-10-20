@@ -2,10 +2,6 @@
 
 #include "Game.hpp"
 
-/**
- * @brief Starts Cat mummies game.
- * @return EXIT_SUCCESS on successful run, EXIT_FAILURE otherwise
- */
 int main() {
   cave_mummies::core::Game game(InputSourceType::Keyboard);
   return game.run();

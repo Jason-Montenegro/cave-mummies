@@ -1,6 +1,7 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
 #include <memory>
+#include <string>
 
 #include "raylib.h"
 
@@ -29,9 +30,17 @@ int Game::run() {
     if (!this->update()) {
       break;
     }
-    if (IsMusicStreamPlaying(this->backgroundSoundtrack) == 0) {
-      PlayMusicStream(this->backgroundSoundtrack);
+
+    if (this->inputHandler->isPressed(KEY_M)) {
+      if (this->musicPaused) {
+        ResumeMusicStream(this->backgroundSoundtrack);
+        this->musicPaused = false;
+      } else {
+        PauseMusicStream(this->backgroundSoundtrack);
+        this->musicPaused = true;
+      }
     }
+
     UpdateMusicStream(this->backgroundSoundtrack);
     this->draw();
   }
@@ -42,15 +51,17 @@ int Game::run() {
 void Game::init() {
   cave_mummies::utils::Log::getInstance().start("cave_mummies.log");
   SetTraceLogCallback(Game::traceLogCallback);
-  // InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), this->windowTitle.c_str());
-  InitWindow(1280, 720, this->windowTitle.c_str());
-  // ToggleFullscreen();
+  SetConfigFlags(FLAG_FULLSCREEN_MODE | FLAG_WINDOW_HIGHDPI);
+  InitWindow(GetMonitorWidth(0), GetMonitorHeight(0)
+    , this->windowTitle.c_str());
   SetTargetFPS(60);
-  SetExitKey(0);
+  SetExitKey(0);  // Deactive Esc as exit program key
+  SetMousePosition(GetScreenWidth()/2, GetScreenHeight()/2);
   InitAudioDevice();
-  SetMasterVolume(1.0f);  /// 1.0 = 100%
-  this->backgroundSoundtrack = LoadMusicStream(
-    "assets/audio/music/game_soundtrack.mp3");
+  SetMasterVolume(1.0f);  // 1.0 = 100%
+  const char* basePath{GetApplicationDirectory()};
+  this->backgroundSoundtrack = LoadMusicStream((std::string(basePath)
+    + "../assets/audio/music/game_soundtrack.mp3").c_str());
   this->loadedGame = true;
   this->gameStateHandler->setCurrentState(GameStateID::MainMenu);
 }

@@ -63,7 +63,7 @@ class ScoreboardHandler {
 
   /**
    * @brief Get the Score from the scoreboard file in the following format:
-   * <label>\t<score>
+   * [label] [score]
    * @param label Score label
    * @return Formatted score string if the score exists, if not an empty string
    * is returned.

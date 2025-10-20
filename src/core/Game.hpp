@@ -40,12 +40,13 @@ class Game : public cave_mummies::core::Application {
   bool loadedGame{false};
   /// @brief Game scoreboard
   cave_mummies::handlers::ScoreboardHandler& scoreboardHandler;
+  /// @brief Music paused condition
+  bool musicPaused{false};
 
  public:
   /**
    * @brief Fullscreen game constructor
    * @param inputType User input type for game
-   * @param windowTitle Game window title
    */
   explicit Game(InputSourceType inputType)
     : windowTitle(Game::defaultWindowTitle)
