@@ -158,7 +158,7 @@ void StageOneState::checkPlayerGunshot() {
         dir.y /= length;
     }
     // Amplify bullet speed
-    const float bulletSpeed{20.0f};
+    const float bulletSpeed{50.0f};
     Vector2 velocity{dir.x * bulletSpeed, dir.y * bulletSpeed};
     cave_mummies::entities::Projectile p{startPosition, velocity, 8.0f, MAROON};
     projectiles.push_back(p);
