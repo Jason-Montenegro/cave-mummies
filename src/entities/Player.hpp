@@ -7,32 +7,32 @@
 
 #include "Entity.hpp"
 #include "Game.hpp"
+#include "InputHandler.hpp"
+
 
 namespace cave_mummies::entities {
 
 /**
- * @brief Entity that the player uses
+ * @brief Player entity
  */
 class Player : public Entity {
- private:
-  /// @brief Default player values
+ protected:
+  /// @brief Default ammunition quantity
   static constexpr uint32_t defaultAmmunitionQuantity{12};
+  /// @brief Player texture
   static constexpr const char* const defaultPlayerAssetPath
     {"assets/textures/entities/wil_player_skin.png"};
   /// @brief Entity kill count
   uint64_t killCount{0};
-  /// @brief loaded ammunition remaining for shooting
-  uint64_t loadedAmmunitionRemaining{Player::defaultAmmunitionQuantity};
+  /// @brief Remaining ammunition for shooting
+  uint32_t remainingAmmunition{Player::defaultAmmunitionQuantity};
   /// @brief Reload speed
   static constexpr uint32_t reloadingSpeedInSeconds{2};
   /// @brief Current game score
   uint64_t currentScore{0};
   /// @brief Sprint increment in velocity
-  const float sprint_velocity_boost{1.1f};
-  /// @brief Sprite frame
-  int32_t currentSpriteFrame{0};
-  /// @brief Sprite frame count
-  int32_t spriteFrameCount{4};
+  const float sprintVelocityBoost{0.8f};
+  /// @brief Jumping condition
   bool isJumping{false};
   int32_t jumpCount{0};
   float jumpVelocity{0.0f};
@@ -45,82 +45,102 @@ class Player : public Entity {
    */
   explicit Player(cave_mummies::core::Game& game
     , const char* const playerAssetPath = Player::defaultPlayerAssetPath)
-    : Entity(game, playerAssetPath) { }
+    : Entity(game, playerAssetPath) {
+    this->velocity = this->baseVelocity = 3.0f;
+    this->currentSpeed = 3.0f;
+  }
 
   /**
-   * @brief Updates this player state.
+   * @brief Updates this player state
    */
   void update() override;
 
   /**
-   * @brief Draws player sprite to screen.
+   * @brief Draws player sprite to screen
    */
   void draw() override;
 
   /**
-   * @brief Decrements jump count by one.
+   * @brief Decrements jump count by one
    */
   inline void reduceJumpCount() {
     --this->jumpCount;
   }
 
   /**
-   * @brief Gets the number of enemies killed by the player.
-   * @return Kill count
+   * @brief Getter of player kill count
+   * @return this kill count
    */
   inline uint64_t getKillCount() const {
     return this->killCount;
   }
 
   /**
-   * @brief Gets the current amount of ammunition loaded to shoot.
-   * @return Loaded ammunition remaining
+   * @brief Getter of remaining ammunition
+   * @return this remaining ammunition
    */
-  inline uint64_t getLoadedAmmunitionRemaining() const {
-    return this->loadedAmmunitionRemaining;
+  inline uint32_t getRemainingAmmunition() const {
+    return this->remainingAmmunition;
   }
 
   /**
-   * @brief Gets the current score of the player.
-   * @return Current score
+   * @brief Getter of current score
+   * @return this current score
    */
   inline uint64_t getCurrentScore() const {
     return this->currentScore;
   }
 
   /**
-   * @brief Sets the number of enemies killed.
+   * @brief Setter of the number of enemies killed
    * @param count New kill count
-   * @remark If count is < 0, it is converted to -count.
+   * @remark If count is < 0, it is converted to -count
    */
   inline void setKillCount(int32_t count) {
     this->killCount = (count < 0) ? -count : count;
   }
 
   /**
-   * @brief Sets the current amount of ammunition loaded to shoot.
-   * @param qty Ammunition quantity
-   * @remark If qty is < 0, it is converted to -qty.
+   * @brief Reloads ammunition to the max ammunition quantity
    */
-  inline void setLoadedAmmunitionRemaining(int32_t qty) {
-    this->loadedAmmunitionRemaining = (qty < 0) ? -qty : qty;
+  inline void reloadAmmunition() {
+    this->remainingAmmunition = Player::defaultAmmunitionQuantity;
   }
 
   /**
-   * @brief Sets the current score of the player.
+   * @brief Setter of the player score
    * @param score New score
    * @remark If score is < 0, it is converted to -score.
    */
   inline void setCurrentScore(int64_t score) {
     this->currentScore = (score < 0) ? -score : score;
   }
-
- private:
-  /**
+ protected:
+   /**
    * @brief Calculates how much should the player jump, and updates
-   * its position.
+   * its position
    */
   void calculateAndDrawJump();
+
+  /**
+   * @brief Updates the sprinting status depending on player's input
+   */
+  void updatePlayerSprint();
+
+  /**
+   * @brief Updates player's lateral movement
+   */
+  void updateLateralMovement();
+
+  /**
+   * @brief Updates player's sprite frame, one frame per second
+   */
+  void updateSpriteFrame();
+
+  /**
+   * @brief Updates the player's position if it went through a wall
+   */
+  void updateWallWrapAround();
 };
 
 }  // cave_mummies::entities

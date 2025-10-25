@@ -8,7 +8,7 @@
 namespace cave_mummies::entities {
 
 /**
- * @brief Projectile structure for player to shoot.
+ * @brief Player projectile
  */
 struct Projectile {
  public:
@@ -24,17 +24,14 @@ struct Projectile {
    * @param r Projectile radius
    * @param c Projectile color
    */
-   Projectile(Vector2 pos
-      , Vector2 vel
-      , float r
-      , Color c)
-      : position(pos)
-      , velocity(vel)
-      , radius(r)
-      , color(c){ }
+   Projectile(Vector2 pos, Vector2 vel, float r, Color c)
+    : position(pos)
+    , velocity(vel)
+    , radius(r)
+    , color(c) { }
 
   /**
-   * @brief Updates this projectile coordinates.
+   * @brief Updates this projectile coordinates
    */
   inline void update() {
     position.x += velocity.x;
@@ -42,18 +39,19 @@ struct Projectile {
   }
 
   /**
-   * @brief Draws projectile on the screen.
+   * @brief Draws projectile on the screen
    */
   inline void draw() const {
     DrawCircleV(position, radius, color);
   }
 
   /**
-   * @brief Getter for projectile coordinates and size.
+   * @brief Getter of projectile coordinates and size
    * @return Projectile bounds
    */
   Rectangle getBounds() const {
-    return {position.x - radius, position.y - radius, radius * 2, radius * 2};
+    return {position.x - radius, position.y - radius, radius * 1.0f
+      , radius * 1.0f};
   }
 };
 

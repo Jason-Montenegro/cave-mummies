@@ -57,9 +57,9 @@ void MainMenuState::moveMenuOptionHighlight() {
 
   const int32_t optionsSize{static_cast<int32_t>(this->menuOptions.size())};
   int32_t direction{0};  // -1 = up, +1 = down
-  if (input.isPressed(KEY_W) || input.isPressed(KEY_UP)) {
+  if (input.isPressed(KEY_W) || input.isPressed(KEY_UP) || GetMouseWheelMove() > 0) {
     direction = -1;
-  } else if (input.isPressed(KEY_S) || input.isPressed(KEY_DOWN)) {
+  } else if (input.isPressed(KEY_S) || input.isPressed(KEY_DOWN) || GetMouseWheelMove() < 0) {
     direction = 1;
   }
 

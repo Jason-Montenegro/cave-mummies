@@ -2,30 +2,68 @@
 
 #include "Player.hpp"
 
+/**
+ * @brief Updates the sprinting status depending on player's input
+ * @param velocity Pointer to the player's current velocity
+ * @param baseVelocity The player's base velocity
+ * @param sprintVelocityBoost The additional velocity applied during a sprint
+ * @param isShiftDown True if the sprint key is currently pressed
+ * @param isShiftReleased True if the sprint key has just been released
+ * @note Assembly (NASM) function for Linux-based machines
+ * @note Modifies velocity argument
+ */
+extern "C" void update_player_sprint(float* velocity, float baseVelocity,
+  float sprintVelocityBoost, bool isShiftDown, bool isShiftReleased);
+
 namespace cave_mummies::entities {
 
 void Player::update() {
+  this->updatePlayerSprint();
+  this->updateLateralMovement();
+  this->updateSpriteFrame();
+  this->updateWallWrapAround();
+  this->calculateAndDrawJump();
+}
+
+void Player::updatePlayerSprint() {
   auto& input{this->game.getInputHandler()};
-  static const float baseVelocity{this->velocity};
+  #ifdef __linux__
+    update_player_sprint(&this->velocity, this->baseVelocity,
+      this->sprintVelocityBoost, input.isKeyDown(KEY_LEFT_SHIFT),
+      input.isKeyReleased(KEY_LEFT_SHIFT));
+  #else
+    if (input.isKeyDown(KEY_LEFT_SHIFT)) {
+      this->velocity = this->baseVelocity
+        + this->baseVelocity * this->sprintVelocityBoost;
+    }
+    if (input.isKeyReleased(KEY_LEFT_SHIFT)) {
+      this->velocity = this->baseVelocity;
+    }
+  #endif
+}
 
-  if (input.isKeyDown(KEY_LEFT_SHIFT)) {
-    this->velocity = baseVelocity + baseVelocity * this->sprint_velocity_boost;
-  }
-  if (input.isKeyReleased(KEY_LEFT_SHIFT)) {
-    this->velocity = baseVelocity;
-  }
-
-  // Lateral movement
-  const float newPosition{this->currentSpeed * this->velocity};
+void Player::updateLateralMovement() {
+  auto& input{this->game.getInputHandler()};
+  const float newPosition{this->velocity * this->currentSpeed};
   if (input.isKeyDown(KEY_A) || input.isKeyDown(KEY_LEFT)) {
     this->bounds.x -= newPosition;
   }
   if (input.isKeyDown(KEY_D) || input.isKeyDown(KEY_RIGHT)) {
     this->bounds.x += newPosition;
   }
-  this->currentSpriteFrame =
-    ++this->currentSpriteFrame % this->spriteFrameCount;
+  // TODO(Jason): set up asm function
+}
 
+void Player::updateSpriteFrame() {
+  // 60 because the game runs on 60 fps
+  this->gameFrameCounter = (gameFrameCounter + 4) % 60;
+  if (this->gameFrameCounter == 0) {
+    this->currentSpriteFrame =
+      ++this->currentSpriteFrame % this->spriteFrameCount;
+  }
+}
+
+void Player::updateWallWrapAround() {
   // Horizontal wall wrap-around
   const float screenWidth{static_cast<float>(GetScreenWidth())};
   // Walks on right wall, appears on left wall
@@ -36,8 +74,7 @@ void Player::update() {
   if (this->bounds.x + this->bounds.width < 0) {
     this->bounds.x = screenWidth;
   }
-
-  calculateAndDrawJump();
+  // TODO(Jason): set up asm function
 }
 
 void Player::calculateAndDrawJump() {
@@ -46,7 +83,8 @@ void Player::calculateAndDrawJump() {
   const float gravity{1.5f};
   const float jumpStrength{22.0f};
   const int maxJumps{2};
-  bool jumpKeyDown{input.isPressed(KEY_W) || input.isPressed(KEY_SPACE)};
+  bool jumpKeyDown{input.isPressed(KEY_W) || input.isPressed(KEY_UP)
+    || input.isPressed(KEY_SPACE)};
 
   if (jumpKeyDown && this->jumpCount < maxJumps) {
     this->isJumping = true;
@@ -65,45 +103,42 @@ void Player::calculateAndDrawJump() {
       this->bounds.y = groundY - this->texture.height;
       this->jumpVelocity = 0.0f;
       this->jumpCount = 0;
-      isJumping = false;
+      this->isJumping = false;
     } else {
       this->bounds.y = newPosition;
     }
   }
+  // TODO(jason): set up asm function
 }
 
 void Player::draw() {
-  // Using the current sprite frame and the spritesheet, it selects which
-  // frame is the correct one, and draws only that.
   auto& input{this->game.getInputHandler()};
-  const float frameWidth{static_cast<float>(this->texture.width / 4.0f)};
+  // Using the current sprite frame and the spritesheet, it selects which
+  // frame is the correct one, and draws only that
+  const float frameWidth{static_cast<float>(
+    this->texture.width / this->spriteFrameCount)};
   const float frameHeight{static_cast<float>(this->texture.height)};
   const float characterScale{1.0f};
   if (input.isKeyDown(KEY_A) || input.isKeyDown(KEY_LEFT)) {
-    this->spriteDirection = cave_mummies::entities::Direction::Left;
+    this->currentDirection = cave_mummies::entities::Direction::Left;
   } else if (input.isKeyDown(KEY_D) || input.isKeyDown(KEY_RIGHT)) {
-    this->spriteDirection = cave_mummies::entities::Direction::Right;
+    this->currentDirection = cave_mummies::entities::Direction::Right;
   }
 
-  Rectangle sourceRec{
-      this->currentSpriteFrame * frameWidth
-    , 0
-    , frameWidth
+  // Calculate the frame from the texture
+  Rectangle sourceRec{this->currentSpriteFrame * frameWidth, 0, frameWidth
     , frameHeight};
 
-  if (this->spriteDirection == cave_mummies::entities::Direction::Left) {
+  if (this->currentDirection == cave_mummies::entities::Direction::Left) {
     sourceRec.width *= -1;
     sourceRec.x += frameWidth;
   }
+  Rectangle destRec{this->bounds.x, this->bounds.y, frameWidth * characterScale,
+    frameHeight * characterScale
+  };
 
-  Rectangle destRec{
-      this->bounds.x
-    , this->bounds.y
-    , frameWidth * characterScale
-    , frameHeight * characterScale};
-
-  DrawTexturePro(this->texture, sourceRec, destRec
-    , (Vector2){0, 0}, 0.0f, WHITE);
+  DrawTexturePro(this->texture, sourceRec, destRec, (Vector2){0, 0}, 0.0f
+    , WHITE);
 }
 
 }  // namespace cave_mummies::entities

@@ -97,7 +97,7 @@ class Game : public cave_mummies::core::Application {
   }
 
   /**
-   * @brief Getter for deafult game stage floor height
+   * @brief Getter for default game stage floor height
    */
   inline float getGameStageFloorHeight() const {
     return (GetScreenHeight() / 2) + GetScreenHeight() * 0.3f;

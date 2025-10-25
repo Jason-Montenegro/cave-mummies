@@ -26,22 +26,17 @@ enum class EnemyDifficulty {
 class Enemy : public Entity {
  protected:
   /// @brief Default enemy values
-  static constexpr uint32_t defaultEnemyVelocity{5};
-  static constexpr const char* const defaultEnemyAssetPath[3]{
+  static constexpr const char* const enemyAssetPaths[3]{
     "../assets/textures/entities/wil_player_skin.png",
     "../assets/textures/entities/wil_player_skin.png",
     "../assets/textures/entities/wil_player_skin.png"
   };
   /// @brief Alive player flag
-  bool isAlive{true};
+  bool isPlayerAlive{true};
   /// @brief Target objective
   cave_mummies::entities::Player& objective;
   /// @brief Enemy difficulty type
-  EnemyDifficulty difficultyType{EnemyDifficulty::Easy};
-  /// @brief Sprite frame
-  int32_t currentSpriteFrame{0};
-  /// @brief Sprite frame count
-  int32_t spriteFrameCount{4};
+  EnemyDifficulty difficultyType{EnemyDifficulty::Moderate};
 
  public:
   /**
@@ -53,43 +48,42 @@ class Enemy : public Entity {
   explicit Enemy(cave_mummies::core::Game& game
     , cave_mummies::entities::Player &objective
     , EnemyDifficulty diff = EnemyDifficulty::Easy)
-    : Entity(game, defaultEnemyAssetPath[static_cast<int>(diff)])
+    : Entity(game, Enemy::getEnemyTextureFilename(diff))
     , objective(objective)
     , difficultyType(diff) {
     this->setVelocity(diff);
     this->setSpeed(diff);
-    this->isAlive = true;
   }
 
   /**
-   * @brief Updates this enemy state.
+   * @brief Updates this enemy state
    */
   void update() override;
 
   /**
-   * @brief Draws enemy sprite on the screen.
+   * @brief Draws enemy sprite on the screen
    */
   void draw() override;
 
   /**
-   * @brief Checks if this enemy is alive.
-   * @return true if alive, false otherwise
+   * @brief Checks if this enemy is alive
+   * @return true if alive, otherwise false
    */
   inline bool getIsAlive() const {
-    return this->isAlive;
+    return this->isPlayerAlive;
   }
 
   /**
-   * @brief Sets this enemy alive condition.
+   * @brief Setter of alive player condition
    * @param alive Alive condition
    */
-  inline void setIsAlive(bool alive) {
-    this->isAlive = alive;
+  inline void setIsPlayerAlive(bool alive) {
+    this->isPlayerAlive = alive;
   }
 
   /**
-   * @brief Gets the enemy difficulty.
-   * @return EnemyType Type of enemy
+   * @brief Gets this enemy difficulty type
+   * @return this enemy difficulty classification type
    */
   inline EnemyDifficulty getDifficulty() const {
     return this->difficultyType;
@@ -103,34 +97,63 @@ class Enemy : public Entity {
   inline void setVelocity(EnemyDifficulty type) {
     switch (type) {
     case EnemyDifficulty::Easy:
-      this->velocity = 1.5f;
+      this->velocity = this->baseVelocity = 2.0f;
       break;
     case EnemyDifficulty::Moderate:
-      this->velocity = 2.0f;
+      this->velocity = this->baseVelocity = 3.0f;
       break;
     case EnemyDifficulty::Hard:
-      this->velocity = 3.0f;
+      this->velocity = this->baseVelocity = 4.0f;
       break;
     }
   }
 
   /**
    * @brief Sets this object speed.
-   * @param type Enemy type
+   * @param type Enemy classification type
    */
   inline void setSpeed(EnemyDifficulty type) {
     switch (type) {
     case EnemyDifficulty::Easy:
-      this->setCurrentSpeed(1.5f);
+      this->setCurrentSpeed(1.2f);
       break;
     case EnemyDifficulty::Moderate:
-      this->setCurrentSpeed(1.7f);
+      this->setCurrentSpeed(1.4f);
       break;
     case EnemyDifficulty::Hard:
-      this->setCurrentSpeed(2.0f);
+      this->setCurrentSpeed(1.6f);
       break;
     }
   }
+
+  /**
+   * @brief Getter of enemy texture file name
+   * @param type Enemy classification type
+   * @return Texture file name
+   */
+  static inline const char* getEnemyTextureFilename(EnemyDifficulty type) {
+    switch (type) {
+    case EnemyDifficulty::Easy: return enemyAssetPaths[0];
+    case EnemyDifficulty::Moderate: return enemyAssetPaths[1];
+    case EnemyDifficulty::Hard: return enemyAssetPaths[2];
+    default: return "";
+    }
+  }
+
+  /**
+   * @brief Updates this enemy lateral movement
+   */
+  void updateLateralMovement();
+
+  /**
+   * @brief Updates this enemy sprite frame, one frame per second
+   */
+  void updateSpriteFrame();
+
+  /**
+   * @brief Updates this enemy position if it went through a wall
+   */
+  void updateWallWrapAround();
 };
 
 }  // namespace cave_mummies::entities

@@ -36,7 +36,6 @@ void StageOneState::init() {
       + "../assets/fonts/PixelOperatorMono-Bold.ttf").c_str());
     this->player = std::make_unique<cave_mummies::entities::Player>(this->game,
       "../assets/textures/entities/wil_player_skin.png");
-    this->player->setVelocity(8.0);
     const float height{static_cast<float>(this->player->getTexture().height)};
     const int32_t frameCount{4};
     const float width{static_cast<float>(
@@ -47,7 +46,6 @@ void StageOneState::init() {
       , .y = this->game.getGameStageFloorHeight()
         - player->getTexture().height};
     this->player->setBounds(playerBounds);
-    this->player->setCurrentSpeed(1.5);
     this->startTime = std::chrono::high_resolution_clock::now();
     this->loaded = true;
     this->fontSize = GetScreenWidth() * 0.04f;
@@ -134,12 +132,7 @@ void StageOneState::continueGameTime() {
 
 void StageOneState::checkPlayerGunshot() {
   if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-    // Update current loaded gun ammunition
-    this->player->setLoadedAmmunitionRemaining(
-      this->player->getLoadedAmmunitionRemaining() - 1);
-    if (this->player->getLoadedAmmunitionRemaining() == 0)  {
-      this->player->setLoadedAmmunitionRemaining(12);
-    }
+    this->player->reloadAmmunition();
     // Calculate start position of bullet
     Vector2 mousePosition{GetMousePosition()};
     Rectangle playerBounds{this->player->getBounds()};
@@ -228,7 +221,7 @@ void StageOneState::drawClock() {
 }
 
 void StageOneState::drawAmmunitionLabel() {
-  const uint64_t currentAmmo{this->player->getLoadedAmmunitionRemaining()};
+  const uint64_t currentAmmo{this->player->getRemainingAmmunition()};
   const std::string buffer{"AMMO: " + std::to_string(currentAmmo)};
 
   // Situated below TIME label

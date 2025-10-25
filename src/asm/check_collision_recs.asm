@@ -6,7 +6,7 @@
 ; @param b[ebp + 12] Second rectangle pointer                                  ;
 ; @param result[ebp + 16] Result int pointer                                   ;
 ; @return 1 if the entities are colliding, otherwise 0.                        ;
-; @note stores result in result pointer.                                       ;
+; @note Stores result in result pointer.                                       ;
 ; @note Assumes struct layout: float x, float y, float width, float height     ;
 ;------------–––------------–––------------–––------------–––------------–––---;
 section .text
