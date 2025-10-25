@@ -12,8 +12,7 @@
  * @param result Pointer to store result
  * @note Assembly (NASM) function for Linux-based machines
  */
-extern "C" void check_collision_recs(Rectangle* /* a */, Rectangle* /* b */
-  , int* /* result */);
+extern "C" void check_collision_recs(Rectangle* a, Rectangle* b, int* result);
 
 namespace cave_mummies::handlers {
 

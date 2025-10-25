@@ -56,10 +56,8 @@ class Game : public cave_mummies::core::Application {
         <cave_mummies::handlers::CollisionHandler>())
     , loadedGame(false) {
     this->setInputSource(inputType);
-    if (this->gameStateHandler) {
-      this->gameStateHandler->registerState(GameStateID::MainMenu
+    this->gameStateHandler->registerState(GameStateID::MainMenu
         , std::make_shared<cave_mummies::states::MainMenuState>(*this));
-    }
   }
 
   /**
@@ -79,9 +77,6 @@ class Game : public cave_mummies::core::Application {
    * @throw std::runtime_error: if no game state handler object is available
    */
   inline cave_mummies::handlers::GameStateHandler& getGameStateHandler() {
-    if (!this->gameStateHandler) {
-      throw std::runtime_error("No game state handler was created.");
-    }
     return *this->gameStateHandler;
   }
 
@@ -90,9 +85,6 @@ class Game : public cave_mummies::core::Application {
    * @throw std::runtime_error: if no input handler object is available
    */
   inline cave_mummies::handlers::InputHandler& getInputHandler() {
-    if (!this->inputHandler) {
-      throw std::runtime_error("No input handler was created.");
-    }
     return *this->inputHandler;
   }
 
@@ -101,9 +93,6 @@ class Game : public cave_mummies::core::Application {
    * @throw std::runtime_error: if no collision handler object is available
    */
   inline cave_mummies::handlers::CollisionHandler& getCollisionHandler() {
-    if (!this->collisionHandler) {
-      throw std::runtime_error("No collision handler was created.");
-    }
     return *this->collisionHandler;
   }
 
@@ -158,9 +147,6 @@ class Game : public cave_mummies::core::Application {
    * @param type User input source
    */
   inline void setInputSource(InputSourceType type = InputSourceType::Keyboard) {
-    if (this->inputHandler) {
-      this->inputHandler.reset();
-    }
     this->inputHandler =
       std::make_unique<cave_mummies::handlers::InputHandler>(type);
   }

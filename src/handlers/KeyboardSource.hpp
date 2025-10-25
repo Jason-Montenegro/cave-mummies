@@ -8,35 +8,42 @@
 namespace cave_mummies::handlers {
 
 /**
- * @brief Interface for keyboard input in the game.
+ * @brief Interface for keyboard input source
  */
 class KeyboardSource : public InputSource {
  public:
   /**
-   * @brief Checks if a key is currently pressed.
-   * @param key Key identifier
-   * @return true if pressed, false otherwise
+   * @brief Checks if a key / button is pressed once
+   * @param key Key or button identifier
+   * @return true if pressed, otherwise false
    */
   inline bool isPressed(int key) const override {
     return IsKeyPressed(key);
   }
 
   /**
-   * @brief Checks if a key / button is currently pressed.
+   * @brief Checks if a key / button is currently being held down
    * @param key Key or button identifier
-   * @return true if down, false otherwise
+   * @return true if down, otherwise false
    */
   inline bool isKeyDown(int key) const override {
     return IsKeyDown(key);
   }
 
   /**
-   * @brief Checks if a key / button was released.
+   * @brief Checks if a key / button was released
    * @param key Key or button identifier
-   * @return true if released, false otherwise
+   * @return true if released, otherwise false
    */ 
   bool isKeyReleased(int key) const override {
     return IsKeyReleased(key);
+  }
+
+  /**
+   * @brief Updates the status of the key bindings of the input source
+   */
+  void update() override {
+    // Does nothing because the keyboard updates by itself
   }
 };
 

@@ -21,15 +21,11 @@ Game::~Game() {
 }
 
 int Game::run() {
-  if (!this->gameStateHandler || !this->inputHandler
-      || !this->collisionHandler) {
-    return EXIT_FAILURE;
-  }
-
   this->init();
   PlayMusicStream(this->backgroundSoundtrack);
 
   while (!WindowShouldClose()) {
+    this->inputHandler->update();
     if (!this->update()) {
       break;
     }
