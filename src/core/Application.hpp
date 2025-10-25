@@ -16,30 +16,30 @@ class Application {
   virtual ~Application() = default;
 
   /**
-   * @brief Starts running application.
-   * @return EXIT_SUCCESS on successful run, EXIT_FAILURE otherwise
+   * @brief Starts running application
+   * @return EXIT_SUCCESS on successful run, otherwise EXIT_FAILURE
    */
   virtual int run() = 0;
 
  protected:
   /**
-   * @brief Initializes application configuration.
+   * @brief Initializes application
    */
   virtual void init() = 0;
 
   /**
-   * @brief Updates state of application.
-   * @return true if an update was possible, false otherwise (program close)
+   * @brief Updates state of application
+   * @return true if an update was possible, otherwise false (close program)
    */
   virtual bool update() = 0;
 
   /**
-   * @brief Draws application to screen.
+   * @brief Draws application to screen
    */
   virtual void draw() = 0;
 
   /**
-   * @brief Cleans application configuration.
+   * @brief Cleans initialized objects of application
    */
   virtual void cleanup() = 0;
 };

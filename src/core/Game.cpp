@@ -10,8 +10,6 @@
 namespace cave_mummies::core {
 
 Game::~Game() {
-  this->gameStateHandler->cleanStates();
-
   if (this->loadedGame) {
     UnloadMusicStream(this->backgroundSoundtrack);
     CloseAudioDevice();
@@ -23,6 +21,11 @@ Game::~Game() {
 }
 
 int Game::run() {
+  if (!this->gameStateHandler || !this->inputHandler
+      || !this->collisionHandler) {
+    return EXIT_FAILURE;
+  }
+
   this->init();
   PlayMusicStream(this->backgroundSoundtrack);
 
@@ -30,17 +33,7 @@ int Game::run() {
     if (!this->update()) {
       break;
     }
-
-    if (this->inputHandler->isPressed(KEY_M)) {
-      if (this->musicPaused) {
-        ResumeMusicStream(this->backgroundSoundtrack);
-        this->musicPaused = false;
-      } else {
-        PauseMusicStream(this->backgroundSoundtrack);
-        this->musicPaused = true;
-      }
-    }
-
+    this->updateSoundtrackStatus();
     UpdateMusicStream(this->backgroundSoundtrack);
     this->draw();
   }
@@ -48,20 +41,31 @@ int Game::run() {
   return EXIT_SUCCESS;
 }
 
+void Game::updateSoundtrackStatus() {
+  if (this->inputHandler->isPressed(KEY_M)) {
+    if (this->musicPaused) {
+      ResumeMusicStream(this->backgroundSoundtrack);
+      this->musicPaused = false;
+    } else {
+      PauseMusicStream(this->backgroundSoundtrack);
+      this->musicPaused = true;
+    }
+  }
+}
+
 void Game::init() {
-  cave_mummies::utils::Log::getInstance().start("cave_mummies.log");
+  cave_mummies::utils::Log::getInstance().start(Game::logFilename);
   SetTraceLogCallback(Game::traceLogCallback);
   SetConfigFlags(FLAG_FULLSCREEN_MODE | FLAG_WINDOW_HIGHDPI);
-  InitWindow(GetMonitorWidth(0), GetMonitorHeight(0)
-    , this->windowTitle.c_str());
+  InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), Game::defaultWindowTitle);
   SetTargetFPS(60);
-  SetExitKey(0);  // Deactive Esc as exit program key
+  SetExitKey(0);  // Deactive Esc key as exit program key
   SetMousePosition(GetScreenWidth()/2, GetScreenHeight()/2);
   InitAudioDevice();
   SetMasterVolume(1.0f);  // 1.0 = 100%
   const char* basePath{GetApplicationDirectory()};
   this->backgroundSoundtrack = LoadMusicStream((std::string(basePath)
-    + "../assets/audio/music/game_soundtrack.mp3").c_str());
+    + std::string(this->soundtrackPath)).c_str());
   this->loadedGame = true;
   this->gameStateHandler->setCurrentState(GameStateID::MainMenu);
 }

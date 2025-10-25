@@ -3,6 +3,7 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
+#include <exception>
 #include <memory>
 #include <string>
 
@@ -12,25 +13,25 @@
 #include "InputHandler.hpp"
 #include "InputSource.hpp"
 #include "Log.hpp"
-#include "ScoreboardHandler.hpp"
 
 using InputSourceType = cave_mummies::handlers::InputSourceType;
 
 namespace cave_mummies::core {
 
 /**
- * @brief Game application that acts as a game controller.
- * Manages the game loop.
+ * @brief Game controller which contains the game loop
  */
 class Game : public cave_mummies::core::Application {
  private:
-  /// @brief Default top window title
+  /// @brief Default window title
   static constexpr const char* const defaultWindowTitle{"Cave mummies"};
-  std::string windowTitle{Game::defaultWindowTitle};
-  /// @brief Log raylib messages
+  /// @brief Program logger
   static cave_mummies::utils::Log& log;
-  /// @brief Current background soundtrack
+  /// @brief Game soundtrack intended to be concatenated with raylib function:
+  /// GetApplicationDirectory()
+  const char* soundtrackPath{"../assets/audio/music/game_soundtrack.mp3"};
   Music backgroundSoundtrack;
+  bool musicPaused{false};
   /// @brief Game state handler
   std::unique_ptr<cave_mummies::handlers::GameStateHandler> gameStateHandler;
   /// @brief Player input handler
@@ -38,27 +39,22 @@ class Game : public cave_mummies::core::Application {
   /// @brief Collision handler
   std::unique_ptr<cave_mummies::handlers::CollisionHandler> collisionHandler;
   bool loadedGame{false};
-  /// @brief Game scoreboard
-  cave_mummies::handlers::ScoreboardHandler& scoreboardHandler;
-  /// @brief Music paused condition
-  bool musicPaused{false};
+  /// @brief Log filename
+  static constexpr const char* const logFilename{"cave_mummies.log"};
 
  public:
   /**
-   * @brief Fullscreen game constructor
+   * @brief Game contructor
    * @param inputType User input type for game
    */
   explicit Game(InputSourceType inputType)
-    : windowTitle(Game::defaultWindowTitle)
-    , gameStateHandler(
-        std::make_unique<cave_mummies::handlers::GameStateHandler>())
-    , inputHandler(std::make_unique<cave_mummies::handlers::InputHandler>(
-        InputSourceType::Keyboard))
-    , collisionHandler(
-        std::make_unique<cave_mummies::handlers::CollisionHandler>())
-    , loadedGame(false)
-    , scoreboardHandler(
-        cave_mummies::handlers::ScoreboardHandler::getInstance()) {
+    : gameStateHandler(std::make_unique
+        <cave_mummies::handlers::GameStateHandler>())
+    , inputHandler(std::make_unique
+        <cave_mummies::handlers::InputHandler>(inputType))
+    , collisionHandler(std::make_unique
+        <cave_mummies::handlers::CollisionHandler>())
+    , loadedGame(false) {
     this->setInputSource(inputType);
     if (this->gameStateHandler) {
       this->gameStateHandler->registerState(GameStateID::MainMenu
@@ -72,89 +68,99 @@ class Game : public cave_mummies::core::Application {
   ~Game() override;
 
   /**
-   * @brief Starts the game loop.
-   * @return EXIT_SUCCESS
+   * @brief Starts the game loop
+   * @return EXIT_SUCCESS if all dependencies were created, otherwise
+   * EXIT_FAILURE
    */
   int run() override;
 
   /**
    * @brief Getter for GameStateHandler
+   * @throw std::runtime_error: if no game state handler object is available
    */
   inline cave_mummies::handlers::GameStateHandler& getGameStateHandler() {
+    if (!this->gameStateHandler) {
+      throw std::runtime_error("No game state handler was created.");
+    }
     return *this->gameStateHandler;
   }
 
   /**
    * @brief Getter for InputHandler
+   * @throw std::runtime_error: if no input handler object is available
    */
   inline cave_mummies::handlers::InputHandler& getInputHandler() {
+    if (!this->inputHandler) {
+      throw std::runtime_error("No input handler was created.");
+    }
     return *this->inputHandler;
   }
 
   /**
    * @brief Getter for CollisionHandler
+   * @throw std::runtime_error: if no collision handler object is available
    */
   inline cave_mummies::handlers::CollisionHandler& getCollisionHandler() {
+    if (!this->collisionHandler) {
+      throw std::runtime_error("No collision handler was created.");
+    }
     return *this->collisionHandler;
   }
 
   /**
-   * @brief Getter for ScoreboardHandler
+   * @brief Getter for deafult game stage floor height
    */
-  inline cave_mummies::handlers::ScoreboardHandler& getScoreboardHandler() {
-    return this->scoreboardHandler;
-  }
-
-  /**
-   * @brief Getter for game stage floor height.
-   */
-  inline float getGameStageFloorHeight() {
+  inline float getGameStageFloorHeight() const {
     return (GetScreenHeight() / 2) + GetScreenHeight() * 0.3f;
   }
 
  private:
   /**
-   * @brief Initializes application configuration.
+   * @brief Initializes game dependencies
    */
   void init() override;
 
   /**
-   * @brief Creates all game state objects for this game
-   */
-  void createGameStates();
-
-  /**
-   * @brief Updates state of game objects.
-   * @return true if an update was possible, false otherwise (program close)
+   * @brief Updates state of game objects
+   * @return true if an update was possible, otherwise false (close program)
    */
   bool update() override;
 
   /**
-   * @brief Draws game objects sprites to screen.
+   * @brief Updates the soundtrack status if a music halt or resume happend
+   */
+  void updateSoundtrackStatus();
+
+  /**
+   * @brief Draws game objects to screen
    */
   void draw() override;
 
   /**
-   * @brief Cleans game objects.
+   * @brief No implementation provided
+   * 
+   * This method does nothing
    */
   void cleanup() override;
 
   /**
-   * @brief Callback to let Raylib redirect its log messages to a controlled
-   * log object.
+   * @brief Callback to allow Raylib to redirect its log messages to a logger
    * @param raylibMsg Raylib log message
    */
   static inline void traceLogCallback(int /* logType */, const char* raylibMsg
-    , va_list /* va_list */) {
-    cave_mummies::utils::Log::append(
-      cave_mummies::utils::Log::DEBUGGING, "Raylib", raylibMsg);
+    , va_list /* variable args */) {
+    cave_mummies::utils::Log::append(cave_mummies::utils::Log::DEBUGGING,
+      "Raylib", raylibMsg);
   }
 
   /**
-   * @brief Sets the input source for playing the game.
-   * @param type Input source (Keyboard or joystick)
+   * @brief Sets the input source for playing the game
+   * @param type User input source
    */
   inline void setInputSource(InputSourceType type = InputSourceType::Keyboard) {
+    if (this->inputHandler) {
+      this->inputHandler.reset();
+    }
     this->inputHandler =
       std::make_unique<cave_mummies::handlers::InputHandler>(type);
   }
