@@ -45,7 +45,8 @@ void AboutMenuState::buildAboutTextBox() {
   menu::TextBox textBox{.rect = boxSizing
     , .text = cave_mummies::states::menu::aboutText
     , .scrollY = 0.0f, .fontSize = 32, .focused = true
-    , .drawContainer = false};
+    , .drawContainer = false, .containerColor = WHITE
+    , .containerBorderColor = WHITE};
 
   this->menuBuilder.insertTextBox(textBox);
 }

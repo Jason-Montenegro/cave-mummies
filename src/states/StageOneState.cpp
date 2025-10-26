@@ -1,5 +1,6 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
+#include <algorithm>
 #include <chrono>
 #include <memory>
 #include <random>
