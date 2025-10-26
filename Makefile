@@ -7,26 +7,30 @@ SRC_DIR := src
 BUILD_DIR := build
 BIN_DIR := bin
 DOC_DIR := doc
+RAYLIB_DIR := libs/raylib
+RAYLIB_BUILD := $(RAYLIB_DIR)/build
+RAYLIB_REPO := https://github.com/raysan5/raylib.git
+RAYLIB_INSTALL := $(RAYLIB_DIR)/install
+RAYLIB_READY := $(RAYLIB_INSTALL)/.built
 ASM_DIR := src/asm
 CXX := g++
 CXXVER := -std=c++17
 ASSEMBLY := nasm
-INCLUDES := -Isrc -Isrc/utils -Isrc/core -Isrc/entities -Isrc/game -Isrc/handlers -Isrc/states
 WARNINGS := -Wall -Wextra
+INCLUDES := -I$(RAYLIB_INSTALL)/include -Isrc -Isrc/utils -Isrc/core \
+	-Isrc/entities -Isrc/game -Isrc/handlers -Isrc/states
+LIBS := -L$(RAYLIB_INSTALL)/lib -lraylib
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
-# Raylib dependency resolution (global install preferred)
+# Raylib dependency resolution
 UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S), Linux)
-	INCLUDES += -I/usr/local/include
-	LIBS += -L/usr/local/lib -lraylib -lm -ldl -lpthread
+	LIBS += -lm -ldl -lpthread
 endif
 
 ifeq ($(UNAME_S), Darwin)
-	INCLUDES += -I/opt/homebrew/include
-  LIBS += -L/opt/homebrew/lib -lraylib \
-		-framework CoreVideo -framework IOKit -framework Cocoa \
+  LIBS += -framework CoreVideo -framework IOKit -framework Cocoa \
 		-framework GLUT -framework OpenGL
 endif
 
@@ -45,14 +49,13 @@ CPP_OBJ := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(CPP_SRC))
 # Compile assembly files
 ifeq ($(UNAME_S), Linux)
 # Fetch all .asm files
-    ASM_SRC := $(wildcard $(ASM_DIR)/*.asm)
+  ASM_SRC := $(wildcard $(ASM_DIR)/*.asm)
 # Convert .asm to .o files
-    ASM_OBJ := $(patsubst $(ASM_DIR)/%.asm, $(BUILD_DIR)/asm/%.o, $(ASM_SRC))
-
-    # Compile .asm files
-    $(BUILD_DIR)/asm/%.o: $(ASM_DIR)/%.asm
-		@mkdir -p $(dir $@)
-		$(ASSEMBLY) $(ASSEMBLYFLAGS) $< -o $@
+  ASM_OBJ := $(patsubst $(ASM_DIR)/%.asm, $(BUILD_DIR)/asm/%.o, $(ASM_SRC))
+# Compile .asm files
+  $(BUILD_DIR)/asm/%.o: $(ASM_DIR)/%.asm
+	@mkdir -p $(dir $@)
+	$(ASSEMBLY) $(ASSEMBLYFLAGS) $< -o $@
 endif
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
@@ -67,18 +70,21 @@ all: debug
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Compile release build
 .PHONY: release
+release: raylib
 release: CXXFLAGS += -O3 -DNDEBUG
 release: $(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Debug build (no optimizations)
 .PHONY: debug
+debug: raylib
 debug: CXXFLAGS += -g -DDEBUG
 debug: $(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Run program in the same directory
 .PHONY: run
+run: raylib
 run: $(BIN_DIR)/$(BINNAME)
 	./$(BIN_DIR)/$(BINNAME)
 
@@ -90,7 +96,7 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Link executable
-$(BIN_DIR)/$(BINNAME): $(OBJ)
+$(BIN_DIR)/$(BINNAME): $(OBJ) | $(RAYLIB_READY)
 	@mkdir -p $(BIN_DIR)
 	$(CXX) -o $(BIN_DIR)/$(BINNAME) $(OBJ) $(LDFLAGS)
 
@@ -109,6 +115,25 @@ doc:
 	@doxygen Doxyfile
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
+.PHONY: raylib
+raylib: $(RAYLIB_READY)
+
+$(RAYLIB_READY):
+	@if [ ! -d "$(RAYLIB_DIR)" ]; then \
+		git clone --depth 1 $(RAYLIB_REPO) $(RAYLIB_DIR); \
+	fi
+	@mkdir -p $(RAYLIB_BUILD)
+	@cd $(RAYLIB_BUILD) && LDFLAGS= CFLAGS= CXXFLAGS= CPATH= LIBRARY_PATH= \
+		cmake -DBUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=$(abspath $(RAYLIB_INSTALL)) \
+		$(abspath $(RAYLIB_DIR))
+	@cd $(RAYLIB_BUILD) && LDFLAGS= CFLAGS= CXXFLAGS= CPATH= LIBRARY_PATH= \
+		make install
+	@find $(RAYLIB_DIR) -mindepth 1 -maxdepth 1 \
+		! -name 'install' -exec rm -rf {} +
+	@touch $(RAYLIB_READY)
+
+# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Clean build files
 .PHONY: clean
 clean:
@@ -119,18 +144,22 @@ clean:
 .PHONY: help
 help:
 	@echo "Available actions:"
-	@echo "  make           : Default build (sin optimización)"
+	@echo "  make           : Default build (no optimization)"
 	@echo "  make run       : Compiles and runs the program"
-	@echo "  make release   : Compiles with -O3 optimization"
+	@echo "  make release   : Compiles a release version"
 	@echo "  make debug     : Compiles with debug symbols"
+	@echo "  make raylib    : Clones and builds raylib dependency"
 	@echo "  make lint      : Checks linting warnings with cpplint"
 	@echo "  make doc       : Generates doxygen documentation"
 	@echo "  make clean     : Deletes build files"
 	@echo "  make help      : Shows this action list"
 	@echo ""
 	@echo "Dependencies:"
-	@echo "  - Raylib (graphics library)"
 	@echo "  - NASM (assembler)"
 	@echo "  - g++ (C++ compiler)"
+	@echo "  - git (version control)"
+	@echo "  - CMake (Build tool)"
+	@echo ""
+	@echo "Install all dependencies on your system before attempting compilation."
 	@echo ""
 	

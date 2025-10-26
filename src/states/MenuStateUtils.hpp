@@ -11,7 +11,7 @@
 namespace cave_mummies::states::menu {
 
 /**
- * @enum MenuOptionFlag
+ * @enum MenuElementFlag
  * @brief Visual state flags for each menu option.
  */
 enum class MenuElementFlag {
@@ -21,7 +21,7 @@ enum class MenuElementFlag {
 };
 
 /**
- * @enum MenuOptionTag
+ * @enum MenuElementTag
  * @brief Types of elements that can be displayed in the menu.
  */
 enum class MenuElementTag {
