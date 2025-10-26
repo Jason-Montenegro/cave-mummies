@@ -46,7 +46,9 @@
  * - CollisionHandler
  * - InputHandler
  * - GameStateHandler
- * - InputSource (KeyboardSource, JoystickSource)
+ * - InputSource
+ * - KeyboardSource
+ * - JoystickSource
  */
 
 /**
@@ -59,10 +61,24 @@
  * Key classes:
  * - MainMenuState
  * - AboutMenuState
- * - ScoreboardState
  * - StageOneState
  * - PausedMenuGameState
  * - GameOverState
+ */
+
+ /**
+ * @namespace cave_mummies::states::menu
+ * @brief Utility classes, enummerations and functions
+ *
+ * Contains a variety of classes, enummerations and functions for building
+ * menu interfaces for game states.
+ *
+ * Key classes:
+ * - MenuBuilder
+ * - MenuElementFlag
+ * - MenuElementTag
+ * - MenuElement 
+ * - TextBox
  */
 
 /**
@@ -73,16 +89,4 @@
  *
  * Key classes:
  * - Log
- * - Math functions (optional: namespace cave_mummies::utils::math)
  */
-
- /**
-  * @namespace cave_mummies::states::menu
-  * @brief Helper functions and aggregate structures for building menu states
-  * 
-  * Contains menu option enum attributes such as MenuOptionFlag and
-  * MenuOptionTag.
-  * 
-  * Key class:
-  * - MenuOption
-  */

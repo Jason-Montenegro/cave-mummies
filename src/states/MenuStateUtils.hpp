@@ -6,62 +6,84 @@
 #include <string>
 
 #include "raylib.h"
+#include "GameState.hpp"
 
 namespace cave_mummies::states::menu {
 
-/// @enum MenuOptionFlag
-/// @brief Visual state flags for each menu option.
-enum class MenuOptionFlag {
+/**
+ * @enum MenuOptionFlag
+ * @brief Visual state flags for each menu option.
+ */
+enum class MenuElementFlag {
   Highlight1,  ///< Primary highlight
   Highlight2,  ///< Secondary highlight
   None  ///< No effect
 };
 
-/// @enum MenuOptionTag
-/// @brief Types of elements that can be displayed in the menu.
-enum class MenuOptionTag {
-  h1, ///< Main header
+/**
+ * @enum MenuOptionTag
+ * @brief Types of elements that can be displayed in the menu.
+ */
+enum class MenuElementTag {
+  h1,  ///< Main title
+  h2,  ///< Secondary title
   li  ///< List item
 };
 
 /**
- * @brief Represents a single option in the main menu.
+ * @brief Represents an element in a menu state
+ * 
  * Stores the text, highlight state, type, and color information
- * needed to render and interact with a menu item.
+ * needed to render and interact with a menu item
  */
-struct MenuOption {
+struct MenuElement {
   /// @brief Displayed text
   std::string text;
-  /// @brief Highlight state
-  MenuOptionFlag flag;
-  /// @brief Element type
-  MenuOptionTag tag;
   /// @brief Base text color
   Color color;
+  /// @brief Highlight state
+  MenuElementFlag flag;
+  /// @brief Element type
+  MenuElementTag tag;
+  /// @brief Font size
+  float fontSize;
+  /// @brief Screen position
+  Vector2 position;
+  /// @brief Game state to which it corresponds
+  cave_mummies::core::GameStateID gameState;
+};
 
-  /**
-   * @brief Constructor
-   * @param text The text to display for this menu option
-   * @param flag The initial highlight state of the option
-   * @param tag The type of menu element
-   * @param color The base color of the text
-   * @see MenuOptionTag
-   * @see MenuOptionFlag
-   */
-  explicit MenuOption(std::string_view text, MenuOptionFlag flag
-    , MenuOptionTag tag, Color color)
-    : text(text), flag(flag), tag(tag), color(color) { }
+/**
+ * @brief Represents a text box in a menu state
+ */
+struct TextBox {
+  /// @brief Box element
+  Rectangle rect;
+  /// @brief Content
+  std::string text;
+  /// @brief Scroll degree
+  float scrollY{0};
+  /// @brief Text font size
+  int32_t fontSize{20};
+  /// @brief Focus flag
+  bool focused{false};
+  /// @brief Box container condition
+  bool drawContainer{false};
+  /// @brief Container color
+  Color containerColor;
+  /// @brief Container border color
+  Color containerBorderColor;
 };
 
 /**
  * @brief Returns the outline color based on the highlight flag.
  */
-Color pickOutlineColor(MenuOptionFlag flag);
+Color pickOutlineColor(MenuElementFlag flag);
 
 /**
  * @brief Returns the outline thickness based on the element type.
  */
-int pickOutlineThickness(MenuOptionTag tag);
+int pickOutlineThickness(MenuElementTag tag);
 
 }  // namespace namespace cave_mummies::states::menu
 

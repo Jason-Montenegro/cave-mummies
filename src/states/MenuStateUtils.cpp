@@ -4,18 +4,19 @@
 
 namespace cave_mummies::states::menu {
 
-Color pickOutlineColor(MenuOptionFlag flag) {
+Color pickOutlineColor(MenuElementFlag flag) {
   switch (flag) {
-  case MenuOptionFlag::Highlight1: return DARKGREEN;
-  case MenuOptionFlag::Highlight2: return LIME;
+  case MenuElementFlag::Highlight1: return DARKGREEN;
+  case MenuElementFlag::Highlight2: return LIME;
   default: return WHITE;
   }
 }
 
-int pickOutlineThickness(MenuOptionTag tag) {
+int pickOutlineThickness(MenuElementTag tag) {
   switch (tag) {
-  case MenuOptionTag::h1: return 8;  // Thick outline
-  case MenuOptionTag::li: return 3;  // Thin outline
+  case MenuElementTag::h1: return 8;  // Thick outline
+  case MenuElementTag::h2: return 5;  // Medium-thickness outline
+  case MenuElementTag::li: return 3;  // Thin outline
   default: return 1;  // Default outline value
   }
 }

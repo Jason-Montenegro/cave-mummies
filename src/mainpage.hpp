@@ -32,10 +32,13 @@
  * move down. Select an option with the `Return` key.
  *
  * Controls during gameplay:
- * - Movement: A / D keys
+ * - Movement: A / D keys or LEFT / RIGHT arrow keys
  * - Run: Left Shift
  * - Jump: Space
  * - Reload: R
  * - Shoot: Mouse left-click
  * - Pause: Esc
+ * 
+ * @section Additional key-bindings
+ * To toggle the game soundtrack, press `M` key.
  */

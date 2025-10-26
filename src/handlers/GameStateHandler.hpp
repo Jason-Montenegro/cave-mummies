@@ -5,15 +5,12 @@
 
 #include <map>
 #include <memory>
-#include <utility>
 
 #include "GameState.hpp"
-#include "MainMenuState.hpp"
-#include "AboutMenuState.hpp"
-#include "GameOverState.hpp"
-#include "PausedMenuGameState.hpp"
-#include "ScoreboardState.hpp"
-#include "StageOneState.hpp"
+
+namespace cave_mummies::core {
+  class Game;
+}
 
 using GameStateID = cave_mummies::core::GameStateID;
 
@@ -27,105 +24,70 @@ class GameStateHandler {
   /// @brief All states collection
   std::map<GameStateID, std::shared_ptr<cave_mummies::core::GameState>> states;
   /// @brief Current loaded state
-  std::shared_ptr<cave_mummies::core::GameState> currentState{nullptr};
+  std::shared_ptr<cave_mummies::core::GameState> currentState;
+  /// @brief Game controller
+  cave_mummies::core::Game& game;
+
 
  public:
+  /**
+   * @brief Constructor
+   * @param game Game controller
+   */
+  explicit GameStateHandler(cave_mummies::core::Game& game);
+
+  /**
+   * @brief Destructor
+   */
+  ~GameStateHandler() = default;
+
   /**
    * @brief Sets the current state to stateID.
    * @param stateID New state to set
    */
-  inline void setCurrentState(GameStateID stateID) {
-    if (this->states.find(stateID) != this->states.end()) {
-      this->currentState = this->states[stateID];
-      initCurrentState();
-    }
-  }
+  void setCurrentState(GameStateID stateID);
 
   /**
    * @brief Gets the current state ID
    * @return Current game state ID
    */
-  inline GameStateID getCurrentState() const {
-    if (this->currentState) {
-      return this->currentState->getStateID();
-    }
-    return GameStateID::Null;
-  }
+  GameStateID getCurrentState() const;
 
   /**
    * @brief Registers a new GameState object into the collection of states,
-   * only if the state does not exist yet. Moving the passed gameState into a
-   * game states collection.
+   * only if the state does not exist yet
    * @param stateID Unique state identifier
-   * @param gameState New game state object
    */
-  inline void registerState(GameStateID stateID
-    , std::shared_ptr<cave_mummies::core::GameState> gameState) {
-    if (this->states.find(stateID) == this->states.end()) {
-      this->states[stateID] = std::move(gameState);
-    }
-  }
+  void registerState(GameStateID stateID);
 
   /**
    * @brief Cleans all stored states from memory.
    */
-  inline void cleanStates() {
-    for (auto& pair : this->states) {
-      pair.second.reset();
-    }
-    this->states.clear();
-    this->currentState = nullptr;
-  }
+  void cleanStates();
 
-  inline void removeState(GameStateID stateID) {
-    if (this->states.find(stateID) != this->states.end()) {
-      this->states.erase(stateID);
-    }
-  }
+  /**
+   * @brief Removes a state from the registered states
+   * @param stateID State identifier to remove
+   */
+  void removeState(GameStateID stateID);
 
   /**
    * @brief Commands that the current state draws its state.
    */
-  inline void draw() {
-    if (this->currentState) {
-      this->currentState->draw();
-    }
-  }
+  void draw();
 
   /**
-   * @brief Commands that the current state updates its state.
+   * @brief Commands that the current state updates its state
+   * @return true if a game update was possible, otherwise false (close program)
    */
-  inline bool update() {
-    if (!this->currentState) {
-      return true;
-    }
-    GameStateID nextState{this->currentState->update()};
-
-    // Close game
-    if (nextState == GameStateID::Null) {
-      return false;
-    }
-
-    // Change game state
-    if (nextState != this->currentState->getStateID()) {
-      setCurrentState(nextState);
-    }
-
-    return true;
-  }
+  bool update();
 
  private:
   /**
    * @brief Initializes current state.
    * @return true if the state was initialized, false otherwise
    */
-  inline bool initCurrentState() {
-    if (this->currentState) {
-      this->currentState->init();
-      return true;
-    }
-    return false;
-  }
+  bool initCurrentState();
 };
 
 }  // cave_mummies::handlers

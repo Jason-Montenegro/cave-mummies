@@ -1,6 +1,8 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
+#include "Game.hpp"
 #include "Player.hpp"
+
 
 /**
  * @brief Updates the sprinting status depending on player's input
@@ -81,7 +83,7 @@ void Player::calculateAndDrawJump() {
   auto& input{this->game.getInputHandler()};
   const float groundY{this->game.getGameStageFloorHeight()};
   const float gravity{1.5f};
-  const float jumpStrength{22.0f};
+  const float jumpStrength{30.0f};
   const int maxJumps{2};
   bool jumpKeyDown{input.isPressed(KEY_W) || input.isPressed(KEY_UP)
     || input.isPressed(KEY_SPACE)};

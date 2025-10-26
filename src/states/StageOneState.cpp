@@ -2,16 +2,30 @@
 
 #include <chrono>
 #include <memory>
-#include <string>
 #include <random>
+#include <string>
 #include <vector>
 
-#include "Game.hpp"
 #include "StageOneState.hpp"
+#include "Game.hpp"
+#include "CollisionHandler.hpp"
+#include "GameStateHandler.hpp"
+#include "MainMenuState.hpp"
+#include "PausedMenuGameState.hpp"
+#include "Player.hpp"
+#include "Enemy.hpp"
 
 using Direction = cave_mummies::entities::Direction;
+using GameStateID = cave_mummies::core::GameStateID;
+
+static int64_t score = 0;
 
 namespace cave_mummies::states {
+
+StageOneState::StageOneState(cave_mummies::core::Game& game)
+  : GameState(game) {
+  this->stateID = cave_mummies::core::GameStateID::StageOne;
+}
 
 StageOneState::~StageOneState() {
   if (this->loaded) {
@@ -34,18 +48,18 @@ void StageOneState::init() {
       + "../assets/textures/scene/floor_tile.png").c_str());
     this->textFont = LoadFont((std::string(basePath)
       + "../assets/fonts/PixelOperatorMono-Bold.ttf").c_str());
-    this->player = std::make_unique<cave_mummies::entities::Player>(this->game,
-      "../assets/textures/entities/wil_player_skin.png");
-    const float height{static_cast<float>(this->player->getTexture().height)};
-    const int32_t frameCount{4};
-    const float width{static_cast<float>(
-      this->player->getTexture().width / frameCount)};
-    Rectangle playerBounds{.height = height
-      , .width = width
-      , .x = static_cast<float>(GetScreenWidth() / 2)
-      , .y = this->game.getGameStageFloorHeight()
-        - player->getTexture().height};
-    this->player->setBounds(playerBounds);
+    this->player = std::make_unique<cave_mummies::entities::Player>(this->game);
+
+    // Update character positioning and size
+    Texture2D texture = this->player->getTexture();
+    const float x = static_cast<float>(
+      GetScreenWidth() / 2 - texture.width / 2);
+    const float y = game.getGameStageFloorHeight() - texture.height;
+    const float width = static_cast<float>(texture.width / 4);
+    const float height = static_cast<float>(texture.height);
+    Rectangle rect = {.x = x, .y = y, .width = width, .height = height};
+    this->player->setBounds(rect);
+
     this->startTime = std::chrono::high_resolution_clock::now();
     this->loaded = true;
     this->fontSize = GetScreenWidth() * 0.04f;
@@ -59,6 +73,7 @@ cave_mummies::core::GameStateID StageOneState::update() {
   if (this->isGamePaused) {
     this->continueGameTime();
   }
+  this->game.setCurrentGameScore(++score);
   this->player->update();
   this->checkPlayerGunshot();
   for (auto& p : this->projectiles) {
@@ -93,16 +108,12 @@ cave_mummies::core::GameStateID StageOneState::update() {
   if (this->isPlayerDead) {
     // Temporary line. This block should transition to Game Over state.
     this->game.getGameStateHandler().removeState(GameStateID::StageOne);
-    this->game.getGameStateHandler().registerState(GameStateID::MainMenu
-      , std::make_shared<cave_mummies::states::MainMenuState>(
-        this->game));
-    newState = cave_mummies::core::GameStateID::MainMenu;
+    this->game.getGameStateHandler().registerState(GameStateID::GameOver);
+    newState = cave_mummies::core::GameStateID::GameOver;
   } else {
     if (this->game.getInputHandler().isPressed(KEY_ESCAPE)) {
       this->pauseGameTime();
-      this->game.getGameStateHandler().registerState(GameStateID::PausedMenu
-        , std::make_shared<cave_mummies::states::PausedMenuGameState>(
-          this->game));
+      this->game.getGameStateHandler().registerState(GameStateID::PausedMenu);
       newState = cave_mummies::core::GameStateID::PausedMenu;
     }
   }
@@ -244,14 +255,11 @@ void StageOneState::generateEnemies() {
     this->lastSpawnMinute = minutes;
     size_t enemyCount{0};
     cave_mummies::entities::EnemyDifficulty enemyDifficulty{
-      cave_mummies::entities::EnemyDifficulty::Easy};
-    if (minutes < 3) {
+      cave_mummies::entities::EnemyDifficulty::Hard};
+    if (minutes < 1) {
       enemyCount = 3;
     } else if (minutes < 7) {
       enemyCount = 5;
-      enemyDifficulty = cave_mummies::entities::EnemyDifficulty::Moderate;
-    } else {
-      enemyCount = 7;
       enemyDifficulty = cave_mummies::entities::EnemyDifficulty::Hard;
     }
 

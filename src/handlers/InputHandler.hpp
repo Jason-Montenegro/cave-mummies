@@ -5,9 +5,12 @@
 
 #include <memory>
 
-#include "InputSource.hpp"
-#include "JoystickSource.hpp"
-#include "KeyboardSource.hpp"
+#include "raylib.h"
+
+namespace cave_mummies::handlers {
+  class InputSource;
+  enum class InputSourceType;
+}
 
 namespace cave_mummies::handlers {
 
@@ -28,18 +31,7 @@ class InputHandler {
    * @brief Constructor
    * @param source Input source pointer
    */
-  explicit InputHandler(InputSourceType source = InputSourceType::Keyboard) {
-    switch (source) {
-    case InputSourceType::Joystick:
-      this->source = std::make_unique<JoystickSource>();
-      break;
-    case InputSourceType::Keyboard:
-    [[fallthrough]];
-    default:
-      this->source = std::make_unique<KeyboardSource>();
-      break;
-    }
-  }
+  explicit InputHandler(InputSourceType source);
 
   /**
    * @brief Destructor
@@ -49,9 +41,7 @@ class InputHandler {
   /**
    * @brief Updates the status of the key bindings of the input source
    */
-  inline void update() {
-    this->source->update();
-  }
+  void update();
 
   /**
    * @brief Queries whether a specific key / button is pressed once
@@ -60,90 +50,70 @@ class InputHandler {
    * @note Should be used when input source does not provide an interface
    * for a specific key that is mapped on the keyboard
    */
-  inline bool keyboardIsPressed(int key) const {
-    return isPressed(key);
-  }
+  bool keyboardIsPressed(int key) const;
 
   /**
    * @brief Queries whether a specific key / button is pressed once
    * @param key Key / button identifier
    * @return true if pressed, otherwise false
    */
-  inline bool isPressed(int key) const {
-    return this->source->isPressed(key);
-  }
+  bool isPressed(int key) const;
 
   /**
    * @brief Queries whether a specific key / button is currently being held down
    * @param key Key / button identifier
    * @return true if down, otherwise false
    */
-  inline bool isKeyDown(int key) const {
-    return this->source->isKeyDown(key);
-  }
+  bool isKeyDown(int key) const;
 
   /**
    * @brief Queries whether a specific key / button was released
    * @param key Key / button identifier
    * @return true if released, otherwise false
    */
-  inline bool isKeyReleased(int key) const {
-    return this->source->isKeyReleased(key);
-  }
+  bool isKeyReleased(int key) const;
 
   /**
    * @brief Queries whether the left mouse button was pressed once
    * @return true if pressed, otherwise false
    * @note Special method for computer mouse
    */
-  inline bool isMouseLeftPressed() const {
-    return isPressed(MOUSE_LEFT_BUTTON);
-  }
+  bool isMouseLeftPressed() const;
 
   /**
    * @brief Queries whether the right mouse button was pressed once
    * @return true if pressed, otherwise false
    * @note Special method for computer mouse
    */
-  inline bool isMouseRightPressed() const {
-    return isPressed(MOUSE_RIGHT_BUTTON);
-  }
+  bool isMouseRightPressed() const;
 
   /**
    * @brief Queries whether the left mouse button is currently being held down
    * @return true if down, otherwise false
    * @note Special method for computer mouse
    */
-  inline bool isMouseLeftDown() const {
-    return isKeyDown(MOUSE_LEFT_BUTTON);
-  }
+  bool isMouseLeftDown() const;
 
   /**
    * @brief Queries whether the right mouse button is currently being held down
    * @return true if down, otherwise false
    * @note Special method for computer mouse
    */
-  inline bool isMouseRightDown() const {
-    return isKeyDown(MOUSE_RIGHT_BUTTON);
-  }
+  bool isMouseRightDown() const;
 
   /**
    * @brief Queries whether the left mouse button was released
    * @return true if released, otherwise false
    * @note Special method for computer mouse
    */
-  inline bool isMouseLeftReleased() const {
-    return isKeyReleased(MOUSE_LEFT_BUTTON);
-  }
+  bool isMouseLeftReleased() const;
 
   /**
    * @brief Queries whether the right mouse button was released
    * @return true if released, otherwise false
    * @note Special method for computer mouse
    */
-  inline bool isMouseRightReleased() const {
-    return isKeyReleased(MOUSE_RIGHT_BUTTON);
-  }
+  bool isMouseRightReleased() const;
 
   /**
    * @brief Queries the movement of the mouse wheel
@@ -151,36 +121,28 @@ class InputHandler {
    * negative number indicates DOWN, zero indicates no movement)
    * @note Special method for computer mouse
    */
-  inline int getCurrentMouseWheelMove() const {
-    return GetMouseWheelMove();
-  }
+  int getCurrentMouseWheelMove() const;
 
   /**
    * @brief Getter of the current mouse position
    * @return Vector2 containing x and y coordinates
    * @note Special method for computer mouse
    */
-  inline Vector2 getCurrentMousePosition() const {
-    return GetMousePosition();
-  }
+  Vector2 getCurrentMousePosition() const;
 
   /**
    * @brief Getter of the x coordinate of the mouse
    * @return X position of mouse
    * @note Special method for computer mouse
    */
-  inline int getMouseX() const {
-    return GetMousePosition().x;
-  }
+  int getMouseX() const;
 
   /**
    * @brief Getter of the y coordinate of the mouse
    * @return Y position of mouse
    * @note Special method for computer mouse
    */
-  inline int getMouseY() const {
-    return GetMousePosition().y;
-  }
+  int getMouseY() const;
 };
 
 }  // namespace cave_mummies::handlers

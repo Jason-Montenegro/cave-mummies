@@ -3,18 +3,20 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include <exception>
 #include <memory>
-#include <string>
+
+#include "raylib.h"
 
 #include "Application.hpp"
-#include "CollisionHandler.hpp"
-#include "GameStateHandler.hpp"
-#include "InputHandler.hpp"
-#include "InputSource.hpp"
 #include "Log.hpp"
 
-using InputSourceType = cave_mummies::handlers::InputSourceType;
+// Forward declarations
+namespace cave_mummies::handlers {
+  class GameStateHandler;
+  class InputHandler;
+  class CollisionHandler;
+  enum class InputSourceType;
+}
 
 namespace cave_mummies::core {
 
@@ -41,24 +43,17 @@ class Game : public cave_mummies::core::Application {
   bool loadedGame{false};
   /// @brief Log filename
   static constexpr const char* const logFilename{"cave_mummies.log"};
+  /// @brief Highest game score
+  int64_t currentHighestGameScore{0};
+  /// @brief Current game score
+  int64_t currentGameScore{0};
 
  public:
   /**
    * @brief Game contructor
    * @param inputType User input type for game
    */
-  explicit Game(InputSourceType inputType)
-    : gameStateHandler(std::make_unique
-        <cave_mummies::handlers::GameStateHandler>())
-    , inputHandler(std::make_unique
-        <cave_mummies::handlers::InputHandler>(inputType))
-    , collisionHandler(std::make_unique
-        <cave_mummies::handlers::CollisionHandler>())
-    , loadedGame(false) {
-    this->setInputSource(inputType);
-    this->gameStateHandler->registerState(GameStateID::MainMenu
-        , std::make_shared<cave_mummies::states::MainMenuState>(*this));
-  }
+  explicit Game(handlers::InputSourceType inputType);
 
   /**
    * @brief Destructor
@@ -76,32 +71,45 @@ class Game : public cave_mummies::core::Application {
    * @brief Getter for GameStateHandler
    * @throw std::runtime_error: if no game state handler object is available
    */
-  inline cave_mummies::handlers::GameStateHandler& getGameStateHandler() {
-    return *this->gameStateHandler;
-  }
+  cave_mummies::handlers::GameStateHandler& getGameStateHandler();
 
   /**
    * @brief Getter for InputHandler
    * @throw std::runtime_error: if no input handler object is available
    */
-  inline cave_mummies::handlers::InputHandler& getInputHandler() {
-    return *this->inputHandler;
-  }
-
+  cave_mummies::handlers::InputHandler& getInputHandler();
   /**
    * @brief Getter for CollisionHandler
    * @throw std::runtime_error: if no collision handler object is available
    */
-  inline cave_mummies::handlers::CollisionHandler& getCollisionHandler() {
-    return *this->collisionHandler;
-  }
+  cave_mummies::handlers::CollisionHandler& getCollisionHandler();
 
   /**
    * @brief Getter for default game stage floor height
    */
-  inline float getGameStageFloorHeight() const {
-    return (GetScreenHeight() / 2) + GetScreenHeight() * 0.3f;
-  }
+  float getGameStageFloorHeight() const;
+
+  /**
+   * @brief Setter for current game score
+   * @param score New game score
+   */
+  void setCurrentGameScore(int64_t score);
+
+  /**
+   * @brief Setter for current highest game score
+   * @param score New game score
+   */
+  void setHighestGameScore(int64_t score);
+
+  /**
+   * @brief Getter for current game score
+   */
+  int64_t getCurrentGameScore() const;
+
+  /**
+   * @brief Getter for current highest game score
+   */
+  int64_t getHighestGameScore() const;
 
  private:
   /**
@@ -136,20 +144,14 @@ class Game : public cave_mummies::core::Application {
    * @brief Callback to allow Raylib to redirect its log messages to a logger
    * @param raylibMsg Raylib log message
    */
-  static inline void traceLogCallback(int /* logType */, const char* raylibMsg
-    , va_list /* variable args */) {
-    cave_mummies::utils::Log::append(cave_mummies::utils::Log::DEBUGGING,
-      "Raylib", raylibMsg);
-  }
+  static void traceLogCallback(int /* logType */, const char* raylibMsg
+    , va_list /* variable args */);
 
   /**
    * @brief Sets the input source for playing the game
    * @param type User input source
    */
-  inline void setInputSource(InputSourceType type = InputSourceType::Keyboard) {
-    this->inputHandler =
-      std::make_unique<cave_mummies::handlers::InputHandler>(type);
-  }
+  void setInputSource(handlers::InputSourceType type);
 };
 
 }  // namespace cave_mummies::core

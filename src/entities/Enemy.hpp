@@ -15,7 +15,6 @@ class Player;
  * @brief Enemy classification type
  */
 enum class EnemyDifficulty {
-  Easy,
   Moderate,
   Hard
 };
@@ -27,9 +26,8 @@ class Enemy : public Entity {
  protected:
   /// @brief Default enemy values
   static constexpr const char* const enemyAssetPaths[3]{
-    "../assets/textures/entities/wil_player_skin.png",
-    "../assets/textures/entities/wil_player_skin.png",
-    "../assets/textures/entities/wil_player_skin.png"
+    "../assets/textures/entities/moderate_enemy_skin.png",
+    "../assets/textures/entities/hard_enemy_skin.png"
   };
   /// @brief Alive player flag
   bool isPlayerAlive{true};
@@ -46,13 +44,24 @@ class Enemy : public Entity {
    * @param diff Enemy difficulty type
    */
   explicit Enemy(cave_mummies::core::Game& game
-    , cave_mummies::entities::Player &objective
-    , EnemyDifficulty diff = EnemyDifficulty::Easy)
+    , cave_mummies::entities::Player &objective, EnemyDifficulty diff)
     : Entity(game, Enemy::getEnemyTextureFilename(diff))
     , objective(objective)
     , difficultyType(diff) {
     this->setVelocity(diff);
     this->setSpeed(diff);
+      // Resize texture
+    Image img{LoadImage((std::string(GetApplicationDirectory()) 
+      + std::string(Enemy::getEnemyTextureFilename(diff))).c_str())};
+    const int32_t newWidth = img.width * 0.1f;
+    const int32_t newHeight = img.height * 0.1f;
+    ImageResize(&img, newWidth, newHeight);
+    // Load scaled texture
+    if (this->texture.id != 0) {
+      UnloadTexture(this->texture);
+    }
+    this->texture = LoadTextureFromImage(img);
+    UnloadImage(img);
   }
 
   /**
@@ -96,9 +105,6 @@ class Enemy : public Entity {
    */
   inline void setVelocity(EnemyDifficulty type) {
     switch (type) {
-    case EnemyDifficulty::Easy:
-      this->velocity = this->baseVelocity = 2.0f;
-      break;
     case EnemyDifficulty::Moderate:
       this->velocity = this->baseVelocity = 3.0f;
       break;
@@ -114,9 +120,6 @@ class Enemy : public Entity {
    */
   inline void setSpeed(EnemyDifficulty type) {
     switch (type) {
-    case EnemyDifficulty::Easy:
-      this->setCurrentSpeed(1.2f);
-      break;
     case EnemyDifficulty::Moderate:
       this->setCurrentSpeed(1.4f);
       break;
@@ -133,9 +136,8 @@ class Enemy : public Entity {
    */
   static inline const char* getEnemyTextureFilename(EnemyDifficulty type) {
     switch (type) {
-    case EnemyDifficulty::Easy: return enemyAssetPaths[0];
-    case EnemyDifficulty::Moderate: return enemyAssetPaths[1];
-    case EnemyDifficulty::Hard: return enemyAssetPaths[2];
+    case EnemyDifficulty::Moderate: return enemyAssetPaths[0];
+    case EnemyDifficulty::Hard: return enemyAssetPaths[1];
     default: return "";
     }
   }

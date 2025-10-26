@@ -6,9 +6,7 @@
 #include <cstdint>
 
 #include "Entity.hpp"
-#include "Game.hpp"
 #include "InputHandler.hpp"
-
 
 namespace cave_mummies::entities {
 
@@ -21,7 +19,7 @@ class Player : public Entity {
   static constexpr uint32_t defaultAmmunitionQuantity{12};
   /// @brief Player texture
   static constexpr const char* const defaultPlayerAssetPath
-    {"assets/textures/entities/wil_player_skin.png"};
+    {"../assets/textures/entities/wil_player_skin.png"};
   /// @brief Entity kill count
   uint64_t killCount{0};
   /// @brief Remaining ammunition for shooting
@@ -48,6 +46,18 @@ class Player : public Entity {
     : Entity(game, playerAssetPath) {
     this->velocity = this->baseVelocity = 3.0f;
     this->currentSpeed = 3.0f;
+    // Resize texture
+    Image img{LoadImage((std::string(GetApplicationDirectory()) 
+      + std::string(Player::defaultPlayerAssetPath)).c_str())};
+    const int32_t newWidth = img.width * 0.1f;
+    const int32_t newHeight = img.height * 0.1f;
+    ImageResize(&img, newWidth, newHeight);
+    // Load scaled texture
+    if (this->texture.id != 0) {
+      UnloadTexture(this->texture);
+    }
+    this->texture = LoadTextureFromImage(img);
+    UnloadImage(img);
   }
 
   /**

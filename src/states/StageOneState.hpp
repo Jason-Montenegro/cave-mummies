@@ -7,9 +7,16 @@
 #include <list>
 
 #include "GameState.hpp"
-#include "Player.hpp"
 #include "Projectile.hpp"
-#include "Enemy.hpp"
+
+namespace cave_mummies::core {
+  class Game;
+}
+
+namespace cave_mummies::entities {
+  class Player;
+  class Enemy;
+}
 
 namespace cave_mummies::states {
 
@@ -26,31 +33,28 @@ class StageOneState : public cave_mummies::core::GameState {
   std::unique_ptr<cave_mummies::entities::Player> player{nullptr};
   /// @brief Current enemy collection
   std::list<std::shared_ptr<cave_mummies::entities::Enemy>> enemyCollection;
+  /// @brief Current projectiles shot
+  std::vector<cave_mummies::entities::Projectile> projectiles;
+  /// @brief Minute counter for enemy spawn pattern
+  double lastSpawnMinute{0.0};
+  /// @brief Game paused condition
+  bool isGamePaused{false};
+  /// @brief Game over condition
+  bool isPlayerDead{false};
+  /// @brief Paused time difference
+  std::chrono::time_point<std::chrono::high_resolution_clock> pausedTime;
   /// @brief Game start time clock
   std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
   /// @brief Label font size
   float fontSize{36.0f};
   /// @brief Label text height
   float textHeight{0.0f};
-  /// @brief Minute counter for enemy spawn pattern
-  double lastSpawnMinute{0};
-  /// @brief Paused time difference
-  std::chrono::time_point<std::chrono::high_resolution_clock> pausedTime;
-  /// @brief Game paused condition
-  bool isGamePaused{false};
-  /// @brief Game over condition
-  bool isPlayerDead{false};
-  /// @brief Current projectiles shot
-  std::vector<cave_mummies::entities::Projectile> projectiles;
 
  public:
   /**
    * @brief Constructor
    */
-  StageOneState(cave_mummies::core::Game& game)
-    : GameState(game) {
-    this->stateID = cave_mummies::core::GameStateID::StageOne;
-  }
+  explicit StageOneState(cave_mummies::core::Game& game);
 
   /**
    * @brief Destructor

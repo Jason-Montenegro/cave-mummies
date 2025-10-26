@@ -3,91 +3,69 @@
 #ifndef PAUSED_GAME_STATE_HPP
 #define PAUSED_GAME_STATE_HPP
 
-#include <vector>
+#include <memory>
 
 #include "GameState.hpp"
+#include "MenuBuilder.hpp"
 
 namespace cave_mummies::states {
 
 /**
- * @brief Game state for paused screen in game.
+ * @brief Game state for paused menu screen in game
  */
 class PausedMenuGameState : public cave_mummies::core::GameState {
  private:
-  /// @brief Font used for menu options
-  Font menuOptionFont;
-  /// @brief Sound played when switching options
-  Sound selectMenuOptionSFX;
-  /// @brief Sound played when menu option is submitted with return key
-  Sound submitMenuOptionSFX;
-  /// @brief Main menu title
-  menu::MenuOption mainTitle;
-  /// @brief List of interactive menu options
-  std::vector<menu::MenuOption> menuOptions;
+  /// @brief Menu builder
+  cave_mummies::states::menu::MenuBuilder menuBuilder;
 
  public:
   /**
    * @brief Constructor
    */
-  PausedMenuGameState(cave_mummies::core::Game& game)
-    : GameState(game)
-    , mainTitle("Paused"
-    , menu::MenuOptionFlag::Highlight1, menu::MenuOptionTag::h1
-    , WHITE) {
-    this->stateID = cave_mummies::core::GameStateID::PausedMenu;
-  }
+  PausedMenuGameState(cave_mummies::core::Game& game);
 
   /**
    * @brief Destructor
    */
-  ~PausedMenuGameState() override;
+  ~PausedMenuGameState() override = default;
 
   /**
-   * @brief Updates the paused state objects.
+   * @brief Updates main menu logic
+   * @return New game state ID if a transition occurs
    */
   cave_mummies::core::GameStateID update() override;
 
   /**
-   * @brief Initializes resources (textures, fonts, sounds).
+   * @brief Builds menu interface and initializes it
    */
   void init() override;
 
-
   /**
-   * @brief Draws the paused menu on screen.
+   * @brief Renders all menu elements to the screen
    */
   void draw() override;
 
  private:
-   /**
-   * @brief Moves the highlight between menu options based on input.
+  /**
+   * @brief Builds main menu title
    */
-  void moveMenuOptionHighlight();
+  void buildMainTitle();
 
   /**
-   * @brief Handles selection events (e.g., pressing Enter).
-   * @return ID of the next game state if an option is selected.
+   * @brief Builds score title on screen
    */
-  cave_mummies::core::GameStateID addMenuOptionEventListener();
+  void buildScoreTitle();
 
   /**
-   * @brief Draws the main title text.
+   * @brief Adds options to menu option list
    */
-  void drawMainTitle();
+  void buildMenuOptions();
 
   /**
-   * @brief Draws a single menu option with optional outline.
-   * @param option Menu option to draw
-   * @param coords Screen coordinates
-   * @param fontSize Font size to use
+   * @brief Checks if the current game score is the highest overall, and if so,
+   * it updates it in the game controller
    */
-  void drawMenuOption(const menu::MenuOption& option, Vector2 coords
-    , float fontSize);
-
-  /**
-   * @brief Draws all interactive menu options.
-   */
-  void drawMenuOptionSection();
+  void updateHighestGameScore();
 };
 
 }  // namespace cave_mummies::states
