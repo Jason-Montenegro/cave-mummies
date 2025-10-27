@@ -3,4 +3,5 @@ build/
 doc/
 .DS_Store
 .vscode
-cat_mummies.log
+cave_mummies.log
+libs/

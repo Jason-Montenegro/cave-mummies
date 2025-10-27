@@ -7,6 +7,8 @@
 
 #include "Log.hpp"
 
+namespace cave_mummies::utils {
+
 /// @brief Labels for message types.
 const char* const Log::MESSAGE_TYPE_LABEL[] = {
   "Debug",
@@ -21,7 +23,7 @@ Log& Log::getInstance() {
 }
 
 Log::Log()
-  : output{std::cout.rdbuf()} {}
+: output{std::cout.rdbuf()} {}
 
 void Log::start(const std::string_view logFilename) {
   const std::lock_guard<std::mutex> lock(this->mutex);
@@ -58,3 +60,5 @@ void Log::write(Log::MessageType type, const std::string_view category
     throw std::runtime_error("could not write log file: " + this->filename);
   }
 }
+
+}  // namespace cave_mummies::utils

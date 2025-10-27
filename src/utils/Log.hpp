@@ -9,6 +9,8 @@
 #include <mutex>
 #include <string>
 
+namespace cave_mummies::utils {
+
 /**
  * @brief Thread-safe log manager
  * @author Jeisson Hidalgo-Céspedes
@@ -48,7 +50,7 @@ class Log final {
   std::string filename;  ///< Log file name
   std::ofstream file;  ///< The log file if using named files
   static const char* const MESSAGE_TYPE_LABEL[]; ///< Labels for message types
-  static constexpr const char *const defaultLogFilename{"cat_mummies.log"};
+  static constexpr const char *const defaultLogFilename{"cave_mummies.log"};
 
  public:
    /**
@@ -113,5 +115,7 @@ class Log final {
    */
   ~Log() = default;
 };
+
+}  // namespace cave_mummies::utils
 
 #endif  // LOG_HPP

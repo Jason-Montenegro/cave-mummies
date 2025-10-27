@@ -3,38 +3,67 @@
 #ifndef PROJECTILE_HPP
 #define PROJECTILE_HPP
 
-#include <string>
-
 #include "Entity.hpp"
 
-/**
- * @brief Projectile entity
- */
-class Projectile : public Entity {
- protected:
-  Vector2 position;  ///< Screen position
+namespace cave_mummies::entities {
 
+/**
+ * @brief Player projectile
+ */
+struct Projectile {
  public:
+  Vector2 position;
+  Vector2 velocity;
+  float radius;
+  Color color;
+
   /**
    * @brief Constructor
-   * @param assetPath Asset path for this object texture
+   * @param pos Start position
+   * @param vel Projectile velocity
+   * @param r Projectile radius
+   * @param c Projectile color
    */
-  explicit Projectile(const char *const assetPath)
-    : Entity(assetPath) { }
+   Projectile(Vector2 pos, Vector2 vel, float r, Color c)
+    : position(pos)
+    , velocity(vel)
+    , radius(r)
+    , color(c) { }
 
   /**
-   * @brief Updates this projectile state.
+   * @brief Updates this projectile coordinates
    */
-  void update() override;
+  inline void update() {
+    position.x += velocity.x;
+    position.y += velocity.y;
+  }
 
   /**
-   * @brief Sets the projectile position on screen.
-   * @param pos New position
+   * @brief Draws projectile on the screen
    */
-  inline void setPosition(Vector2 pos) {
-    this->position.x = pos.x;
-    this->position.y = pos.y;
+  inline void draw() const {
+    DrawCircleV(position, radius, color);
+  }
+
+  /**
+   * @brief Getter of projectile coordinates and size
+   * @return Projectile bounds
+   */
+  Rectangle getBounds() const {
+    return {position.x - radius, position.y - radius, radius * 1.0f
+      , radius * 1.0f};
+  }
+
+  /**
+   * @brief Equality operator overload
+   * @param other Other projectile
+   * @return true if they are the same, otherwise false
+   */
+  bool operator==(const Projectile& other) const {
+    return this == &other;
   }
 };
+
+}  // namespace cave_mummies::entities
 
 #endif  // PROJECTILE_HPP

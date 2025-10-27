@@ -3,10 +3,20 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 
+#include <string>
+
 #include "raylib.h"
 
+// Class forward declaration
+namespace cave_mummies::core {
+  class Game;
+}
+
+namespace cave_mummies::entities {
+
 /**
- * @brief Set of possible entity directions.
+ * @enum Direction
+ * @brief Set of possible entity directions
  */
 enum class Direction {
   Up,
@@ -20,75 +30,122 @@ enum class Direction {
  */
 class Entity {
  protected:
-  Rectangle bounds;  ///< Includes (x, y) coordinates, width and height
-  Texture2D texture;  ///< Image texture
-  Vector2 velocity;
+  /// @brief Includes (x, y) coordinates, width and height
+  Rectangle bounds{0, 0, 0, 0};
+  /// @brief Entity texture
+  Texture2D texture;
+  /// @brief Entity speed
+  float currentSpeed{1.0f};
+  /// @brief Speed velocity
+  float velocity{1.0f};
+  /// @brief Base velocity value
+  float baseVelocity{1.0f};
+  /// @brief Frame counter for displaying sprite more extendedly
+  int32_t gameFrameCounter;
+  /// @brief Sprite frame
+  int32_t currentSpriteFrame{0};
+  /// @brief Sprite frame count
+  int32_t spriteFrameCount{4};
+  /// @brief Game controller
+  cave_mummies::core::Game& game;
+  /// @brief Default sprite pixel width
+  static constexpr float DefaultSpritePixelWidth{32.0};
+  /// @brief Sprite direction
+  cave_mummies::entities::Direction currentDirection{
+    cave_mummies::entities::Direction::Right};
 
  public:
   /**
    * @brief Constructor
-   * @param assetFilename File name of sprite texture
+   * @param game Game controller
    */
-  explicit Entity(const char *const assetFilename)
-    : bounds{0, 0, 0, 0}, velocity{0,0} {
-    this->texture = LoadTexture(assetFilename);
-  }
+  explicit Entity(cave_mummies::core::Game& game)
+    : game(game) { }
 
   /**
    * @brief Destructor
    */
   virtual ~Entity() {
-    UnloadTexture(this->texture);
+    if (this->texture.id != 0) {
+      UnloadTexture(this->texture);
+    }
   }
 
   /**
-   * @brief Updates this entity state.
+   * @brief Updates this entity state
    */
   virtual void update() = 0;
 
   /**
-   * @brief Draws texture to screen.
+   * @brief Draws texture to screen
    */
-  inline virtual void draw() {
-    DrawTexture(texture, static_cast<int>(this->bounds.x)
-      , static_cast<int>(this->bounds.y), RAYWHITE);
+  inline virtual void draw() = 0;
+
+  /**
+   * @brief Getter of bounds member
+   * @return this bounds member
+   */
+  inline Rectangle getBounds() const {
+    return this->bounds;
   }
 
   /**
-   * @brief Gets the bounds member
-   * @return this bounds object
-   */
-  inline Rectangle getBounds() const { return this->bounds; }
-
-  /**
-   * @brief Sets the bounds member
+   * @brief Setter of bounds member
    * @param b New bounds object
    */
-  inline void setBounds(const Rectangle &b) { this->bounds = b; }
+  inline void setBounds(const Rectangle& b) {
+    this->bounds = b;
+  }
 
   /**
-   * @brief Gets the velocity member
+   * @brief Getter of velocity member
    * @return this velocity object
    */
-  inline Vector2 getVelocity() const { return this->velocity; }
+  inline float getVelocity() const {
+    return this->velocity;
+  }
 
   /**
-   * @brief Sets the velocity member
-   * @param b New velocity object
+   * @brief Setter of velocity member
+   * @param v New velocity value
    */
-  inline void setVelocity(const Vector2 &v) { this->velocity = v; }
+  inline void setVelocity(float v) {
+    this->velocity = v;
+  }
 
   /**
-   * @brief Gets the texture member
-   * @return this texture object
+   * @brief Setter of current speed member
+   * @param speed New speed value
    */
-  inline Texture2D getTexture() const { return this->texture; }
-  
+  inline void setCurrentSpeed(float speed) {
+    this->currentSpeed = speed;
+  }
+
   /**
-   * @brief Sets the texture member
-   * @param b New texture object
+   * @brief Getter of texture member
+   * @return this texture member
    */
-  inline void setTexture(const Texture2D &t) { this->texture = t; }
+  inline Texture2D getTexture() const {
+    return this->texture;
+  }
+
+  /**
+   * @brief Getter of the current sprite direction
+   * @return this current direction
+   */
+  inline Direction getDirection() const {
+    return this->currentDirection;
+  }
+
+  /**
+   * @brief Setter of texture frame count
+   * @param count Spritesheet frame count
+   */
+  inline void setTextureFrameCount(int32_t count) {
+    this->spriteFrameCount = count;
+  }
 };
+
+}  // cave_mummies::entities
 
 #endif  // ENTITY_HPP

@@ -5,19 +5,24 @@
 
 #include "raylib.h"
 
-class Game;
+namespace cave_mummies::core {
+  class Game;
+};
+
+namespace cave_mummies::core {
 
 /**
+ * @enum GameStateID
  * @brief Set of identifiers for every game state available.
  */
 enum class GameStateID {
   Null,
+  QuitGame,
   MainMenu,
   AboutMenu,
+  PausedMenu,
   GameOver,
-  Paused,
-  LevelOne,
-  Scoreboard,
+  StageOne
 };
 
 /**
@@ -27,27 +32,18 @@ class GameState {
  protected:
   /// @brief State identifier
   GameStateID stateID{GameStateID::Null};
+  /// @brief Main menu background texture
+  Texture2D background;
+  /// @brief Is state currently loaded
   bool loaded{false};
-  Game &game;
+  /// @brief Game controller object
+  cave_mummies::core::Game& game;
 
  public:
   /**
-   * @brief Deleted copy constructor.
-   * @param other Other app
-   */
-  GameState(const GameState &other) = delete;
-
-  /**
-   * @brief Deleted copy-assignment operator.
-   * @param other Other app
-   */
-  GameState& operator=(const GameState &other) = delete;
-
-  /**
    * @brief Constructor
    */
-  GameState(Game &game)
-    : game(game) { }
+  GameState(cave_mummies::core::Game& game);
 
   /**
    * @brief Destructor
@@ -55,30 +51,35 @@ class GameState {
   virtual ~GameState() = default;
 
   /**
-   * @brief Gets the state ID of this.
-   * @return this state ID
+   * @brief Getter of state id
+   * @return this state id
    */
-  inline GameStateID getStateID() const { return this->stateID; }
+  GameStateID getStateID() const;
 
   /**
-   * @brief Updates its internal object state.
-   * @return Next state that this game state transitions to.
-   * @note The return value should return this state ID if no transition
-   * is required.
+   * @brief Updates its internal object state
+   * @return Next state that this game state transitions to
+   * @note If no transition is required, return this state id
    */
-  virtual GameStateID update() {
-    return this->stateID;
-  };
+  virtual GameStateID update();
 
   /**
-   * @brief Initializes this object members.
+   * @brief Initializes this game state
    */
-  virtual void init() {}
+  virtual void init() { }
 
   /**
-   * @brief Draws its internal object state to window.
+   * @brief Draws its internal object state to window
    */
   virtual void draw() = 0;
+
+ protected:
+  /**
+   * @brief Draws background image to state screen
+   */
+  virtual void drawBackground();
 };
+
+}  // namespace cave_mummies::core
 
 #endif  // GAME_STATE_HPP

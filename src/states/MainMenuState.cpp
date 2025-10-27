@@ -1,185 +1,117 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
-#include "Game.hpp"
-#include "MainMenuState.hpp"
+#include <string>
+#include <utility>
+#include <vector>
 
-MainMenuState::~MainMenuState() {
-  if (this->loaded) {
-    // Unload all loaded game assets
-    UnloadFont(this->menuOptionFont);
-    UnloadTexture(this->background);
-    UnloadSound(this->selectMenuOptionSFX);
-    UnloadMusicStream(this->backgroundMusic);
-  }
-  this->menuOptions.clear();
+#include "MainMenuState.hpp"
+#include "Game.hpp"
+
+using MenuOptionFlag = cave_mummies::states::menu::MenuElementFlag;
+using MenuElementTag = cave_mummies::states::menu::MenuElementTag;
+using Collection = cave_mummies::states::menu::MenuBuilder::Collection;
+using GameStateID = cave_mummies::core::GameStateID;
+
+namespace cave_mummies::states {
+
+MainMenuState::MainMenuState(cave_mummies::core::Game& game)
+  : GameState(game), menuBuilder(game, GameStateID::MainMenu) {
+  this->stateID = GameStateID::MainMenu;
 }
 
 void MainMenuState::init() {
-  if (!this->loaded) {
-    // Load all game assets
-    this->background = LoadTexture("assets/background/main_bg.png");
-    this->menuOptionFont = LoadFont("assets/fonts/PixelOperatorMono-Bold.ttf");
-    this->selectMenuOptionSFX = LoadSound("assets/audio/sfx/throw1-sfx.wav");
-    this->backgroundMusic = LoadMusicStream(
-      "assets/audio/music/game-bg-soundtrack.mp3");
-    PlayMusicStream(this->backgroundMusic);
-    // Create all options that are displayed on main menu
-    this->menuOptions.emplace_back("Start", MenuOptionFlag::Highlight2
-      , MenuOptionTag::li, WHITE);
-    this->menuOptions.emplace_back("About", MenuOptionFlag::None
-      , MenuOptionTag::li, WHITE);
-    this->menuOptions.emplace_back("Scoreboard", MenuOptionFlag::None
-      , MenuOptionTag::li, WHITE);
-    this->menuOptions.emplace_back("Quit", MenuOptionFlag::None
-      , MenuOptionTag::li, WHITE);
-    this->loaded = true;
-  }
+  const char* basePath{GetApplicationDirectory()};
+  this->background = LoadTexture((std::string(basePath)
+    + "../assets/background/game_bg.png").c_str());
+  // Build interface with builder
+  this->menuBuilder.loadFont((std::string(basePath)
+    + "../assets/fonts/PixelOperatorMono-Bold.ttf").c_str());
+  this->menuBuilder.loadSelectMenuOption((std::string(basePath)
+    + "../assets/audio/sfx/throw1-sfx.wav").c_str());
+  this->menuBuilder.loadSubmitMenuOption((std::string(basePath)
+    + "../assets/audio/sfx/throw5-sfx.wav").c_str());
+  this->buildMainTitle();
+  this->buildScoreTitle();
+  this->buildMenuOptions();
 }
 
-GameStateID MainMenuState::update() {
-  UpdateMusicStream(this->backgroundMusic);
-
-  moveMenuOptionHighlight();
-  GameStateID newState{addMenuOptionEventListener()};
-  return newState;
-}
-
-void MainMenuState::moveMenuOptionHighlight() {
-  const size_t optionsSize{this->menuOptions.size()};
-  if (this->game.getInputHandler().isPressed(KEY_W)
-    || this->game.getInputHandler().isPressed(KEY_UP)) {
-    // Move option selector up
-    for (size_t index{0}; index < optionsSize; ++index) {
-      if (this->menuOptions[index].flag == MenuOptionFlag::Highlight2
-          && index > 0) {
-          this->menuOptions[index].flag = MenuOptionFlag::None;
-          this->menuOptions[index - 1].flag = MenuOptionFlag::Highlight2;
-          PlaySound(this->selectMenuOptionSFX);
-          break;
-      }
-    }
-  }
-  if (this->game.getInputHandler().isPressed(KEY_S)
-    || this->game.getInputHandler().isPressed(KEY_DOWN)) {
-    // Move option selector down
-    for (size_t index{0}; index < optionsSize; ++index) {
-      if (this->menuOptions[index].flag == MenuOptionFlag::Highlight2
-          && index + 1 < optionsSize) {
-          this->menuOptions[index].flag = MenuOptionFlag::None;
-          this->menuOptions[index + 1].flag = MenuOptionFlag::Highlight2;
-          PlaySound(this->selectMenuOptionSFX);
-          break;
-      }
-    }
-  }
-}
-
-GameStateID MainMenuState::addMenuOptionEventListener() {
-  if (this->game.getInputHandler().isPressed(KEY_ENTER)) {
-    // Change game state event listener for every menu option
-    for (const auto &option : this->menuOptions) {
-      if (option.flag == MenuOptionFlag::Highlight2) {
-        if (option.text == "Start") return GameStateID::LevelOne;
-        if (option.text == "About") return GameStateID::AboutMenu;
-        if (option.text == "Scoreboard") return GameStateID::Scoreboard;
-        if (option.text == "Quit") return GameStateID::Null;
-        // Stop current music
-        StopMusicStream(this->backgroundMusic);
-      }
-    }
-  }
-  return this->stateID;
-}
-
-void MainMenuState::draw() {
-  drawBackground();
-  drawMainTitle();
-  drawMenuOptionSection();
-}
-
-void MainMenuState::drawBackground() {
-  ClearBackground(BLACK);
-  // Calculate the math for extending background to whole game screen
-  Rectangle sourceRec{0.0f, 0.0f, static_cast<float>(this->background.width)
-    , static_cast<float>(this->background.height)};
-  Rectangle destRec{0.0f, 0.0f, static_cast<float>(GetScreenWidth())
-    , static_cast<float>(GetScreenHeight())};
-  Vector2 origin{0.0f, 0.0f};
-  DrawTexturePro(this->background, sourceRec, destRec, origin, 0.0f, WHITE);
-}
-
-void MainMenuState::drawMainTitle() {
+void MainMenuState::buildMainTitle() {
+  const std::string title{"Cave Mummies"};
   // Calculate the location where to place the title
   const float screenW{static_cast<float>(GetScreenWidth())};
   const float screenH{static_cast<float>(GetScreenHeight())};
   const float fontSize{screenH * 0.12f};  // 12% relative height of the screen
-  Vector2 textSize{MeasureTextEx(this->menuOptionFont
-    , this->mainTitle.text.data(), fontSize, 1.0f)};
-
+  Vector2 textSize{MeasureTextEx(this->menuBuilder.getLoadedFont()
+    , title.c_str(), fontSize, 1.0f)};
   const float x{screenW / 2.0f - textSize.x / 2.0f};
   const float y{screenH * 0.1f};  // Upper side margin of 10%
-  drawMenuOption(this->mainTitle, {x, y}, fontSize);
+
+  menu::MenuElement titleElement{.text = title, .color = WHITE
+    , .flag = MenuOptionFlag::Highlight2, .tag = MenuElementTag::li
+    , .fontSize = fontSize, .position = Vector2{.x = x, .y = y}
+    , .gameState = GameStateID::Null};
+  this->menuBuilder.insertMenuElement(titleElement, Collection::Titles);
 }
 
+void MainMenuState::buildScoreTitle() {
+  std::string scoreTitle{"Highest score: "};
+  scoreTitle += std::to_string(this->game.getHighestGameScore());
 
-void MainMenuState::drawMenuOption(const MenuOption &option, Vector2 coords
-  , float fontSize) {
-  if (!option.text.empty()) {
-    Vector2 pos{coords};
-    if (option.flag == MenuOptionFlag::Highlight2
-      || option.flag == MenuOptionFlag::Highlight1) {
-      Color outlineColor{this->pickOutlineColor(option.flag)};
-      const int outlineThickness{this->pickOutlineThickness(option.tag)};
-      // Draw the same text to simulate an outline effect on texts
-      for (int x{-outlineThickness}; x <= outlineThickness; ++x) {
-        for (int y{-outlineThickness}; y <= outlineThickness; ++y) {
-          if (x != 0 || y != 0) {
-            DrawTextEx(this->menuOptionFont, option.text.data(),
-              {pos.x + x, pos.y + y}, fontSize, 1.0f, outlineColor);
-          }
-        }
-      }
-    }
-    // Draw text to screen
-    DrawTextEx(this->menuOptionFont, option.text.data(), pos, fontSize, 1.0f
-      , option.color);
-  }
+  // Calculate the location where to place the title
+  const float screenW{static_cast<float>(GetScreenWidth())};
+  const float screenH{static_cast<float>(GetScreenHeight())};
+  const float fontSize{screenH * 0.08f};  // 8% relative height of the screen
+  Vector2 textSize{MeasureTextEx(this->menuBuilder.getLoadedFont()
+    , scoreTitle.c_str(), fontSize, 1.0f)};
+  const float x{screenW / 2.0f - textSize.x / 2.0f};
+  const float y{screenH * 0.3f};  // Upper side margin of 30%
+
+  menu::MenuElement titleElement{.text = scoreTitle, .color = WHITE
+    , .flag = MenuOptionFlag::None, .tag = MenuElementTag::h2
+    , .fontSize = fontSize, .position = Vector2{.x = x, .y = y}
+    , .gameState = GameStateID::Null};
+  this->menuBuilder.insertMenuElement(titleElement, Collection::Titles);
 }
 
-Color MainMenuState::pickOutlineColor(MenuOptionFlag flag) {
-  switch (flag) {
-  case MenuOptionFlag::Highlight1: return RED;
-  case MenuOptionFlag::Highlight2: return DARKBROWN;
-  default: return WHITE;
-  }
-}
-
-int MainMenuState::pickOutlineThickness(MenuOptionTag tag) {
-  switch (tag) {
-  case MenuOptionTag::h1: return 8;  // Thick outline
-  case MenuOptionTag::li: return 3;  // Thin outline
-  default: return 1;  // Default outline value
-  }
-}
-
-void MainMenuState::drawMenuOptionSection() {
+void MainMenuState::buildMenuOptions() {
   // Set screen details to position menu option section
   const float screenW{static_cast<float>(GetScreenWidth())};
   const float screenH{static_cast<float>(GetScreenHeight())};
   const float spacing{screenH * 0.08f};
-  const float fontSize{screenH * 0.06f};
-  const float totalHeight{this->menuOptions.size() * spacing};
+  const float fontSize{screenH * 0.06f};  // 6% relative height of the screen
+  // 3 because that's the size of the menu option list
+  const float totalHeight{3 * spacing};
   const float startY{(screenH / 2.0f - totalHeight / 2.0f) + 100};
 
-  // Draw options in their respective position
-  size_t index{0};
-  for (const auto &option : this->menuOptions) {
-    const float y{startY + index * spacing};
-    index++;
-    Vector2 textSize{MeasureTextEx(this->menuOptionFont, option.text.data()
-      , fontSize, 1.0f)};
-    const float x{screenW / 2.0f - textSize.x / 2.0f};
+  const std::vector<std::pair<std::string, GameStateID>> options{
+    {"Start", GameStateID::StageOne},
+    {"About", GameStateID::AboutMenu},
+    {"Quit", GameStateID::QuitGame}
+  };
 
-    drawMenuOption(option, {x, y}, fontSize);
+  for (size_t i{0}; i < options.size(); ++i) {
+    // Measure text size relative to screen
+    Vector2 textSize{MeasureTextEx(this->menuBuilder.getLoadedFont(),
+      options[i].first.c_str(), fontSize, 1.0f)};
+    const float x{screenW / 2.0f - textSize.x / 2.0f};
+    const float y{startY + i * spacing};
+    // Configure element and insert it in the list
+    this->menuBuilder.insertMenuElement(menu::MenuElement{
+      .text = options[i].first, .color = WHITE
+      , .flag = ((i == 0) ? MenuOptionFlag::Highlight2 : MenuOptionFlag::None)
+      , .tag = MenuElementTag::li, .fontSize = fontSize
+      , .position = Vector2{.x = x, .y = y}, .gameState = options[i].second}
+      , Collection::optionList);
   }
 }
+
+cave_mummies::core::GameStateID MainMenuState::update() {
+  return this->menuBuilder.update();
+}
+
+void MainMenuState::draw() {
+  GameState::drawBackground();
+  this->menuBuilder.draw();
+}
+
+}  // namespace cave_mummies::states

@@ -5,54 +5,36 @@
 
 #include <map>
 #include <memory>
-#include <utility>
 
 #include "GameState.hpp"
-#include "MainMenuState.hpp"
-#include "AboutMenuState.hpp"
-#include "GameOverState.hpp"
-#include "PausedGameState.hpp"
-#include "ScoreboardState.hpp"
-#include "LevelOneState.hpp"
+
+namespace cave_mummies::core {
+  class Game;
+}
+
+using GameStateID = cave_mummies::core::GameStateID;
+
+namespace cave_mummies::handlers {
 
 /**
  * @brief Game state handler for switching game states on screen.
  */
 class GameStateHandler {
  private:
-  /// @brief States data members
-  std::map<GameStateID, std::shared_ptr<GameState>> states;
-  std::shared_ptr<GameState> currentState{nullptr};
+  /// @brief All states collection
+  std::map<GameStateID, std::shared_ptr<cave_mummies::core::GameState>> states;
+  /// @brief Current loaded state
+  std::shared_ptr<cave_mummies::core::GameState> currentState;
+  /// @brief Game controller
+  cave_mummies::core::Game& game;
+
 
  public:
   /**
-   * @brief Deleted copy constructor.
-   * @param other Other app
-   */
-  GameStateHandler(const GameStateHandler &other) = delete;
-
-  /**
-   * @brief Deleted move constructor.
-   * @param other Other app
-   */
-  GameStateHandler(GameStateHandler &&other) = delete;
-
-  /**
-   * @brief Deleted copy-assignment operator.
-   * @param other Other app
-   */
-  GameStateHandler& operator=(const GameStateHandler &other) = delete;
-
-  /**
-   * @brief Deleted move-assignment operator.
-   * @param other Other app
-   */
-  GameStateHandler& operator=(GameStateHandler &&other) = delete;
-
-  /**
    * @brief Constructor
+   * @param game Game controller
    */
-  GameStateHandler() = default;
+  explicit GameStateHandler(cave_mummies::core::Game& game);
 
   /**
    * @brief Destructor
@@ -63,92 +45,51 @@ class GameStateHandler {
    * @brief Sets the current state to stateID.
    * @param stateID New state to set
    */
-  inline void setCurrentState(GameStateID stateID) {
-    if (this->states.find(stateID) != this->states.end()) {
-      this->currentState = this->states[stateID];
-      initCurrentState();
-    }
-  }
+  void setCurrentState(GameStateID stateID);
 
   /**
    * @brief Gets the current state ID
    * @return Current game state ID
    */
-  inline GameStateID getCurrentState() const {
-    if (this->currentState) {
-      return this->currentState->getStateID();
-    }
-    return GameStateID::Null;
-  }
+  GameStateID getCurrentState() const;
 
   /**
    * @brief Registers a new GameState object into the collection of states,
-   * only if the state does not exist yet. Moving the passed gameState into a
-   * game states collection.
+   * only if the state does not exist yet
    * @param stateID Unique state identifier
-   * @param gameState New game state object
    */
-  inline void registerState(GameStateID stateID
-    , std::shared_ptr<GameState> gameState) {
-    if (this->states.find(stateID) == this->states.end()) {
-      this->states[stateID] = std::move(gameState);
-    }
-  }
+  void registerState(GameStateID stateID);
 
   /**
    * @brief Cleans all stored states from memory.
    */
-  inline void cleanStates() {
-    for (auto &pair : this->states) {
-      pair.second.reset();
-    }
-    this->states.clear();
-    this->currentState = nullptr;
-  }
+  void cleanStates();
+
+  /**
+   * @brief Removes a state from the registered states
+   * @param stateID State identifier to remove
+   */
+  void removeState(GameStateID stateID);
 
   /**
    * @brief Commands that the current state draws its state.
    */
-  inline void draw() {
-    if (this->currentState) {
-      this->currentState->draw();
-    }
-  }
+  void draw();
 
   /**
-   * @brief Commands that the current state updates its state.
+   * @brief Commands that the current state updates its state
+   * @return true if a game update was possible, otherwise false (close program)
    */
-  inline bool update() {
-    if (!this->currentState) {
-      return true;
-    }
-    GameStateID nextState{this->currentState->update()};
-
-    // Close game
-    if (nextState == GameStateID::Null) {
-      return false;
-    }
-
-    // Change game state
-    if (nextState != this->currentState->getStateID()) {
-      setCurrentState(nextState);
-    }
-
-    return true;
-  }
+  bool update();
 
  private:
   /**
    * @brief Initializes current state.
    * @return true if the state was initialized, false otherwise
    */
-  inline bool initCurrentState() {
-    if (this->currentState) {
-      this->currentState->init();
-      return true;
-    }
-    return false;
-  }
+  bool initCurrentState();
 };
+
+}  // cave_mummies::handlers
 
 #endif  // GAME_STATE_CONTROLLER_HPP

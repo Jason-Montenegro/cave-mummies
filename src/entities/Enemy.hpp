@@ -1,92 +1,145 @@
+// Copyright 2025 Jason Montenegro-Navarro
+
 #ifndef ENEMY_HPP
 #define ENEMY_HPP
 
-#include <cstdlib>
-
 #include "Entity.hpp"
-#include "Player.hpp"
+
+namespace cave_mummies::entities {
+
+class Player;
 
 /**
  * @brief Enemy classification type
  */
-enum class EnemyType {
+enum class EnemyDifficulty {
   Easy,
   Moderate,
   Hard
 };
 
 /**
- * @brief Enemy entity
+ * @brief Enemy entity that attacks the player
  */
 class Enemy : public Entity {
- private:
-  /// @brief Default enemy values
-  static constexpr uint32_t defaultEnemyVelocity{5};
-  static constexpr const char *const defaultEnemyAssetPath[3]{
-    "assets/textures/entities/mummy-easy-diff-sprite.png",
-    "assets/textures/entities/mummy-moderate-diff-sprite.png",
-    "assets/textures/entities/mummy-hard-diff-sprite.png",
-  };
-  /// Alive player flag
-  bool isAlive{true};
-  /// Target objective
-  Player &objective;
-  /// Enemy type
-  EnemyType type{EnemyType::Easy};
+ protected:
+  /// @brief Alive player flag
+  bool isPlayerAlive{true};
+  /// @brief Target objective
+  cave_mummies::entities::Player& objective;
+  /// @brief Enemy difficulty type
+  EnemyDifficulty difficultyType{EnemyDifficulty::Easy};
+  /// @brief Attack tolerance for player projectiles
+  uint32_t attackTolerance{0};
+  /// @brief Attacks received
+  uint32_t projectileAttacksReceived{0};
 
  public:
   /**
    * @brief Constructor
-   * @param objective Target objective this will follow
-   * @param type Enemy type
+   * @param game Game controller
+   * @param objective Target objective this enemy will follow
+   * @param diff Enemy difficulty type
    */
-  explicit Enemy(Player &objective, EnemyType type = EnemyType::Easy)
-      : Entity(defaultEnemyAssetPath[static_cast<int>(type)])
-      , objective(objective), type(type) {
-    this->setVelocity(type);
-    this->isAlive = true;
-  }
+  explicit Enemy(cave_mummies::core::Game& game
+    , cave_mummies::entities::Player &objective, EnemyDifficulty diff);
 
   /**
-   * @brief Updates this enemy state.
+   * @brief Destructor
+   */
+  ~Enemy() override;
+
+  /**
+   * @brief Updates this enemy state
    */
   void update() override;
 
   /**
-   * @brief Checks if this enemy is alive.
-   * @return true if alive, false otherwise
+   * @brief Draws enemy sprite on the screen
    */
-  inline bool getIsAlive() const { return this->isAlive; }
+  void draw() override;
+
   /**
-   * @brief Sets this enemy alive condition.
+   * @brief Checks if this enemy is alive
+   * @return true if alive, otherwise false
+   */
+  inline bool getIsAlive() const {
+    return this->isPlayerAlive;
+  }
+
+  /**
+   * @brief Setter of alive player condition
    * @param alive Alive condition
    */
-  inline void setIsAlive(bool alive) { this->isAlive = alive; }
+  inline void setIsPlayerAlive(bool alive) {
+    this->isPlayerAlive = alive;
+  }
 
   /**
-   * @brief Gets the type of enemy
-   * @return EnemyType Type of enemy
+   * @brief Gets this enemy difficulty type
+   * @return this enemy difficulty classification type
    */
-  inline EnemyType getType() const { return this->type; }
+  inline EnemyDifficulty getDifficulty() const {
+    return this->difficultyType;
+  }
 
- private:
+  /**
+   * @brief Increments the projectile attacks received counter by one
+   */
+  inline void incrementReceivedAttacks() {
+    ++this->projectileAttacksReceived;
+  }
+
+  /**
+   * @brief Getter of this enemy attack tolerance
+   */
+  inline uint32_t getAttackTolerance() const {
+    return this->attackTolerance;
+  }
+
+  /**
+   * @brief Getter of this enemy projectile attacks received
+   */
+  inline uint32_t getReceivedAttacks() const {
+    return this->projectileAttacksReceived;
+  }
+
+ protected:
   /**
    * @brief Sets this object velocity
    * @param type Enemy type
    */
-  inline void setVelocity(EnemyType type) {
-    switch (type) {
-      case EnemyType::Easy:
-        this->velocity = {1.0f, 1.0f};
-        break;
-      case EnemyType::Moderate:
-        this->velocity = {2.0f, 2.0f};
-        break;
-      case EnemyType::Hard:
-        this->velocity = {3.0f, 3.0f};
-        break;
-    }
-  }
+  void setVelocity(EnemyDifficulty type);
+
+  /**
+   * @brief Sets this object speed
+   * @param type Enemy classification type
+   */
+  void setSpeed(EnemyDifficulty type);
+
+  /**
+   * @brief Sets this object attack tolerance to player's projectiles
+   * @param type Enemy classification type
+   */
+  void setAttackTolerance(EnemyDifficulty type);
+
+  /**
+   * @brief Updates this enemy lateral movement
+   */
+  void updateLateralMovement();
+
+  /**
+   * @brief Updates this enemy sprite frame, one frame per second
+   */
+  void updateSpriteFrame();
+
+ private:
+  /**
+   * @brief Loads this object sprite texture
+   */
+  void loadTexture();
 };
+
+}  // namespace cave_mummies::entities
 
 #endif  // ENEMY_HPP

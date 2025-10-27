@@ -6,120 +6,167 @@
 #include <cstdint>
 
 #include "Entity.hpp"
-#include "Projectile.hpp"
+
+namespace cave_mummies::entities {
 
 /**
  * @brief Player entity
  */
 class Player : public Entity {
- private:
-  /// @brief Default player values
+ protected:
+  /// @brief Default ammunition quantity
   static constexpr uint32_t defaultAmmunitionQuantity{12};
-  static constexpr const char *const defaultProjectileAssetPath
-    {"assets/textures/projectiles/projectile-sprite.png"};
-  static constexpr const char *const defaultPlayerAssetPath
-    {"assets/textures/entities/cat.jpeg"};
-  /// Alive player flag
-  bool isAlive{true};
-  /// Type of projectile it uses
-  Projectile projectile;
-  /// Enemies kill count
+  /// @brief Entity kill count
   uint64_t killCount{0};
-  /// Quantity of projectiles available
-  uint64_t ammunitionQuantity{Player::defaultAmmunitionQuantity};
-  /// Current reached score
+  /// @brief Remaining ammunition for shooting
+  uint32_t remainingAmmunition{Player::defaultAmmunitionQuantity};
+  /// @brief Reload speed
+  static constexpr uint32_t reloadingSpeedInSeconds{2};
+  /// @brief Gun reload sound effect
+  Sound gunReloadSFX;
+  /// @brief Gun shot sound effect
+  Sound gunShotSFX;
+  /// @brief Current game score
   uint64_t currentScore{0};
+  /// @brief Sprint increment in velocity
+  const float sprintVelocityBoost{0.8f};
+  /// @brief Jumping condition
+  bool isJumping{false};
+  int32_t jumpCount{0};
+  float jumpVelocity{0.0f};
 
  public:
   /**
    * @brief Constructor
-   * @param playerAssetPath Texture for player object
-   * @param projecileAssetPath Texture for projectile object
+   * @param game Game controller
    */
-  explicit Player(const char *const playerAssetPath =
-      Player::defaultPlayerAssetPath
-    , const char *const projectileAssetPath =
-      Player::defaultProjectileAssetPath)
-    : Entity(playerAssetPath), projectile(projectileAssetPath) { }
+  Player(cave_mummies::core::Game& game);
 
   /**
-   * @brief Updates this player state.
+   * @brief Destructor
+   */
+  ~Player();
+
+  /**
+   * @brief Updates this player state
    */
   void update() override;
 
   /**
-   * @brief Checks if this player is alive.
-   * @return true if alive, false otherwise
+   * @brief Draws player sprite to screen
    */
-  inline bool isPlayerAlive() const { return this->isAlive; }
+  void draw() override;
 
   /**
-   * @brief Gets the projectile used by the player.
-   * @return Reference to the projectile object
+   * @brief Decrements jump count by one
    */
-  inline Projectile& getProjectile() { return this->projectile; }
-
-  /**
-   * @brief Gets the projectile used by the player (const version).
-   * @return Const reference to the projectile object
-   */
-  inline const Projectile& getProjectile() const { return this->projectile; }
-
-  /**
-   * @brief Gets the number of enemies killed by the player.
-   * @return Kill count
-   */
-  inline uint64_t getKillCount() const { return this->killCount; }
-
-  /**
-   * @brief Gets the current amount of ammunition.
-   * @return Ammunition quantity
-   */
-  inline uint64_t getAmmunitionQuantity() const {
-    return this->ammunitionQuantity;
+  inline void reduceJumpCount() {
+    --this->jumpCount;
   }
 
   /**
-   * @brief Gets the current score of the player.
-   * @return Current score
+   * @brief Getter of player kill count
+   * @return this kill count
    */
-  inline uint64_t getCurrentScore() const { return this->currentScore; }
-
-  /**
-   * @brief Sets whether the player is alive.
-   * @param alive true if alive, false otherwise
-   */
-  inline void setIsAlive(bool alive) { this->isAlive = alive; }
-
-  /**
-   * @brief Sets the projectile used by the player.
-   * @param p Projectile object to assign
-   */
-  inline void setProjectile(const Projectile &p) { this->projectile = p; }
-
-  /**
-   * @brief Sets the number of enemies killed.
-   * @param count New kill count
-   * @remark If count is < 0, it is converted to -count.
-   */
-  inline void setKillCount(int32_t count) {
-    this->killCount = (count < 0) ? -count : count;
+  inline uint64_t getKillCount() const {
+    return this->killCount;
   }
 
   /**
-   * @brief Sets the current amount of ammunition.
-   * @param qty Ammunition quantity
-   * @remark If qty is < 0, it is converted to -qty.
+   * @brief Getter of remaining ammunition
+   * @return this remaining ammunition
    */
-  inline void setAmmunitionQuantity(int32_t qty) {
-    this->ammunitionQuantity = (qty < 0) ? -qty : qty;
+  inline uint32_t getRemainingAmmunition() const {
+    return this->remainingAmmunition;
   }
 
   /**
-   * @brief Sets the current score of the player.
+   * @brief Getter of current score
+   * @return this current score
+   */
+  inline uint64_t getCurrentScore() const {
+    return this->currentScore;
+  }
+
+  /**
+   * @brief Increments the kill count by one
+   */
+  inline void incrementKillCount() {
+    ++this->killCount;
+  }
+
+  /**
+   * @brief Reloads ammunition to the max ammunition quantity
+   */
+  inline void reloadAmmunition() {
+    this->remainingAmmunition = Player::defaultAmmunitionQuantity;
+  }
+
+  /**
+   * @brief Decrement ammunition count by one
+   */
+  inline void decrementAmmunitionCount() {
+    --this->remainingAmmunition;
+  }
+
+  /**
+   * @brief Setter of the player score
    * @param score New score
+   * @remark If score is < 0, it is converted to -score.
    */
-  inline void setCurrentScore(uint64_t score) { this->currentScore = score; }
+  inline void setCurrentScore(int64_t score) {
+    this->currentScore = (score < 0) ? -score : score;
+  }
+
+  /**
+   * @brief Getter of gun reload sound effect
+   * @return Reload sound effect
+   */
+  inline Sound& getReloadSoundEffect() {
+    return this->gunReloadSFX;
+  }
+  /**
+   * @brief Getter of gun shot sound effect
+   * @return Gun shot sound effect
+   */
+  inline Sound& getGunShotSoundEffect() {
+    return this->gunShotSFX;
+  }
+
+ protected:
+   /**
+   * @brief Calculates how much should the player jump, and updates
+   * its position
+   */
+  void calculateAndDrawJump();
+
+  /**
+   * @brief Updates the sprinting status depending on player's input
+   */
+  void updatePlayerSprint();
+
+  /**
+   * @brief Updates player's lateral movement
+   */
+  void updateLateralMovement();
+
+  /**
+   * @brief Updates player's sprite frame, one frame per second
+   */
+  void updateSpriteFrame();
+
+  /**
+   * @brief Updates the player's position if it went through a wall
+   */
+  void updateWallWrapAround();
+
+ private:
+  /**
+   * @brief Loads this object sprite texture
+   */
+  void loadTexture();
 };
+
+}  // cave_mummies::entities
 
 #endif  // PLAYER_HPP
