@@ -36,7 +36,7 @@ void MainMenuState::init() {
 }
 
 void MainMenuState::buildMainTitle() {
-  const std::string title{"Cave mummies"};
+  const std::string title{"Cave Mummies"};
   // Calculate the location where to place the title
   const float screenW{static_cast<float>(GetScreenWidth())};
   const float screenH{static_cast<float>(GetScreenHeight())};

@@ -1,8 +1,7 @@
-= Cave mummies
+= Cave Mummies
 :experimental:
 :nofooter:
 :source-highlighter: pygments
-:sectnums:
 :stem: latexmath
 :toc:
 :xrefstyle: short
@@ -11,24 +10,24 @@ image:doc-assets/game_main_menu.png[Cave mummies main menu, align=center]
 
 [[Game-lore]]
 == Game Lore
-Cave Mummies is a 2D arcade / survival game that creates a fun and enjoyable
-experience during gameplay, through unlimited gameplay with an infinite game
-mode that features the main character Wil.
-Wil is an anthropomorphic creature which appeard one day on his owner's
-backyard as a baby. Since then, his owner has taken care or him.
+Cave Mummies is a **2D arcade / survival** game that creates a fun and enjoyable
+experience during gameplay, through **unlimited** gameplay with an infinite game
+mode that features the main character **Wil**.
+Wil is an anthropomorphic creature that appeared one day on his owner's
+backyard as a baby. Since then, his owner has taken care of him.
 Wil is stranded in a cave where his owner went missing. He's in the search for
-him, but encounters himself surrounded by hordes of mummies that are desperate
-to take him down.
+him, but encounters himself surrounded by hordes of **mummies** that are
+desperate to take him down.
 Before Wil's owner went on searching for treasure in the caves, he left Wil a
 gun so he could protect himself against any creature. Since it has been a while
 since Wil has seen his owner, he starts his journey looking for him taking the
 gun he was given.
 
 Wil does not know when the hordes of mummies will stop, but he knows he has to
-survive to see his owner again. Wil discovers they only perform melee attacks,
-therefore he must take advantage of his ranged weapon.
+survive to see his owner again. Wil discovers they only perform
+**melee attacks**, therefore he must take advantage of his ranged weapon.
 
-== Game specification
+== Game Specification
 Cave Mummies is a single-player desktop video game which is built on C++ and
 NASM (x86_64 Assembly). It utilizes Raylib as its base graphics library, and
 relies on it for all graphic and input actions in the game. The game features
@@ -36,246 +35,279 @@ NASM in its Linux-based release. Therefore, performance may increase in
 Linux-based machines.
 
 The core mechanic of the game is time-based survival with score progression.
-The player is intended to survive as long as possible. Based on the time passed,
-the player is rewarded with a better score on the specific game session it is
-playing.
+The player is intended to survive as long as possible. Based on elapsed time and
+the number of mummies defeated by the player, they will be rewarded with
+a greater score. Scores have a specific scope: they are only the highest on
+the current game application opened. Therefore, if the player wished to save
+their progress, they should take a picture of the highest score recorded.
 
 === Key features
 - Static arena gameplay
 - Enemy waves with multiple difficulty levels (speed and resistance)
-- Player's weapon reloading
+- Player's weapon with limited ammunition
+- Elapsed time clock for game sessions
 - Scoring system with high-score tracking
-- Menu interface and scoreboard
+- Menu interface, with about page and highest score label
 
-== How to play
-image:doc-assets/gameplay_preview.png[Gameplay preview, align=center]
+== How to Play
+image:doc-assets/gameplay_preview_one.png[Gameplay preview, align=center]
 
-The player must open the application and navigate through the presented main
+First of all, the player must navigate through the presented main
 menu. The player can navigate the menu utilizing `W` / `UP` keys for going
-upward, and `S` / `DOWN` keys for going downward. The player can select an 
-option by pressing the `return` key.
+**upward**, and `S` / `DOWN` keys for going **downward**. The player can select
+an  option by pressing the `return` key or using the mouse `LEFT_CLICK` anywhere
+on the screen.
 
-Following these navigation instructions, the player should select the 'Start'
-option, which is first in the menu. Once the player enters that option, the
-application should initiate gameplay.
+These navigation instructions apply to **all** game menus presented during the
+application's lifetime. Following these navigation instructions, the player
+should select the `Start` option, which is first in the menu. Once the player
+selects that option, the application will initiate gameplay.
 
 The game provides the following control interface for the player to use:
 
-- **Movement**: A / D / W / UP_ARROW / LEFT_ARROW / RIGHT ARROW keys 
-(or joystick with Arduino)
-- **Run**: LEFT-SHIFT key (its used simultaneously with movement keys)
-- **Jump**: Space bar
-- **Reload**: R key
-- **Shoot**: Mouse left-click
-- **Pause**: ESC key pauses the active game
-- **Music** M key toggles the music
+- **Movement**: `W` / `A` / `D` or `UP_ARROW` / `LEFT_ARROW` / `RIGHT_ARROW`
+keys
+  (utilizing an arduino joystick can also toggle these key bindings)
+- **Run**: `LEFT_SHIFT` key (to be used simultaneously with movement keys)
+- **Jump**: `Space` bar, or `W` key, or `UP_ARROW` key
+- **Reload**: `R` key or mouse `LEFT_CLICK`
+- **Shoot**: Mouse `LEFT_CLICK`
+- **Pause**: `Esc` key (used while in gameplay)
+- **Music**: `M` key toggles the music
 
-The player will have unlimited bullets as ammunition, but there is a limit to
-how many bullets may be loaded onto the weapon. Therefore, the weapon will
-yield twelve bullets at a time. After the remaining loaded bullets are used,
-the player must wait until the weapon is reloaded. Reloading the weapon can be
-done with the `R` key, and it may take up to 2 seconds.
+The player must aim at incoming enemies which will try to follow him / her, and
+**shoot** them to take them down. Surely shooting with a weapon which has
+unlimited bullets as ammunition is **satisfying**, but there is a limit to how
+many bullets may be loaded into the weapon.
+The weapon should only yield twelve bullets at a time. After the remaining
+loaded bullets are used, the player must wait until the weapon is reloaded.
+Reloading may take up to 2 seconds and can only occur once the magazine is
+empty.
 
-The player must aim at incoming enemies which try to follow the player, and
-shoot at them to take them down utilizing the mouse `left-click`. The player is
-able to move left and right, run and jump. Finally to pause the game, the player
-can enter a pause state, to which an options menu will appear for the player
-to choose from.
-
-=== How to win
+=== How to Win
 To win the game is actually a matter of the player's want. The game by itself
 does not have a finish line, or a proper end screen. Rather, the game continues
 indefinitely until the player ultimately fails to avoid the incoming waves of
 enemies, and dies.
 
-To increase the current game score, three factors can contribute: time elapsed,
-enemies killed, and air time. Time elapsed as its label implies, it refers to
-the time elapsed since the start of the game. Enemies killed can vary between
-the difficulty of the enemies. More difficult enemies tend to yield a better
-score for killing them. The player has two jumps available from the moment
-its standing on the floor tile. Killing enemies increases the amount of
-jumps the player can perform, therefore, staying in the air increments the score
-rapidly if the player is able to stay in the air the most time possible.
+To increase the current game score, only two factors can contribute to it:
+time elapsed and enemies killed. Elapsed time, as its label implies, refers
+to the time elapsed since the start of the gameplay. Each second elapsed
+accounts for one extra point to the current game score. A greater enemy kill
+count should grant a better score reward too. For each enemy killed, 10 points
+are added to the current game score. The player starts out with only two jumps
+available from the moment they are standing on the floor tile. Killing
+enemies increases the amount of jumps the player can perform. This jump count
+is cumulative and not capped, therefore, the player can store as many jumps
+available, as enemies killed.
 
 The player's goal is to survive as long as possible without being touched by any
 enemy. The game score may indicate a degree of "winning", in the sense that a
 higher score may indicate gamer prowess.
 
-Saved historial scores are to be tracked by the game, and will be displayed at
-the player's wish in the main menu. 
-A scoreboard shall appear with the historical best scores in the game.
+In both the paused menu, and game over screen, appear an option to go back to
+the main menu. This option records the highest game score during the current
+application's lifetime.
 
-The indications summary following the next list:
+[[gameplay_summary]]
+=== Gameplay Summary
+The gameplay mechanics can be summarized in the key points of the following
+list. The following list summarizes the main gameplay mechanics:
 
-- Survive waves of enemies appearing from the sides of the stage.
-- Avoid not having any loaded bullets in the weapon.
-- Aim and shoot at enemies to survive.
-- Avoid direct contact with enemies.
-- The longer you stay alive, the higher your score.
-- Staying in the air yields a constant amount of score points.
-- Do not let enemies get near you.
-- A high-score tracker records your best survival time.
+- Survive waves of enemies appearing from the sides of the stage
+- Avoid not having any loaded bullets in the weapon
+- Aim and shoot at enemies to survive
+- Avoid direct contact with enemies
+- The longer you stay alive, the higher your score
+- Kill as many enemies to get a better score
+- Wisely manage your accumulated jump count
+- Staying in the air can prevent enemies from reaching you
+- A high-score tracker records your best survival time
 
 Finally, winning is not about finishing levels, but about setting and breaking
 your personal best score.
 
 [[assets]]
-== Game assets
+== Game Assets
 
-=== Main menu
+=== Main Menu Screen
 image::doc-assets/game_main_menu.png[Game main menu, align=center]
 
-=== Paused menu
-image::doc-assets/paused_menu.png[Paused menu, align=center]
+=== Paused Game Screen
+image::doc-assets/paused_game_screen.png[Paused game screen, align=center]
 
-=== Main character
-image::doc-assets/wil_player_skin.png[main player character, width=200, align=center]
+=== Game Over Screen
+image::doc-assets/game_over_screen.png[Paused game screen, align=center]
+
+=== Gameplay Example
+image::doc-assets/gameplay_preview_two.png[Gameplay preview, align=center]
+
+=== Player Character
+image::doc-assets/wil_skin.png[main player character, width=200, align=center]
+
+=== Enemy Set
+==== Easy-Moderate Difficulty Enemy
+image::doc-assets/easy_enemy_skin.png[Easy-moderate difficulty enemy character, width=200, align=center]
+
+==== Hard Difficulty Enemy
+image::doc-assets/hard_enemy_skin.png[Hard difficulty enemy character, width=200, align=center]
 
 [[user_manual]]
-== User manual
+== User Manual
 
 [[build]]
 === Build
 
 [[game_settings]]
 ==== Game settings
-If you prefer to utilize a joystick for playing the game, change `line 10` using
+If you prefer to utilize a joystick for playing the game, change `line 28` using
 the following syntax:
 Otherwise, use `InputSourceType::Keyboard` for standard input with the keyboard.
 [source,delphi]
 ----
-Game game(InputSourceType::Joystick, "Cave Mummies");
+Game game(cave_mummies::handlers::InputSourceType::Joystick);
 ----
 
-[[building_the_program]]
-==== Building the program
+[[build]]
+==== Build
+=== Disclaimer
 Before attempting to build the project, make sure the required dependencies are
-on the clients machine, and are their paths are reachable.
-Using `make help` provides an interface for all available targets in the
-Makefile provided, make sure to follow the set interface.
+on your machine, and that their paths are reachable. Using `make help`
+displays an interface with all available targets provided by the Makefile.
+Make sure to follow the set interface.
 
 The following indications are focused on MacOS and Linux-based systems
-specifically. Support for machines with Windows, or other operating systems is
-not supported, nor there is documentation for those systems relating to this
-project.
+specifically. Support for machines with Windows operating system, or other
+operating systems is not readily supported, nor there is documentation for
+those systems relating to this project in this document.
 
-Open a terminal window, and direct to the root of this project. There, to build
-the game input the `make` command. This action will compile the source code into
-object code in a `build/` directory in the current project and link all that
-object code into an executable named `Cave mummies` in a `bin/` directory.
+=== Instructions
+Previous to the main instructions, there is the `make raylib` command available,
+which clones and compiles the raylib dependency for this project to compile
+adequately.
 
-The previous Makefile target provides a standard compilation for the game, but
-also a `make release` command is provided by the Makefile interface, to compile
-a release version of the game. This target will perform a similar pipeline to
-`make`, although the executable created is a release version of the game.
+Starting off, open a terminal window and direct yourself to the root of this
+project. There, to build the game, run the `make` command. This action will
+compile the source code in a directory named `build/` in the current project,
+and link the compiled code into an executable named `Cave mummies` in a `bin/`
+directory.
 
-Another useful command, but rather similar to `make` is the `make debug`
-command, which is intended to build a debug version of the game. This version
-is intended for debugging the program's code.
+The previous target mentioned provides a standard debug compilation for the
+game, but also a `make release` command is provided by the Makefile interface
+to compile a release version of the game. This target will perform a similar
+instruction pipeline to `make`, although the executable created is a more
+optimized release version of the game.
 
-To clear any compiled files and generated executables, utilize the `make clean`
-command. This command will eliminate the `build/` and `bin/` directories in one
-action.
+To clear any compiled files and executables, utilize the `make clean`
+command. This command will remove the `build/` and `bin/` directories in one
+action, but will not remove the `libs/raylib/` directory.
 
-During development cpplint was utilized for following a set standard in the
-code. If you have cpplint in your machine, you can utilize the `make lint`
+During development, **cpplint** was used to enforce a consistent code standard.
+If you have **cpplint** in your machine, you can utilize the `make lint`
 command to perform a scan on the code. This functionality is an extra, and
-should not be necessary for compiling and running the program.
+is not necessary to compile and run the game.
 
 [[usage]]
 === Usage
-After the previous `build` section, and compiling an executable version of the
-game, this section will provide a guide on usage of the program.
+After the previous <<build, build>> section and the compilation
+process, this section will provide a usage guide of the game.
 
 The Makefile interface provides the `make run` command, which should be used
-after having a compiled version of the program. If no compiled executable is
-available, the target will compile the game the same way the `make`
-command does. And after that, it will run the program.
+after having a compiled version of the game to run the game. If no compiled
+executable is available, the target will compile the game in `debug` mode, in
+the same manner the `make` command does.
 
-Another alternative, is to direct to the `bin/` directory in the root of the
-project and running the program using the mouse.
-This alternative is discouraged because the game assets may go missing and the
-program may behave in a weird way.
+Another alternative, is to direct yourself to the `bin/` directory in the root
+of the project and executing the executable file manually. A desktop shortcut
+can also be created using the executable located inside the `bin/` directory.
 
 [[Functionality]]
-== Functionality
-The following functionalities are intended to be included in the video game.
+== Functionalities
+The following table of functionalities lists a series of functionality intended
+to be included in the game.
 [cols="2,2,2,2", options="header"]
 |===
 | Functionality | Control (keys/joystick) | Description | Status
 
 | Lateral Movement
-| With Arduino: Joystick<br>Without Arduino: left key A, right key D
-| The player moves sideways across the screen.
+| `W` / `A` / `D` or `UP_ARROW` / `LEFT_ARROW` / `RIGHT_ARROW` keys
+| The player moves across the screen.
 | ✅ Finished
 
+| Lateral Movement with Arduino joystick
+| Joystick axis movement
+| The player moves across the screen.
+| ⏳ Pending
+
 | Running
-| Left-shift key (should be used in conjuction with movement keys)
-| Makes the player increment its speed.
+| `LEFT_SHIFT` key (to be used simultaneously with movement keys)
+| Makes the player boost its current speed.
 | ✅ Finished
 
 | Jump
-| Space key
+| `Space` bar, or `W` key, or `UP_ARROW` key
 | Allows dodging mummies. Vertical movement only (jump).
 | ✅ Finished
 
 | Reloading
-| R key
-| Increases available ammunition.
-| 🔄 In progress
+| `R` key or mouse `LEFT_CLICK`
+| Reloads the player's weapon ammunition to the maximum value
+| ✅ Finished
 
 | Shooting
-| Mouse (left click)
-| Shoots a bullet toward the position of the cursor. Impact reduces enemies
-health points.
+| Mouse `LEFT_CLICK`
+| Shoots a bullet toward the position of the cursor.
 | ✅ Finished
 
 | Score
 | Automatically with time and when eliminating mummies
-| The highest score is saved.
-| 🔄 In progress
+| The current and highest score is saved in the game.
+| ✅ Finished
 
 | Menu Interface
 | -
-| The main menu that directs to a game session and the report.
+| The main menu that directs to gameplay and the about menu.
 | ✅ Finished
 
 | Game Interface
 | -
-| Sprites of the player and enemies must appear on screen.
+| Load game scene, player, and enemy sprite textures.
 | ✅ Finished
 
 | Pause Button
-| Esc key
-| Pressing Esc key pauses the current game session.
+| `Esc` key (used while in gameplay)
+| Transition to a paused game state to pause the gameplay
 | ✅ Finished
 
 | Toggle soundtrack button
-| M key
-| Pressing M key toggles the playing soundtrack.
+| `M` key
+| Toggle playing the background soundtrack
 | ✅ Finished
 
 | High Score Component
 | -
-| A component in the main menu displaying the highest historical score.
-| 🔄 In progress
+| A label / title in the main menu displaying the highest historical score.
+| ✅ Finished
 |===
 
 == Dependencies
-For the client to compile the game utilizing its build features, the following
-dependencies must be present in the clients machine:
+To compile the game utilizing its build features, the following dependencies
+must be present on your machine:
 
 - Latest gpass:[++] compiler
-- NASM Assembly compiler
-- System-specific Raylib Graphics library
+- NASM (Assembly compiler)
+- Git (version control)
+- CMake (build tool)
 
-The g++ compiler is required due to the Makefile only providing an interface for
- that specific compiler.
+The g++ compiler is required since the Makefile only supports that compiler.
 The NASM Assembly compiler is necessary for Linux-based builds due to the
-Makefile establishing
-a rigid compilation pipeline.
-The Raylib Graphics library is required, as its the backbone of the game, in
-which it relies heavily for all the graphic and input actions.
+Makefile establishing a rigid compilation pipeline. No need for it if you're
+using a MacOS operating system.
+Git version control is used to clone the raylib dependency.
+CMake is used to compile the raylib clone.
+
+All of these dependencies are to be installed suited to your operating system.
+There is no guide on how to install these besides this requirement list.
 
 [[credits]]
 == Credits
