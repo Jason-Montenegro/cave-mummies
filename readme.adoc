@@ -168,8 +168,7 @@ Otherwise, use `InputSourceType::Keyboard` for standard input with the keyboard.
 Game game(cave_mummies::handlers::InputSourceType::Joystick);
 ----
 
-[[build]]
-==== Build
+[[building_and_compiling]]
 === Disclaimer
 Before attempting to build the project, make sure the required dependencies are
 on your machine, and that their paths are reachable. Using `make help`
