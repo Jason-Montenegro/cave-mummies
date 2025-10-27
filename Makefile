@@ -70,22 +70,19 @@ all: debug
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Compile release build
 .PHONY: release
-release: raylib
 release: CXXFLAGS += -O3 -DNDEBUG
-release: $(BIN_DIR)/$(BINNAME)
+release: raylib $(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Debug build (no optimizations)
 .PHONY: debug
-debug: raylib
 debug: CXXFLAGS += -g -DDEBUG
-debug: $(BIN_DIR)/$(BINNAME)
+debug: raylib $(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Run program in the same directory
 .PHONY: run
-run: raylib
-run: $(BIN_DIR)/$(BINNAME)
+run: raylib $(BIN_DIR)/$(BINNAME)
 	./$(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-

@@ -44,27 +44,27 @@ bool InputHandler::isKeyReleased(int key) const {
 }
 
 bool InputHandler::isMouseLeftPressed() const {
-  return isPressed(MOUSE_LEFT_BUTTON);
+  return IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 }
 
 bool InputHandler::isMouseRightPressed() const {
-  return isPressed(MOUSE_RIGHT_BUTTON);
+  return IsMouseButtonPressed(MOUSE_RIGHT_BUTTON);
 }
 
 bool InputHandler::isMouseLeftDown() const {
-  return isKeyDown(MOUSE_LEFT_BUTTON);
+  return IsMouseButtonDown(MOUSE_LEFT_BUTTON);
 }
 
 bool InputHandler::isMouseRightDown() const {
-  return isKeyDown(MOUSE_RIGHT_BUTTON);
+  return IsMouseButtonDown(MOUSE_RIGHT_BUTTON);
 }
 
 bool InputHandler::isMouseLeftReleased() const {
-  return isKeyReleased(MOUSE_LEFT_BUTTON);
+  return IsMouseButtonReleased(MOUSE_LEFT_BUTTON);
 }
 
 bool InputHandler::isMouseRightReleased() const {
-  return isKeyReleased(MOUSE_RIGHT_BUTTON);
+  return IsMouseButtonReleased(MOUSE_RIGHT_BUTTON);
 }
 
 int InputHandler::getCurrentMouseWheelMove() const {

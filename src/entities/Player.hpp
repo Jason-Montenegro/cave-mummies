@@ -6,7 +6,6 @@
 #include <cstdint>
 
 #include "Entity.hpp"
-#include "InputHandler.hpp"
 
 namespace cave_mummies::entities {
 
@@ -17,15 +16,16 @@ class Player : public Entity {
  protected:
   /// @brief Default ammunition quantity
   static constexpr uint32_t defaultAmmunitionQuantity{12};
-  /// @brief Player texture
-  static constexpr const char* const defaultPlayerAssetPath
-    {"../assets/textures/entities/wil_player_skin.png"};
   /// @brief Entity kill count
   uint64_t killCount{0};
   /// @brief Remaining ammunition for shooting
   uint32_t remainingAmmunition{Player::defaultAmmunitionQuantity};
   /// @brief Reload speed
   static constexpr uint32_t reloadingSpeedInSeconds{2};
+  /// @brief Gun reload sound effect
+  Sound gunReloadSFX;
+  /// @brief Gun shot sound effect
+  Sound gunShotSFX;
   /// @brief Current game score
   uint64_t currentScore{0};
   /// @brief Sprint increment in velocity
@@ -39,26 +39,13 @@ class Player : public Entity {
   /**
    * @brief Constructor
    * @param game Game controller
-   * @param playerAssetPath Texture for player object
    */
-  explicit Player(cave_mummies::core::Game& game
-    , const char* const playerAssetPath = Player::defaultPlayerAssetPath)
-    : Entity(game, playerAssetPath) {
-    this->velocity = this->baseVelocity = 3.0f;
-    this->currentSpeed = 3.0f;
-    // Resize texture
-    Image img{LoadImage((std::string(GetApplicationDirectory()) 
-      + std::string(Player::defaultPlayerAssetPath)).c_str())};
-    const int32_t newWidth = img.width * 0.1f;
-    const int32_t newHeight = img.height * 0.1f;
-    ImageResize(&img, newWidth, newHeight);
-    // Load scaled texture
-    if (this->texture.id != 0) {
-      UnloadTexture(this->texture);
-    }
-    this->texture = LoadTextureFromImage(img);
-    UnloadImage(img);
-  }
+  Player(cave_mummies::core::Game& game);
+
+  /**
+   * @brief Destructor
+   */
+  ~Player();
 
   /**
    * @brief Updates this player state
@@ -102,12 +89,10 @@ class Player : public Entity {
   }
 
   /**
-   * @brief Setter of the number of enemies killed
-   * @param count New kill count
-   * @remark If count is < 0, it is converted to -count
+   * @brief Increments the kill count by one
    */
-  inline void setKillCount(int32_t count) {
-    this->killCount = (count < 0) ? -count : count;
+  inline void incrementKillCount() {
+    ++this->killCount;
   }
 
   /**
@@ -118,6 +103,13 @@ class Player : public Entity {
   }
 
   /**
+   * @brief Decrement ammunition count by one
+   */
+  inline void decrementAmmunitionCount() {
+    --this->remainingAmmunition;
+  }
+
+  /**
    * @brief Setter of the player score
    * @param score New score
    * @remark If score is < 0, it is converted to -score.
@@ -125,6 +117,22 @@ class Player : public Entity {
   inline void setCurrentScore(int64_t score) {
     this->currentScore = (score < 0) ? -score : score;
   }
+
+  /**
+   * @brief Getter of gun reload sound effect
+   * @return Reload sound effect
+   */
+  inline Sound& getReloadSoundEffect() {
+    return this->gunReloadSFX;
+  }
+  /**
+   * @brief Getter of gun shot sound effect
+   * @return Gun shot sound effect
+   */
+  inline Sound& getGunShotSoundEffect() {
+    return this->gunShotSFX;
+  }
+
  protected:
    /**
    * @brief Calculates how much should the player jump, and updates
@@ -151,6 +159,12 @@ class Player : public Entity {
    * @brief Updates the player's position if it went through a wall
    */
   void updateWallWrapAround();
+
+ private:
+  /**
+   * @brief Loads this object sprite texture
+   */
+  void loadTexture();
 };
 
 }  // cave_mummies::entities

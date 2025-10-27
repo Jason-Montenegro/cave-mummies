@@ -3,8 +3,6 @@
 #ifndef ENEMY_HPP
 #define ENEMY_HPP
 
-#include <cstdlib>
-
 #include "Entity.hpp"
 
 namespace cave_mummies::entities {
@@ -15,6 +13,7 @@ class Player;
  * @brief Enemy classification type
  */
 enum class EnemyDifficulty {
+  Easy,
   Moderate,
   Hard
 };
@@ -24,17 +23,16 @@ enum class EnemyDifficulty {
  */
 class Enemy : public Entity {
  protected:
-  /// @brief Default enemy values
-  static constexpr const char* const enemyAssetPaths[3]{
-    "../assets/textures/entities/moderate_enemy_skin.png",
-    "../assets/textures/entities/hard_enemy_skin.png"
-  };
   /// @brief Alive player flag
   bool isPlayerAlive{true};
   /// @brief Target objective
   cave_mummies::entities::Player& objective;
   /// @brief Enemy difficulty type
-  EnemyDifficulty difficultyType{EnemyDifficulty::Moderate};
+  EnemyDifficulty difficultyType{EnemyDifficulty::Easy};
+  /// @brief Attack tolerance for player projectiles
+  uint32_t attackTolerance{0};
+  /// @brief Attacks received
+  uint32_t projectileAttacksReceived{0};
 
  public:
   /**
@@ -44,25 +42,12 @@ class Enemy : public Entity {
    * @param diff Enemy difficulty type
    */
   explicit Enemy(cave_mummies::core::Game& game
-    , cave_mummies::entities::Player &objective, EnemyDifficulty diff)
-    : Entity(game, Enemy::getEnemyTextureFilename(diff))
-    , objective(objective)
-    , difficultyType(diff) {
-    this->setVelocity(diff);
-    this->setSpeed(diff);
-      // Resize texture
-    Image img{LoadImage((std::string(GetApplicationDirectory()) 
-      + std::string(Enemy::getEnemyTextureFilename(diff))).c_str())};
-    const int32_t newWidth = img.width * 0.1f;
-    const int32_t newHeight = img.height * 0.1f;
-    ImageResize(&img, newWidth, newHeight);
-    // Load scaled texture
-    if (this->texture.id != 0) {
-      UnloadTexture(this->texture);
-    }
-    this->texture = LoadTextureFromImage(img);
-    UnloadImage(img);
-  }
+    , cave_mummies::entities::Player &objective, EnemyDifficulty diff);
+
+  /**
+   * @brief Destructor
+   */
+  ~Enemy() override;
 
   /**
    * @brief Updates this enemy state
@@ -98,49 +83,45 @@ class Enemy : public Entity {
     return this->difficultyType;
   }
 
+  /**
+   * @brief Increments the projectile attacks received counter by one
+   */
+  inline void incrementReceivedAttacks() {
+    ++this->projectileAttacksReceived;
+  }
+
+  /**
+   * @brief Getter of this enemy attack tolerance
+   */
+  inline uint32_t getAttackTolerance() const {
+    return this->attackTolerance;
+  }
+
+  /**
+   * @brief Getter of this enemy projectile attacks received
+   */
+  inline uint32_t getReceivedAttacks() const {
+    return this->projectileAttacksReceived;
+  }
+
  protected:
   /**
-   * @brief Sets this object velocity.
+   * @brief Sets this object velocity
    * @param type Enemy type
    */
-  inline void setVelocity(EnemyDifficulty type) {
-    switch (type) {
-    case EnemyDifficulty::Moderate:
-      this->velocity = this->baseVelocity = 3.0f;
-      break;
-    case EnemyDifficulty::Hard:
-      this->velocity = this->baseVelocity = 4.0f;
-      break;
-    }
-  }
+  void setVelocity(EnemyDifficulty type);
 
   /**
-   * @brief Sets this object speed.
+   * @brief Sets this object speed
    * @param type Enemy classification type
    */
-  inline void setSpeed(EnemyDifficulty type) {
-    switch (type) {
-    case EnemyDifficulty::Moderate:
-      this->setCurrentSpeed(1.4f);
-      break;
-    case EnemyDifficulty::Hard:
-      this->setCurrentSpeed(1.6f);
-      break;
-    }
-  }
+  void setSpeed(EnemyDifficulty type);
 
   /**
-   * @brief Getter of enemy texture file name
+   * @brief Sets this object attack tolerance to player's projectiles
    * @param type Enemy classification type
-   * @return Texture file name
    */
-  static inline const char* getEnemyTextureFilename(EnemyDifficulty type) {
-    switch (type) {
-    case EnemyDifficulty::Moderate: return enemyAssetPaths[0];
-    case EnemyDifficulty::Hard: return enemyAssetPaths[1];
-    default: return "";
-    }
-  }
+  void setAttackTolerance(EnemyDifficulty type);
 
   /**
    * @brief Updates this enemy lateral movement
@@ -152,10 +133,11 @@ class Enemy : public Entity {
    */
   void updateSpriteFrame();
 
+ private:
   /**
-   * @brief Updates this enemy position if it went through a wall
+   * @brief Loads this object sprite texture
    */
-  void updateWallWrapAround();
+  void loadTexture();
 };
 
 }  // namespace cave_mummies::entities

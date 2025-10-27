@@ -58,18 +58,9 @@ class Entity {
   /**
    * @brief Constructor
    * @param game Game controller
-   * @param assetFilename File name of entity texture
-   * @note assetFilename must be relative to raylib's GetApplicationDirectory()
    */
-  explicit Entity(cave_mummies::core::Game& game
-    , const char* assetFilename)
-    : game(game) {
-    if (assetFilename) {
-      const char* basePath{GetApplicationDirectory()};
-      this->texture = LoadTexture((std::string(basePath)
-        + assetFilename).c_str());
-    }
-  }
+  explicit Entity(cave_mummies::core::Game& game)
+    : game(game) { }
 
   /**
    * @brief Destructor
@@ -88,10 +79,7 @@ class Entity {
   /**
    * @brief Draws texture to screen
    */
-  inline virtual void draw() {
-    DrawTexture(this->texture, static_cast<int>(this->bounds.x)
-      , static_cast<int>(this->bounds.y), RAYWHITE);
-  }
+  inline virtual void draw() = 0;
 
   /**
    * @brief Getter of bounds member
@@ -139,14 +127,6 @@ class Entity {
    */
   inline Texture2D getTexture() const {
     return this->texture;
-  }
-  
-  /**
-   * @brief Setter of texture member
-   * @param t New texture object
-   */
-  inline void setTexture(const Texture2D& t) {
-    this->texture = t;
   }
 
   /**

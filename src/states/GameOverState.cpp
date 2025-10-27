@@ -46,7 +46,7 @@ void GameOverState::buildMainTitle() {
   const float x{screenW / 2.0f - textSize.x / 2.0f};
   const float y{screenH * 0.1f};  // Upper side margin of 10%
 
-  menu::MenuElement titleElement{.text = title.c_str(), .color = WHITE
+  menu::MenuElement titleElement{.text = title, .color = WHITE
     , .flag = MenuOptionFlag::Highlight1, .tag = MenuElementTag::h1
     , .fontSize = fontSize, .position = Vector2{.x = x, .y = y}
     , .gameState = GameStateID::Null};
@@ -66,7 +66,7 @@ void GameOverState::buildScoreTitle() {
   const float x{screenW / 2.0f - textSize.x / 2.0f};
   const float y{screenH * 0.3f};  // Upper side margin of 30%
 
-  menu::MenuElement titleElement{.text = scoreTitle.c_str(), .color = WHITE
+  menu::MenuElement titleElement{.text = scoreTitle, .color = WHITE
     , .flag = MenuOptionFlag::None, .tag = MenuElementTag::h2
     , .fontSize = fontSize, .position = Vector2{.x = x, .y = y}
     , .gameState = GameStateID::Null};
@@ -106,19 +106,19 @@ void GameOverState::buildMenuOptions() {
 
 cave_mummies::core::GameStateID GameOverState::update() {
   auto newState{this->menuBuilder.update()};
+  this->updateHighestGameScore();
+  this->game.setCurrentGameScore(0);
   if (newState == GameStateID::StageOne) {
     this->game.getGameStateHandler().removeState(GameStateID::StageOne);
     this->game.getGameStateHandler().registerState(GameStateID::StageOne);
+  } else if (newState == GameStateID::MainMenu) {
+    this->game.getGameStateHandler().removeState(GameStateID::StageOne);
   }
-  if (newState == GameStateID::MainMenu) {
-    this->updateHighestGameScore();
-  }
-  this->game.setCurrentGameScore(0);
   return newState;
 }
 
 void GameOverState::updateHighestGameScore() {
-  const int64_t currentGameScore{this->game.getCurrentGameScore()};
+  const uint64_t currentGameScore{this->game.getCurrentGameScore()};
   if (currentGameScore > this->game.getHighestGameScore()) {
     this->game.setHighestGameScore(currentGameScore);
   }

@@ -53,6 +53,15 @@ struct Projectile {
     return {position.x - radius, position.y - radius, radius * 1.0f
       , radius * 1.0f};
   }
+
+  /**
+   * @brief Equality operator overload
+   * @param other Other projectile
+   * @return true if they are the same, otherwise false
+   */
+  bool operator==(const Projectile& other) const {
+    return this == &other;
+  }
 };
 
 }  // namespace cave_mummies::entities

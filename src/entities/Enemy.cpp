@@ -1,15 +1,52 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
+#include <string>
+
 #include "Enemy.hpp"
 #include "Player.hpp"
 #include "Game.hpp"
 
 namespace cave_mummies::entities {
 
+Enemy::Enemy(cave_mummies::core::Game& game
+  , cave_mummies::entities::Player &objective, EnemyDifficulty diff)
+  : Entity(game)
+  , objective(objective)
+  , difficultyType(diff) {
+  this->setVelocity(diff);
+  this->setSpeed(diff);
+  this->setAttackTolerance(diff);
+  this->loadTexture();
+}
+
+void Enemy::loadTexture() {
+  if (texture.id != 0) {
+    UnloadTexture(texture);
+  }
+  std::string filename{game.getGameTextures().getEnemyTextureFilename(
+    this->difficultyType)};
+  std::string basePath{GetApplicationDirectory()};
+  Image img{LoadImage((basePath + filename).c_str())};
+  if (!img.data) {
+    throw std::runtime_error("Failed to load enemy texture: "
+      + std::string(filename));
+  }
+  const int32_t newWidth{static_cast<int32_t>(img.width * 0.1f)};
+  const int32_t newHeight{static_cast<int32_t>(img.height * 0.1f)};
+  ImageResize(&img, newWidth, newHeight);
+  this->texture = LoadTextureFromImage(img);
+  UnloadImage(img);
+}
+
+Enemy::~Enemy() {
+  if (this->texture.id != 0) {
+    UnloadTexture(this->texture);
+  }
+}
+
 void Enemy::update() {
   this->updateLateralMovement();
   this->updateSpriteFrame();
-  this->updateWallWrapAround();
 }
 
 void Enemy::updateLateralMovement() {
@@ -32,20 +69,6 @@ void Enemy::updateSpriteFrame() {
     this->currentSpriteFrame =
       ++this->currentSpriteFrame % this->spriteFrameCount;
   }
-}
-
-void Enemy::updateWallWrapAround() {
-  // Horizontal wall wrap-around
-  const float screenWidth{static_cast<float>(GetScreenWidth())};
-  // Walks on right wall, appears on left wall
-  if (this->bounds.x > screenWidth) {
-    this->bounds.x = -this->bounds.width;
-  }
-  // Walks on left wall, appears on right wall
-  if (this->bounds.x + this->bounds.width < 0) {
-    this->bounds.x = screenWidth;
-  }
-  // TODO(Jason): set up asm function
 }
 
 void Enemy::draw() {
@@ -78,5 +101,48 @@ void Enemy::draw() {
   DrawTexturePro(this->texture, sourceRec, destRec, (Vector2){0, 0}, 0.0f
     , WHITE);
 }
+
+void Enemy::setVelocity(EnemyDifficulty type) {
+  switch (type) {
+  case EnemyDifficulty::Easy:
+    this->velocity = this->baseVelocity = 2.0f;
+    break;
+  case EnemyDifficulty::Moderate:
+    this->velocity = this->baseVelocity = 2.5f;
+    break;
+  case EnemyDifficulty::Hard:
+    this->velocity = this->baseVelocity = 3.0f;
+    break;
+  }
+}
+
+void Enemy::setSpeed(EnemyDifficulty type) {
+  switch (type) {
+  case EnemyDifficulty::Easy:
+    this->setCurrentSpeed(1.2f);
+    break;
+  case EnemyDifficulty::Moderate:
+    this->setCurrentSpeed(1.4f);
+    break;
+  case EnemyDifficulty::Hard:
+    this->setCurrentSpeed(1.6f);
+    break;
+  }
+}
+
+void Enemy::setAttackTolerance(EnemyDifficulty type) {
+  switch (type) {
+  case EnemyDifficulty::Easy:
+    this->attackTolerance = 1;
+    break;
+  case EnemyDifficulty::Moderate:
+    this->attackTolerance = 2;
+    break;
+  case EnemyDifficulty::Hard:
+    this->attackTolerance = 2;
+    break;
+  }
+}
+
 
 }  // namespace cave_mummies::entities

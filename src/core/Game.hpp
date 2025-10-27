@@ -8,7 +8,7 @@
 #include "raylib.h"
 
 #include "Application.hpp"
-#include "Log.hpp"
+#include "GameTextures.hpp"
 
 // Forward declarations
 namespace cave_mummies::handlers {
@@ -27,8 +27,6 @@ class Game : public cave_mummies::core::Application {
  private:
   /// @brief Default window title
   static constexpr const char* const defaultWindowTitle{"Cave mummies"};
-  /// @brief Program logger
-  static cave_mummies::utils::Log& log;
   /// @brief Game soundtrack intended to be concatenated with raylib function:
   /// GetApplicationDirectory()
   const char* soundtrackPath{"../assets/audio/music/game_soundtrack.mp3"};
@@ -40,13 +38,14 @@ class Game : public cave_mummies::core::Application {
   std::unique_ptr<cave_mummies::handlers::InputHandler> inputHandler;
   /// @brief Collision handler
   std::unique_ptr<cave_mummies::handlers::CollisionHandler> collisionHandler;
+  /// @brief Loaded game condition
   bool loadedGame{false};
-  /// @brief Log filename
-  static constexpr const char* const logFilename{"cave_mummies.log"};
   /// @brief Highest game score
-  int64_t currentHighestGameScore{0};
+  uint64_t currentHighestGameScore{0};
   /// @brief Current game score
-  int64_t currentGameScore{0};
+  uint64_t currentGameScore{0};
+  /// @brief Enemy texture loader
+  cave_mummies::entities::GameTextures gameTextures;
 
  public:
   /**
@@ -92,24 +91,32 @@ class Game : public cave_mummies::core::Application {
   /**
    * @brief Setter for current game score
    * @param score New game score
+   * @note Turns negative values to their complement
    */
   void setCurrentGameScore(int64_t score);
 
   /**
    * @brief Setter for current highest game score
    * @param score New game score
+   * @note Turns negative values to their complement
    */
   void setHighestGameScore(int64_t score);
 
   /**
    * @brief Getter for current game score
    */
-  int64_t getCurrentGameScore() const;
+  uint64_t getCurrentGameScore() const;
 
   /**
    * @brief Getter for current highest game score
    */
-  int64_t getHighestGameScore() const;
+  uint64_t getHighestGameScore() const;
+
+  /**
+   * @brief Getter of game texture loader
+   * @return Game texture loader
+   */
+  cave_mummies::entities::GameTextures& getGameTextures();
 
  private:
   /**
@@ -139,13 +146,6 @@ class Game : public cave_mummies::core::Application {
    * This method does nothing
    */
   void cleanup() override;
-
-  /**
-   * @brief Callback to allow Raylib to redirect its log messages to a logger
-   * @param raylibMsg Raylib log message
-   */
-  static void traceLogCallback(int /* logType */, const char* raylibMsg
-    , va_list /* variable args */);
 
   /**
    * @brief Sets the input source for playing the game

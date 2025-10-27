@@ -46,7 +46,7 @@ void MainMenuState::buildMainTitle() {
   const float x{screenW / 2.0f - textSize.x / 2.0f};
   const float y{screenH * 0.1f};  // Upper side margin of 10%
 
-  menu::MenuElement titleElement{.text = title.c_str(), .color = WHITE
+  menu::MenuElement titleElement{.text = title, .color = WHITE
     , .flag = MenuOptionFlag::Highlight2, .tag = MenuElementTag::li
     , .fontSize = fontSize, .position = Vector2{.x = x, .y = y}
     , .gameState = GameStateID::Null};
@@ -66,7 +66,7 @@ void MainMenuState::buildScoreTitle() {
   const float x{screenW / 2.0f - textSize.x / 2.0f};
   const float y{screenH * 0.3f};  // Upper side margin of 30%
 
-  menu::MenuElement titleElement{.text = scoreTitle.c_str(), .color = WHITE
+  menu::MenuElement titleElement{.text = scoreTitle, .color = WHITE
     , .flag = MenuOptionFlag::None, .tag = MenuElementTag::h2
     , .fontSize = fontSize, .position = Vector2{.x = x, .y = y}
     , .gameState = GameStateID::Null};

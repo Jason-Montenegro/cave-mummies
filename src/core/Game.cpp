@@ -9,6 +9,7 @@
 #include "CollisionHandler.hpp"
 #include "Game.hpp"
 #include "GameStateHandler.hpp"
+#include "Log.hpp"
 #include "MainMenuState.hpp"
 #include "InputHandler.hpp"
 #include "InputSource.hpp"
@@ -36,13 +37,9 @@ Game::~Game() {
     CloseWindow();
     this->loadedGame = false;
   }
-
-  cave_mummies::utils::Log::getInstance().stop();
 }
 
 void Game::init() {
-  cave_mummies::utils::Log::getInstance().start(Game::logFilename);
-  SetTraceLogCallback(Game::traceLogCallback);
   SetConfigFlags(FLAG_FULLSCREEN_MODE | FLAG_WINDOW_HIGHDPI);
   InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), Game::defaultWindowTitle);
   SetTargetFPS(60);
@@ -75,19 +72,29 @@ float Game::getGameStageFloorHeight() const {
 }
 
 void Game::setCurrentGameScore(int64_t score) {
+  if (score < 0) {
+    score = -score;
+  }
   this->currentGameScore = score;
 }
 
 void Game::setHighestGameScore(int64_t score) {
+  if (score < 0) {
+    score = -score;
+  }
   this->currentHighestGameScore = score;
 }
 
-int64_t Game::getCurrentGameScore() const {
+uint64_t Game::getCurrentGameScore() const {
   return this->currentGameScore;
 }
 
-int64_t Game::getHighestGameScore() const {
+uint64_t Game::getHighestGameScore() const {
   return this->currentHighestGameScore;
+}
+
+cave_mummies::entities::GameTextures& Game::getGameTextures() {
+  return this->gameTextures;
 }
 
 int Game::run() {
@@ -132,12 +139,6 @@ void Game::draw() {
 
 void Game::cleanup() {
   // Currently nothing to clean up
-}
-
-void Game::traceLogCallback(int /* logType */, const char* raylibMsg
-  , va_list /* variable args */) {
-  cave_mummies::utils::Log::append(cave_mummies::utils::Log::DEBUGGING,
-    "Raylib", raylibMsg);
 }
 
 void Game::setInputSource(InputSourceType type) {

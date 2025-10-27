@@ -64,6 +64,7 @@ class MenuBuilder {
    * @brief Loads font to builder
    * @param filename Font filename
    * @return true if the font was loaded, otherwise false
+   * @note this object unloads loaded resources
    */
   bool loadFont(const char* filename);
 
@@ -71,6 +72,7 @@ class MenuBuilder {
    * @brief Loads select menu option sound
    * @param filename Sound filename
    * @return true if the sound was loaded, otherwise false
+   * @note this object unloads loaded resources
    */
   bool loadSelectMenuOption(const char* filename);
 
@@ -78,6 +80,7 @@ class MenuBuilder {
    * @brief Loads submit menu option sound
    * @param filename Sound filename
    * @return true if the sound was loaded, otherwise false
+   * @note this object unloads loaded resources
    */
   bool loadSubmitMenuOption(const char* filename);
 

@@ -1,8 +1,10 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
+#include <string>
+
 #include "Game.hpp"
 #include "Player.hpp"
-
+#include "InputHandler.hpp"
 
 /**
  * @brief Updates the sprinting status depending on player's input
@@ -18,6 +20,49 @@ extern "C" void update_player_sprint(float* velocity, float baseVelocity,
   float sprintVelocityBoost, bool isShiftDown, bool isShiftReleased);
 
 namespace cave_mummies::entities {
+
+Player::Player(cave_mummies::core::Game& game)
+  : Entity(game) {
+  this->velocity = this->baseVelocity = 3.0f;
+  this->currentSpeed = 3.0f;
+  std::string basePath{GetApplicationDirectory()};
+  this->loadTexture();
+  // Load sound effects
+  this->gunReloadSFX = LoadSound((basePath
+    + std::string("../assets/audio/sfx/gun-cocking-sfx.wav")).c_str());
+  this->gunShotSFX = LoadSound((basePath
+    + std::string("../assets/audio/sfx/gun-shot-sfx.wav")).c_str());
+}
+
+void Player::loadTexture() {
+  if (texture.id != 0) {
+    UnloadTexture(texture);
+  }
+  std::string filename{game.getGameTextures().getPlayerTextureFilename()};
+  std::string basePath{GetApplicationDirectory()};
+  Image img{LoadImage((basePath + filename).c_str())};
+  if (!img.data) {
+    throw std::runtime_error("Failed to load player texture: "
+      + std::string(filename));
+  }
+  const int32_t newWidth{static_cast<int32_t>(img.width * 0.1f)};
+  const int32_t newHeight{static_cast<int32_t>(img.height * 0.1f)};
+  ImageResize(&img, newWidth, newHeight);
+  this->texture = LoadTextureFromImage(img);
+  UnloadImage(img);
+}
+
+Player::~Player() {
+  if (this->texture.id != 0) {
+    UnloadTexture(this->texture);
+  }
+  if (this->gunReloadSFX.frameCount > 0) {
+    UnloadSound(this->gunReloadSFX);
+  }
+  if (this->gunShotSFX.frameCount > 0) {
+    UnloadSound(this->gunShotSFX);
+  }
+}
 
 void Player::update() {
   this->updatePlayerSprint();
