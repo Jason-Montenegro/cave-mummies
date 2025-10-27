@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include <stdexcept>
+
 #include "Game.hpp"
 #include "Player.hpp"
 #include "InputHandler.hpp"
@@ -74,11 +76,13 @@ void Player::update() {
 
 void Player::updatePlayerSprint() {
   auto& input{this->game.getInputHandler()};
+  /*
   #ifdef __linux__
     update_player_sprint(&this->velocity, this->baseVelocity,
       this->sprintVelocityBoost, input.isKeyDown(KEY_LEFT_SHIFT),
       input.isKeyReleased(KEY_LEFT_SHIFT));
   #else
+  */
     if (input.isKeyDown(KEY_LEFT_SHIFT)) {
       this->velocity = this->baseVelocity
         + this->baseVelocity * this->sprintVelocityBoost;
@@ -86,7 +90,7 @@ void Player::updatePlayerSprint() {
     if (input.isKeyReleased(KEY_LEFT_SHIFT)) {
       this->velocity = this->baseVelocity;
     }
-  #endif
+  //#endif
 }
 
 void Player::updateLateralMovement() {

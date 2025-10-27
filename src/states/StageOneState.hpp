@@ -3,6 +3,7 @@
 #ifndef STAGE_ONE_STATE_HPP
 #define STAGE_ONE_STATE_HPP
 
+#include <chrono>
 #include <memory>
 #include <list>
 #include <random>

@@ -8,18 +8,17 @@ BUILD_DIR := build
 BIN_DIR := bin
 DOC_DIR := doc
 RAYLIB_DIR := libs/raylib
-RAYLIB_BUILD := $(RAYLIB_DIR)/build
+RAYLIB_BUILD := $(RAYLIB_DIR)/src
 RAYLIB_REPO := https://github.com/raysan5/raylib.git
-RAYLIB_INSTALL := $(RAYLIB_DIR)/install
-RAYLIB_READY := $(RAYLIB_INSTALL)/.built
+RAYLIB_READY := $(RAYLIB_DIR)/.built
 ASM_DIR := src/asm
 CXX := g++
 CXXVER := -std=c++17
 ASSEMBLY := nasm
 WARNINGS := -Wall -Wextra
-INCLUDES := -I$(RAYLIB_INSTALL)/include -Isrc -Isrc/utils -Isrc/core \
+INCLUDES := -I$(RAYLIB_BUILD) -Isrc -Isrc/utils -Isrc/core \
 	-Isrc/entities -Isrc/game -Isrc/handlers -Isrc/states
-LIBS := -L$(RAYLIB_INSTALL)/lib -lraylib
+LIBS := -L$(RAYLIB_BUILD) -lraylib
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Raylib dependency resolution
@@ -60,7 +59,7 @@ endif
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Combine all object files
-OBJ := $(CPP_OBJ) $(ASM_OBJ)
+OBJ := $(CPP_OBJ)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Default target (debug build)
@@ -82,7 +81,7 @@ debug: raylib $(BIN_DIR)/$(BINNAME)
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Run program in the same directory
 .PHONY: run
-run: raylib $(BIN_DIR)/$(BINNAME)
+run: $(BIN_DIR)/$(BINNAME)
 	./$(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
@@ -119,15 +118,7 @@ $(RAYLIB_READY):
 	@if [ ! -d "$(RAYLIB_DIR)" ]; then \
 		git clone --depth 1 $(RAYLIB_REPO) $(RAYLIB_DIR); \
 	fi
-	@mkdir -p $(RAYLIB_BUILD)
-	@cd $(RAYLIB_BUILD) && LDFLAGS= CFLAGS= CXXFLAGS= CPATH= LIBRARY_PATH= \
-		cmake -DBUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Release \
-		-DCMAKE_INSTALL_PREFIX=$(abspath $(RAYLIB_INSTALL)) \
-		$(abspath $(RAYLIB_DIR))
-	@cd $(RAYLIB_BUILD) && LDFLAGS= CFLAGS= CXXFLAGS= CPATH= LIBRARY_PATH= \
-		make install
-	@find $(RAYLIB_DIR) -mindepth 1 -maxdepth 1 \
-		! -name 'install' -exec rm -rf {} +
+	@cd $(RAYLIB_BUILD) && make 
 	@touch $(RAYLIB_READY)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-

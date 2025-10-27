@@ -42,6 +42,7 @@ Game::~Game() {
 void Game::init() {
   SetConfigFlags(FLAG_FULLSCREEN_MODE | FLAG_WINDOW_HIGHDPI);
   InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), Game::defaultWindowTitle);
+  ToggleFullscreen();
   SetTargetFPS(60);
   SetExitKey(0);  // Deactive Esc key as exit program key
   SetMousePosition(GetScreenWidth()/2, GetScreenHeight()/2);

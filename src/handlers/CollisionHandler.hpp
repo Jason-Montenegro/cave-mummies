@@ -28,13 +28,15 @@ class CollisionHandler {
    * @return true if entities collide, otherwise false
    */
   inline bool checkCollision(const Rectangle a, const Rectangle b) const {
-    #ifdef __linux__
+    
+    /*#ifdef __linux__
       int result{0};
       check_collision_recs(&a, &b, &result);
       return result != 0;
     #else
+    */
       return CheckCollisionRecs(a, b);
-    #endif
+    // #endif
   }
 };
 

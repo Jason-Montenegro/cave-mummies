@@ -1,5 +1,6 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
+#include <stdexcept>
 #include <string>
 
 #include "Enemy.hpp"

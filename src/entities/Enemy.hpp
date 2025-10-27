@@ -3,6 +3,8 @@
 #ifndef ENEMY_HPP
 #define ENEMY_HPP
 
+#include <cstdint>
+
 #include "Entity.hpp"
 
 namespace cave_mummies::entities {
