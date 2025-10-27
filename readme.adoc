@@ -65,7 +65,7 @@ selects that option, the application will initiate gameplay.
 
 The game provides the following control interface for the player to use:
 
-- **Movement**: `W` / `A` / `D` or `UP_ARROW` / `LEFT_ARROW` / `RIGHT_ARROW`
+- **Movement**: `A` / `W` / `D` or `LEFT_ARROW` / `UP_ARROW` / `RIGHT_ARROW`
 keys
   (utilizing an arduino joystick can also toggle these key bindings)
 - **Run**: `LEFT_SHIFT` key (to be used simultaneously with movement keys)

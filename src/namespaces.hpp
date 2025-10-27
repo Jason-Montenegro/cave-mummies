@@ -23,15 +23,16 @@
 
 /**
  * @namespace cave_mummies::entities
- * @brief Game entities such as players, enemies, and NPCs.
+ * @brief Game entities such as players, enemies, and projectiles.
  *
  * Contains classes representing playable and non-playable objects,
  * including their data and behavior.
  *
  * Key classes:
- * - Entity
- * - Player
  * - Enemy
+ * - Entity
+ * - GameTextures
+ * - Player
  * - Projectile
  */
 
@@ -40,15 +41,15 @@
  * @brief Modules handling auxiliary game systems.
  *
  * Contains classes responsible for input handling, collisions,
- * object spawning, and state management.
+ * and state management.
  *
  * Key classes:
  * - CollisionHandler
- * - InputHandler
  * - GameStateHandler
+ * - InputHandler
  * - InputSource
- * - KeyboardSource
  * - JoystickSource
+ * - KeyboardSource
  */
 
 /**
@@ -59,25 +60,25 @@
  * gameplay screen, and pause screen, each implementing its own logic.
  *
  * Key classes:
- * - MainMenuState
  * - AboutMenuState
- * - StageOneState
- * - PausedMenuGameState
  * - GameOverState
+ * - MainMenuState
+ * - PausedMenuGameState
+ * - StageOneState
  */
 
  /**
  * @namespace cave_mummies::states::menu
- * @brief Utility classes, enummerations and functions
+ * @brief Utility classes, enummerations and functions.
  *
  * Contains a variety of classes, enummerations and functions for building
  * menu interfaces for game states.
  *
  * Key classes:
  * - MenuBuilder
+ * - MenuElement 
  * - MenuElementFlag
  * - MenuElementTag
- * - MenuElement 
  * - TextBox
  */
 
@@ -85,7 +86,7 @@
  * @namespace cave_mummies::utils
  * @brief Helper functions and classes for the game engine.
  *
- * Contains general utilities, logging, and math functions.
+ * Contains general utilities such as logging.
  *
  * Key classes:
  * - Log
