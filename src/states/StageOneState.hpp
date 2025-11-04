@@ -31,8 +31,8 @@ namespace cave_mummies::states {
  */
 class StageOneState : public cave_mummies::core::GameState {
  private:
-  /// @brief Floor tile component
-  Texture2D floorTile;
+  /// @brief Floor tile
+  const Texture& floorTile;
   /// @brief Text font
   Font textFont;
   /// @brief Player character

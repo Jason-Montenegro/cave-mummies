@@ -32,8 +32,6 @@ class Entity {
  protected:
   /// @brief Includes (x, y) coordinates, width and height
   Rectangle bounds{0, 0, 0, 0};
-  /// @brief Entity texture
-  Texture2D texture;
   /// @brief Entity speed
   float currentSpeed{1.0f};
   /// @brief Speed velocity
@@ -65,11 +63,7 @@ class Entity {
   /**
    * @brief Destructor
    */
-  virtual ~Entity() {
-    if (this->texture.id != 0) {
-      UnloadTexture(this->texture);
-    }
-  }
+  virtual ~Entity() { }
 
   /**
    * @brief Updates this entity state
@@ -119,14 +113,6 @@ class Entity {
    */
   inline void setCurrentSpeed(float speed) {
     this->currentSpeed = speed;
-  }
-
-  /**
-   * @brief Getter of texture member
-   * @return this texture member
-   */
-  inline Texture2D getTexture() const {
-    return this->texture;
   }
 
   /**

@@ -13,6 +13,7 @@
 #include "MainMenuState.hpp"
 #include "InputHandler.hpp"
 #include "InputSource.hpp"
+#include "TextureManager.hpp"
 
 using InputSourceType = cave_mummies::handlers::InputSourceType;
 
@@ -25,6 +26,7 @@ Game::Game(InputSourceType inputType)
       <cave_mummies::handlers::InputHandler>(inputType))
   , collisionHandler(std::make_unique
       <cave_mummies::handlers::CollisionHandler>())
+  , textureManager(nullptr)
   , loadedGame(false) {
   this->setInputSource(inputType);
   this->gameStateHandler->registerState(GameStateID::MainMenu);
@@ -40,10 +42,14 @@ Game::~Game() {
 }
 
 void Game::init() {
-  SetConfigFlags(FLAG_FULLSCREEN_MODE | FLAG_WINDOW_HIGHDPI);
-  InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), Game::defaultWindowTitle);
-  ToggleFullscreen();
   SetTargetFPS(60);
+  #ifdef __APPLE__
+  SetConfigFlags(FLAG_BORDERLESS_WINDOWED_MODE);
+  InitWindow(1400, 800, Game::defaultWindowTitle);
+  #else
+  SetConfigFlags(FLAG_FULLSCREEN_MODE);
+  InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), Game::defaultWindowTitle);
+  #endif
   SetExitKey(0);  // Deactive Esc key as exit program key
   SetMousePosition(GetScreenWidth()/2, GetScreenHeight()/2);
   InitAudioDevice();
@@ -53,6 +59,8 @@ void Game::init() {
     + std::string(this->soundtrackPath)).c_str());
   this->loadedGame = true;
   this->gameStateHandler->setCurrentState(GameStateID::MainMenu);
+  // Initialize all textures
+  this->textureManager = std::make_unique<cave_mummies::core::TextureManager>();
 }
 
 cave_mummies::handlers::GameStateHandler& Game::getGameStateHandler() {
@@ -67,6 +75,9 @@ cave_mummies::handlers::CollisionHandler& Game::getCollisionHandler() {
   return *this->collisionHandler;
 }
 
+cave_mummies::core::TextureManager& Game::getTextureManager() {
+  return *this->textureManager;
+}
 
 float Game::getGameStageFloorHeight() const {
   return (GetScreenHeight() / 2) + GetScreenHeight() * 0.3f;
@@ -92,10 +103,6 @@ uint64_t Game::getCurrentGameScore() const {
 
 uint64_t Game::getHighestGameScore() const {
   return this->currentHighestGameScore;
-}
-
-cave_mummies::entities::GameTextures& Game::getGameTextures() {
-  return this->gameTextures;
 }
 
 int Game::run() {

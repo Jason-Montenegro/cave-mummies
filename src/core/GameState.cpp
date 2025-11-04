@@ -1,6 +1,6 @@
-  // Copyright 2025 Jason Montenegro-Navarro
+// Copyright 2025 Jason Montenegro-Navarro
 
-  #include "GameState.hpp"
+#include "GameState.hpp"
 
 namespace cave_mummies::core {
 

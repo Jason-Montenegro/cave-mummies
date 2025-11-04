@@ -16,6 +16,8 @@ class Player : public Entity {
  protected:
   /// @brief Default ammunition quantity
   static constexpr uint32_t defaultAmmunitionQuantity{12};
+  /// @brief Player texture
+  const Texture2D& texture;
   /// @brief Entity kill count
   uint64_t killCount{0};
   /// @brief Remaining ammunition for shooting
@@ -159,12 +161,6 @@ class Player : public Entity {
    * @brief Updates the player's position if it went through a wall
    */
   void updateWallWrapAround();
-
- private:
-  /**
-   * @brief Loads this object sprite texture
-   */
-  void loadTexture();
 };
 
 }  // cave_mummies::entities

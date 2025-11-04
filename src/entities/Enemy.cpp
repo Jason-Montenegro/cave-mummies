@@ -6,43 +6,23 @@
 #include "Enemy.hpp"
 #include "Player.hpp"
 #include "Game.hpp"
+#include "TextureManager.hpp"
 
 namespace cave_mummies::entities {
 
 Enemy::Enemy(cave_mummies::core::Game& game
   , cave_mummies::entities::Player &objective, EnemyDifficulty diff)
   : Entity(game)
+  , texture(game.getTextureManager().getEnemyTexture(diff))
   , objective(objective)
   , difficultyType(diff) {
   this->setVelocity(diff);
   this->setSpeed(diff);
   this->setAttackTolerance(diff);
-  this->loadTexture();
 }
 
-void Enemy::loadTexture() {
-  if (texture.id != 0) {
-    UnloadTexture(texture);
-  }
-  std::string filename{game.getGameTextures().getEnemyTextureFilename(
-    this->difficultyType)};
-  std::string basePath{GetApplicationDirectory()};
-  Image img{LoadImage((basePath + filename).c_str())};
-  if (!img.data) {
-    throw std::runtime_error("Failed to load enemy texture: "
-      + std::string(filename));
-  }
-  const int32_t newWidth{static_cast<int32_t>(img.width * 0.1f)};
-  const int32_t newHeight{static_cast<int32_t>(img.height * 0.1f)};
-  ImageResize(&img, newWidth, newHeight);
-  this->texture = LoadTextureFromImage(img);
-  UnloadImage(img);
-}
-
-Enemy::~Enemy() {
-  if (this->texture.id != 0) {
-    UnloadTexture(this->texture);
-  }
+const Texture2D& Enemy::getTexture() {
+  return this->texture;
 }
 
 void Enemy::update() {

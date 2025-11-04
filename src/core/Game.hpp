@@ -8,7 +8,6 @@
 #include "raylib.h"
 
 #include "Application.hpp"
-#include "GameTextures.hpp"
 
 // Forward declarations
 namespace cave_mummies::handlers {
@@ -17,6 +16,10 @@ namespace cave_mummies::handlers {
   class CollisionHandler;
   enum class InputSourceType;
 }
+
+namespace cave_mummies::core {
+  class TextureManager;
+};
 
 namespace cave_mummies::core {
 
@@ -38,14 +41,14 @@ class Game : public cave_mummies::core::Application {
   std::unique_ptr<cave_mummies::handlers::InputHandler> inputHandler;
   /// @brief Collision handler
   std::unique_ptr<cave_mummies::handlers::CollisionHandler> collisionHandler;
+  /// @brief Texture manager
+  std::unique_ptr<cave_mummies::core::TextureManager> textureManager;
   /// @brief Loaded game condition
   bool loadedGame{false};
   /// @brief Highest game score
   uint64_t currentHighestGameScore{0};
   /// @brief Current game score
   uint64_t currentGameScore{0};
-  /// @brief Enemy texture loader
-  cave_mummies::entities::GameTextures gameTextures;
 
  public:
   /**
@@ -77,11 +80,18 @@ class Game : public cave_mummies::core::Application {
    * @throw std::runtime_error: if no input handler object is available
    */
   cave_mummies::handlers::InputHandler& getInputHandler();
+
   /**
    * @brief Getter for CollisionHandler
    * @throw std::runtime_error: if no collision handler object is available
    */
   cave_mummies::handlers::CollisionHandler& getCollisionHandler();
+
+  /**
+   * @brief Getter for TextureManager
+   * @throw std::runtime_error: if no collision handler object is available
+   */
+  cave_mummies::core::TextureManager& getTextureManager();
 
   /**
    * @brief Getter for default game stage floor height
@@ -111,12 +121,6 @@ class Game : public cave_mummies::core::Application {
    * @brief Getter for current highest game score
    */
   uint64_t getHighestGameScore() const;
-
-  /**
-   * @brief Getter of game texture loader
-   * @return Game texture loader
-   */
-  cave_mummies::entities::GameTextures& getGameTextures();
 
  private:
   /**

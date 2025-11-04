@@ -25,6 +25,8 @@ enum class EnemyDifficulty {
  */
 class Enemy : public Entity {
  protected:
+  /// @brief Enemy texture
+  const Texture2D& texture;
   /// @brief Alive player flag
   bool isPlayerAlive{true};
   /// @brief Target objective
@@ -49,7 +51,7 @@ class Enemy : public Entity {
   /**
    * @brief Destructor
    */
-  ~Enemy() override;
+  ~Enemy() override = default;
 
   /**
    * @brief Updates this enemy state
@@ -106,6 +108,12 @@ class Enemy : public Entity {
     return this->projectileAttacksReceived;
   }
 
+  /**
+   * @brief Getter of this enemy object texture
+   * @return Enemy texture
+   */
+  const Texture2D& getTexture();
+
  protected:
   /**
    * @brief Sets this object velocity
@@ -134,12 +142,6 @@ class Enemy : public Entity {
    * @brief Updates this enemy sprite frame, one frame per second
    */
   void updateSpriteFrame();
-
- private:
-  /**
-   * @brief Loads this object sprite texture
-   */
-  void loadTexture();
 };
 
 }  // namespace cave_mummies::entities

@@ -109,6 +109,7 @@ lint: ## Check code style conformance using Cpplint
 .PHONY: doc
 doc:
 	@doxygen Doxyfile
+	@echo "documentation generated"
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 .PHONY: raylib
