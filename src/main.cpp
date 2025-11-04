@@ -25,7 +25,12 @@ int main() {
   SetTraceLogCallback(traceLogCallback);
 
   try {
+    #ifdef JOYSTICK_CONTROLLER
+    Game game(cave_mummies::handlers::InputSourceType::Joystick);
+    #else
     Game game(cave_mummies::handlers::InputSourceType::Keyboard);
+    #endif
+
     game.run();
   } catch (const std::exception& e) {
     cave_mummies::utils::Log::append(cave_mummies::utils::Log::ERROR,
