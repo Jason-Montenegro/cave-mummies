@@ -16,15 +16,17 @@
 #include "Enemy.hpp"
 #include "Projectile.hpp"
 #include "InputHandler.hpp"
+#include "TextureManager.hpp"
 
 using Direction = cave_mummies::entities::Direction;
 using GameStateID = cave_mummies::core::GameStateID;
 using EnemyDifficulty = cave_mummies::entities::EnemyDifficulty;
-
+using TextureID = cave_mummies::core::TextureID;
 namespace cave_mummies::states {
 
 StageOneState::StageOneState(cave_mummies::core::Game& game)
-  : GameState(game) {
+  : GameState(game)
+  , floorTile(game.getTextureManager().getTexture(TextureID::FloorTile)) {
   this->stateID = cave_mummies::core::GameStateID::StageOne;
 }
 
@@ -32,7 +34,6 @@ StageOneState::~StageOneState() {
   if (this->loaded) {
     // Unload all loaded game assets
     UnloadTexture(this->background);
-    UnloadTexture(this->floorTile);
     UnloadFont(this->textFont);
     this->loaded = false;
   }
@@ -44,18 +45,16 @@ void StageOneState::init() {
     const char* basePath{GetApplicationDirectory()};
     this->background = LoadTexture((std::string(basePath)
     + "../assets/background/game_bg.png").c_str());
-    this->floorTile = LoadTexture((std::string(basePath)
-      + "../assets/textures/scene/floor_tile.png").c_str());
     this->textFont = LoadFont((std::string(basePath)
       + "../assets/fonts/PixelOperatorMono-Bold.ttf").c_str());
     this->player = std::make_unique<cave_mummies::entities::Player>(this->game);
-    // Update character positioning and size
-    Texture2D texture = this->player->getTexture();
+    const Texture2D& playerTexture{this->game.getTextureManager().getTexture(
+      TextureID::PlayerSprite)};
     const float screenW{static_cast<float>(GetScreenWidth())};
-    const float x{screenW / 2.0f - texture.width / 2.0f};
-    const float y{game.getGameStageFloorHeight() - texture.height};
-    const float playerW{static_cast<float>(texture.width / 4.0f)};
-    const float playerH{static_cast<float>(texture.height)};
+    const float x{screenW / 2.0f - playerTexture.width / 2.0f};
+    const float y{game.getGameStageFloorHeight() - playerTexture.height};
+    const float playerW{static_cast<float>(playerTexture.width / 4.0f)};
+    const float playerH{static_cast<float>(playerTexture.height)};
     this->player->setBounds({.x = x, .y = y, .width = playerW
       , .height = playerH});
     // Setup level settings
@@ -125,7 +124,7 @@ void StageOneState::checkProjectileShot() {
     const float bulletSpeed{50.0f};
     Vector2 velocity{.x = (dir.x * bulletSpeed), .y = (dir.y * bulletSpeed)};
     auto p{std::make_shared<cave_mummies::entities::Projectile>(startPosition
-      , velocity, 6.0f, DARKGRAY)};
+      , velocity, 6.0f, RED)};
     this->projectileCollection.push_back(p);
     // TODO(Jason): add asm function
   }

@@ -5,15 +5,6 @@
 
 #include "raylib.h"
 
-/**
- * @brief Checks collision between two entities
- * @param a First entity
- * @param b Second entity
- * @param result Pointer to store result
- * @note Assembly (NASM) function for Linux-based machines
- */
-extern "C" void check_collision_recs(Rectangle* a, Rectangle* b, int* result);
-
 namespace cave_mummies::handlers {
 
 /**
@@ -28,13 +19,7 @@ class CollisionHandler {
    * @return true if entities collide, otherwise false
    */
   inline bool checkCollision(const Rectangle a, const Rectangle b) const {
-    #ifdef __linux__
-      int result{0};
-      check_collision_recs(&a, &b, &result);
-      return result != 0;
-    #else
-      return CheckCollisionRecs(a, b);
-    #endif
+   return CheckCollisionRecs(a, b);
   }
 };
 

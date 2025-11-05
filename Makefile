@@ -8,18 +8,17 @@ BUILD_DIR := build
 BIN_DIR := bin
 DOC_DIR := doc
 RAYLIB_DIR := libs/raylib
-RAYLIB_BUILD := $(RAYLIB_DIR)/build
+RAYLIB_BUILD := $(RAYLIB_DIR)/src
 RAYLIB_REPO := https://github.com/raysan5/raylib.git
-RAYLIB_INSTALL := $(RAYLIB_DIR)/install
-RAYLIB_READY := $(RAYLIB_INSTALL)/.built
+RAYLIB_READY := $(RAYLIB_DIR)/.built
 ASM_DIR := src/asm
 CXX := g++
 CXXVER := -std=c++17
 ASSEMBLY := nasm
 WARNINGS := -Wall -Wextra
-INCLUDES := -I$(RAYLIB_INSTALL)/include -Isrc -Isrc/utils -Isrc/core \
+INCLUDES := -I$(RAYLIB_BUILD) -Isrc -Isrc/utils -Isrc/core \
 	-Isrc/entities -Isrc/game -Isrc/handlers -Isrc/states
-LIBS := -L$(RAYLIB_INSTALL)/lib -lraylib
+LIBS := -L$(RAYLIB_BUILD) -lraylib
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Raylib dependency resolution
@@ -41,7 +40,7 @@ LDFLAGS := $(LIBS)
 ASSEMBLYFLAGS := -f elf64
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
-# Source files
+# Fetch source files and group together
 CPP_SRC := $(shell find $(SRC_DIR) -name '*.cpp')
 CPP_OBJ := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(CPP_SRC))
 
@@ -60,7 +59,7 @@ endif
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Combine all object files
-OBJ := $(CPP_OBJ) $(ASM_OBJ)
+OBJ := $(CPP_OBJ)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Default target (debug build)
@@ -74,15 +73,21 @@ release: CXXFLAGS += -O3 -DNDEBUG
 release: raylib $(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
+# Compile release build for joystick movement controls
+.PHONY: release_joystick
+release_joystick: CXXFLAGS += -DJOYSTICK_CONTROLLER
+release_joystick: raylib $(BIN_DIR)/$(BINNAME)
+
+# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Debug build (no optimizations)
 .PHONY: debug
 debug: CXXFLAGS += -g -DDEBUG
 debug: raylib $(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
-# Run program in the same directory
+# Run program from root path
 .PHONY: run
-run: raylib $(BIN_DIR)/$(BINNAME)
+run: $(BIN_DIR)/$(BINNAME)
 	./$(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
@@ -92,7 +97,7 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
-# Link executable
+# Link executable file
 $(BIN_DIR)/$(BINNAME): $(OBJ) | $(RAYLIB_READY)
 	@mkdir -p $(BIN_DIR)
 	$(CXX) -o $(BIN_DIR)/$(BINNAME) $(OBJ) $(LDFLAGS)
@@ -106,12 +111,14 @@ lint: ## Check code style conformance using Cpplint
 	@-cpplint --filter=$(LINTC) $(INPUTFC)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
-# Generate documentation
+# Generate documentation with doxygen
 .PHONY: doc
 doc:
 	@doxygen Doxyfile
+	@echo "Doxygen documentation generated!"
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
+# Clone and build raylib dependency
 .PHONY: raylib
 raylib: $(RAYLIB_READY)
 
@@ -119,15 +126,7 @@ $(RAYLIB_READY):
 	@if [ ! -d "$(RAYLIB_DIR)" ]; then \
 		git clone --depth 1 $(RAYLIB_REPO) $(RAYLIB_DIR); \
 	fi
-	@mkdir -p $(RAYLIB_BUILD)
-	@cd $(RAYLIB_BUILD) && LDFLAGS= CFLAGS= CXXFLAGS= CPATH= LIBRARY_PATH= \
-		cmake -DBUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Release \
-		-DCMAKE_INSTALL_PREFIX=$(abspath $(RAYLIB_INSTALL)) \
-		$(abspath $(RAYLIB_DIR))
-	@cd $(RAYLIB_BUILD) && LDFLAGS= CFLAGS= CXXFLAGS= CPATH= LIBRARY_PATH= \
-		make install
-	@find $(RAYLIB_DIR) -mindepth 1 -maxdepth 1 \
-		! -name 'install' -exec rm -rf {} +
+	@cd $(RAYLIB_BUILD) && make 
 	@touch $(RAYLIB_READY)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
@@ -141,22 +140,23 @@ clean:
 .PHONY: help
 help:
 	@echo "Available actions:"
-	@echo "  make           : Default build (no optimization)"
-	@echo "  make run       : Compiles and runs the program"
-	@echo "  make release   : Compiles a release version"
-	@echo "  make debug     : Compiles with debug symbols"
-	@echo "  make raylib    : Clones and builds raylib dependency"
-	@echo "  make lint      : Checks linting warnings with cpplint"
-	@echo "  make doc       : Generates doxygen documentation"
-	@echo "  make clean     : Deletes build files"
-	@echo "  make help      : Shows this action list"
+	@echo "  make                    : Default build (builds in debug mode as default)"
+	@echo "  make run                : Compiles if needed, and runs the program"
+	@echo "  make release            : Compiles a release version"
+	@echo "  make release_joystick   : Compiles a release version for joystick movement control"
+	@echo "  make debug              : Compiles with debug symbols"
+	@echo "  make raylib             : Clones and builds raylib dependency"
+	@echo "  make lint               : Checks linting warnings with Cpplint"
+	@echo "  make doc                : Generates doxygen documentation"
+	@echo "  make clean              : Deletes build files"
+	@echo "  make help               : Shows this action list"
 	@echo ""
 	@echo "Dependencies:"
-	@echo "  - NASM (assembler)"
+	@echo "  - NASM (ASM compiler for Linux-based systems)"
 	@echo "  - g++ (C++ compiler)"
-	@echo "  - git (version control)"
-	@echo "  - CMake (Build tool)"
-	@echo ""
-	@echo "Install all dependencies on your system before attempting compilation."
+	@echo "  - Git (version control tool)"
+	@echo "  - Make (Build tool)"
+	@echo "  - Cpplint (Linting tool required for 'make lint')"
+	@echo "  - Doxygen (Documentation tool required for 'make doc')"
 	@echo ""
 	

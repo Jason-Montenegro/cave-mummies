@@ -3,6 +3,7 @@
 #ifndef STAGE_ONE_STATE_HPP
 #define STAGE_ONE_STATE_HPP
 
+#include <chrono>
 #include <memory>
 #include <list>
 #include <random>
@@ -30,8 +31,8 @@ namespace cave_mummies::states {
  */
 class StageOneState : public cave_mummies::core::GameState {
  private:
-  /// @brief Floor tile component
-  Texture2D floorTile;
+  /// @brief Floor tile
+  const Texture& floorTile;
   /// @brief Text font
   Font textFont;
   /// @brief Player character

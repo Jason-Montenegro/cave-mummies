@@ -19,6 +19,7 @@
  * - Application
  * - Game
  * - GameState
+ * - TextureManager
  */
 
 /**

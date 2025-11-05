@@ -1,13 +1,11 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
-#ifndef ENTITY_HPP
-#define ENTITY_HPP
+#ifndef CAVE_MUMMIES_ENTITIES_ENTITY_HPP
+#define CAVE_MUMMIES_ENTITIES_ENTITY_HPP
 
 #include <string>
-
 #include "raylib.h"
 
-// Class forward declaration
 namespace cave_mummies::core {
   class Game;
 }
@@ -15,8 +13,7 @@ namespace cave_mummies::core {
 namespace cave_mummies::entities {
 
 /**
- * @enum Direction
- * @brief Set of possible entity directions
+ * @brief Set of possible entity directions.
  */
 enum class Direction {
   Up,
@@ -26,126 +23,111 @@ enum class Direction {
 };
 
 /**
- * @brief Abstract entity interface. Sets entities API.
+ * @brief Abstract entity interface.
  */
 class Entity {
- protected:
-  /// @brief Includes (x, y) coordinates, width and height
-  Rectangle bounds{0, 0, 0, 0};
-  /// @brief Entity texture
-  Texture2D texture;
-  /// @brief Entity speed
-  float currentSpeed{1.0f};
-  /// @brief Speed velocity
-  float velocity{1.0f};
-  /// @brief Base velocity value
-  float baseVelocity{1.0f};
-  /// @brief Frame counter for displaying sprite more extendedly
-  int32_t gameFrameCounter;
-  /// @brief Sprite frame
-  int32_t currentSpriteFrame{0};
-  /// @brief Sprite frame count
-  int32_t spriteFrameCount{4};
-  /// @brief Game controller
-  cave_mummies::core::Game& game;
-  /// @brief Default sprite pixel width
-  static constexpr float DefaultSpritePixelWidth{32.0};
-  /// @brief Sprite direction
-  cave_mummies::entities::Direction currentDirection{
-    cave_mummies::entities::Direction::Right};
-
  public:
   /**
-   * @brief Constructor
-   * @param game Game controller
+   * @brief Construct a new Entity object.
+   * @param game Game controller.
    */
   explicit Entity(cave_mummies::core::Game& game)
     : game(game) { }
 
   /**
-   * @brief Destructor
+   * @brief Destroy the Entity object.
    */
-  virtual ~Entity() {
-    if (this->texture.id != 0) {
-      UnloadTexture(this->texture);
-    }
-  }
+  virtual ~Entity() { }
 
   /**
-   * @brief Updates this entity state
+   * @brief Updates the entity state.
    */
   virtual void update() = 0;
 
   /**
-   * @brief Draws texture to screen
+   * @brief Draws the entity.
    */
-  inline virtual void draw() = 0;
+  virtual void draw() = 0;
 
   /**
-   * @brief Getter of bounds member
-   * @return this bounds member
+   * @brief Gets the entity bounds.
+   * @return Rectangle representing the entity bounds.
    */
   inline Rectangle getBounds() const {
     return this->bounds;
   }
 
   /**
-   * @brief Setter of bounds member
-   * @param b New bounds object
+   * @brief Sets the entity bounds.
+   * @param b New bounds rectangle.
    */
   inline void setBounds(const Rectangle& b) {
     this->bounds = b;
   }
 
   /**
-   * @brief Getter of velocity member
-   * @return this velocity object
+   * @brief Gets the entity velocity.
+   * @return Current velocity value.
    */
   inline float getVelocity() const {
     return this->velocity;
   }
 
   /**
-   * @brief Setter of velocity member
-   * @param v New velocity value
+   * @brief Sets the entity velocity.
+   * @param v New velocity value.
    */
   inline void setVelocity(float v) {
     this->velocity = v;
   }
 
   /**
-   * @brief Setter of current speed member
-   * @param speed New speed value
+   * @brief Sets the current speed value.
+   * @param speed New speed value.
    */
   inline void setCurrentSpeed(float speed) {
     this->currentSpeed = speed;
   }
 
   /**
-   * @brief Getter of texture member
-   * @return this texture member
-   */
-  inline Texture2D getTexture() const {
-    return this->texture;
-  }
-
-  /**
-   * @brief Getter of the current sprite direction
-   * @return this current direction
+   * @brief Gets the current movement direction.
+   * @return Current direction.
    */
   inline Direction getDirection() const {
     return this->currentDirection;
   }
 
   /**
-   * @brief Setter of texture frame count
-   * @param count Spritesheet frame count
+   * @brief Sets the spritesheet frame count.
+   * @param count Number of frames in the spritesheet.
    */
   inline void setTextureFrameCount(int32_t count) {
     this->spriteFrameCount = count;
   }
+
+ protected:
+  /// @brief Entity rectangle (x, y, width, height).
+  Rectangle bounds{0, 0, 0, 0};
+  /// @brief Current entity speed.
+  float currentSpeed{1.0f};
+  /// @brief Current velocity value.
+  float velocity{1.0f};
+  /// @brief Base velocity reference value.
+  float baseVelocity{1.0f};
+  /// @brief Frame counter used for sprite display.
+  int32_t gameFrameCounter{0};
+  /// @brief Current sprite frame.
+  int32_t currentSpriteFrame{0};
+  /// @brief Total sprite frames.
+  int32_t spriteFrameCount{4};
+  /// @brief Game controller reference.
+  cave_mummies::core::Game& game;
+  /// @brief Default sprite width in pixels.
+  static constexpr float defaultSpritePixelWidth{32.0};
+  /// @brief Current sprite direction.
+  Direction currentDirection{Direction::Right};
 };
 
-}  // cave_mummies::entities
+}  // namespace cave_mummies::entities
 
-#endif  // ENTITY_HPP
+#endif  // CAVE_MUMMIES_ENTITIES_ENTITY_HPP

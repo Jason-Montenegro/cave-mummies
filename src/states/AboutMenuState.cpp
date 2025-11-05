@@ -25,10 +25,6 @@ void AboutMenuState::init() {
   // Build interface with builder
   this->menuBuilder.loadFont((std::string(basePath)
     + "../assets/fonts/PixelOperatorMono-Bold.ttf").c_str());
-  this->menuBuilder.loadSelectMenuOption((std::string(basePath)
-    + "../assets/audio/sfx/throw1-sfx.wav").c_str());
-  this->menuBuilder.loadSubmitMenuOption((std::string(basePath)
-    + "../assets/audio/sfx/throw5-sfx.wav").c_str());
   this->buildAboutTextBox();
   this->buildMenuOptions();
 }
@@ -36,6 +32,8 @@ void AboutMenuState::init() {
 void AboutMenuState::buildAboutTextBox() {
   const float screenW{static_cast<float>(GetScreenWidth())};
   const float screenH{static_cast<float>(GetScreenHeight())};
+  // 0.032f is an arbitrary constant for sizing
+  const int32_t fontSize{static_cast<int32_t>(screenH * 0.032f)};
 
   // Define box sizing: floating values represent a margin percentage relative
   // to the side of the screen
@@ -44,7 +42,7 @@ void AboutMenuState::buildAboutTextBox() {
 
   menu::TextBox textBox{.rect = boxSizing
     , .text = cave_mummies::states::menu::aboutText
-    , .scrollY = 0.0f, .fontSize = 32, .focused = true
+    , .scrollY = 0.0f, .fontSize = fontSize, .focused = true
     , .drawContainer = false, .containerColor = WHITE
     , .containerBorderColor = WHITE};
 
