@@ -75,7 +75,7 @@ The game provides the following key control interface for the player to use:
 - **Pause**: `ESC` (can only be used during gameplay)
 - **Music**: `M` (toggles the background music)
 
-===== Note:
+=== Note:
 This game features compatibility with the Arduino platform enabling movement
 with the joystick accessory. The player can move the its character utilizing a
 joystick-controlled release and a connected Arduino device with a joystick
@@ -293,7 +293,7 @@ must be present on your machine:
 - NASM (ASM compiler for Linux-based systems)
 - Git (version control tool)
 - Make (Build tool)
-- cpplint (Linting tool required for 'make lint')
+- Cpplint (Linting tool required for 'make lint')
 - Doxygen (Documentation tool required for 'make doc')
 
 All of these dependencies are to be installed suited to your operating system.
