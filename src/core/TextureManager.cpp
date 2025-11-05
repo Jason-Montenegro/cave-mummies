@@ -1,8 +1,8 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
+#include "TextureManager.hpp"
 #include <string>
 #include <vector>
-#include "TextureManager.hpp"
 #include "Enemy.hpp"
 
 namespace cave_mummies::core {
@@ -15,15 +15,11 @@ TextureManager::TextureManager() {
 }
 
 TextureManager::~TextureManager() {
-  for (auto texture : this->textures) {
-    if (texture.second.id != 0) {
-      UnloadTexture(texture.second);
+  for (auto texturePair : this->textures) {
+    if (texturePair.second.id != 0) {
+      UnloadTexture(texturePair.second);
     }
   }
-}
-
-float TextureManager::getGameStageFloorHeight() const {
-  return (GetScreenHeight() / 2) + GetScreenHeight() * 0.3f;
 }
 
 void TextureManager::loadPlayerTexture() {

@@ -107,7 +107,7 @@ $(BIN_DIR)/$(BINNAME): $(OBJ) | $(RAYLIB_READY)
 INPUTFC := $(CPP_SRC)
 LINTC := +whitespace/braces,+runtime/explicit,-build/include_subdir,-build/header_guard
 .PHONY: lint
-lint: ## Check code style conformance using cpplint
+lint: ## Check code style conformance using Cpplint
 	@-cpplint --filter=$(LINTC) $(INPUTFC)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
@@ -146,7 +146,7 @@ help:
 	@echo "  make release_joystick   : Compiles a release version for joystick movement control"
 	@echo "  make debug              : Compiles with debug symbols"
 	@echo "  make raylib             : Clones and builds raylib dependency"
-	@echo "  make lint               : Checks linting warnings with cpplint"
+	@echo "  make lint               : Checks linting warnings with Cpplint"
 	@echo "  make doc                : Generates doxygen documentation"
 	@echo "  make clean              : Deletes build files"
 	@echo "  make help               : Shows this action list"
@@ -156,7 +156,7 @@ help:
 	@echo "  - g++ (C++ compiler)"
 	@echo "  - Git (version control tool)"
 	@echo "  - Make (Build tool)"
-	@echo "  - cpplint (Linting tool required for 'make lint')"
+	@echo "  - Cpplint (Linting tool required for 'make lint')"
 	@echo "  - Doxygen (Documentation tool required for 'make doc')"
 	@echo ""
 	

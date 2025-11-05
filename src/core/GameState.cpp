@@ -17,7 +17,7 @@ GameStateID GameState::update() {
 
 void GameState::drawBackground() {
   ClearBackground(BLACK);
-  // Calculate the math for extending background to whole game screen
+  // Calculate background extension to the whole screen
   Rectangle sourceRec{0.0f, 0.0f, static_cast<float>(this->background.width)
     , static_cast<float>(this->background.height)};
   Rectangle destRec{0.0f, 0.0f, static_cast<float>(GetScreenWidth())

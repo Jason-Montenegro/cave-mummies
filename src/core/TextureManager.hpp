@@ -1,7 +1,7 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
-#ifndef TEXTURE_MANAGER_HPP
-#define TEXTURE_MANAGER_HPP
+#ifndef CAVE_MUMMIES_CORE_TEXTURE_MANAGER_HPP
+#define CAVE_MUMMIES_CORE_TEXTURE_MANAGER_HPP
 
 #include <map>
 #include "raylib.h"
@@ -12,6 +12,9 @@ namespace cave_mummies::entities {
 
 namespace cave_mummies::core {
 
+/**
+ * @brief Texture identifiers for game texture objects.
+ */
 enum class TextureID {
   PlayerSprite,
   EnemyEasySprite, 
@@ -21,79 +24,71 @@ enum class TextureID {
 };
 
 /**
- * @brief 
- * 
+ * @brief Texture manager which holds all loaded assets in the game.
  */
 class TextureManager {
+  // Public API
+ public:
+  /**
+   * @brief Construct a new Texture Manager object.
+   */
+  TextureManager();
+
+  /**
+   * @brief Destroy the Texture Manager object.
+   */
+  ~TextureManager();
+
+  /**
+   * @brief Gets a texture by its identifier.
+   * @param id Texture identifier.
+   * @return Constant reference to the requested texture.
+   */
+  const Texture2D& getTexture(TextureID id);
+
+  /**
+   * @brief Gets an enemy texture according to its difficulty level.
+   * @param diff Enemy difficulty.
+   * @return Constant reference to the corresponding texture.
+   */
+  const Texture2D& getEnemyTexture(cave_mummies::entities::EnemyDifficulty
+    diff);
+
+  // Private data
  private:
-  /// @brief Entity texture
+  /// @brief Map of loaded textures indexed by TextureID.
   std::map<TextureID, Texture2D> textures;
-  /// @brief Base path for textures
+  /// @brief Base path for texture assets.
   const char* basePath{nullptr};
-  /// @brief Default enemy values
+  /// @brief Paths to enemy texture assets.
   static constexpr const char* const enemyAssetPaths[3]{
     "../assets/textures/entities/moderate_enemy_skin.png",
     "../assets/textures/entities/moderate_enemy_skin.png",
     "../assets/textures/entities/hard_enemy_skin.png"
   };
-  /// @brief Player texture
+  /// @brief Path to the default player texture.
   static constexpr const char* const defaultPlayerAssetPath
     {"../assets/textures/entities/wil_player_skin.png"};
-  /// @brief Floor tile texture
+  /// @brief Path to the floor tile texture.
   static constexpr const char* const floorTileAssetPath
     {"../assets/textures/scene/floor_tile.png"};
 
- public:
   /**
-   * @brief Constructor
-   */
-  TextureManager();
-
-  /**
-   * @brief Destructor
-   */
-  ~TextureManager();
-
-  /**
-   * @brief Getter of game object texture
-   * 
-   * @param id Texture identifier
-   * @return Corresponding texture
-   */
-  const Texture2D& getTexture(TextureID id);
-
-  /**
-   * @brief Getter of enemy object texture
-   * 
-   * @param diff Enemy difficulty
-   * @return Enemy object texture
-   */
-  const Texture2D& getEnemyTexture(cave_mummies::entities::EnemyDifficulty
-    diff);
-
- private:
-  /**
-   * @brief Loads all enemy object textures
+   * @brief Loads all enemy textures.
    */
   void loadEnemyTextures();
 
   /**
-   * @brief Loads the player object texture
-   * 
+   * @brief Loads the player texture.
    */
   void loadPlayerTexture();
 
   /**
-   * @brief Loads all game stage object textures
+   * @brief Loads textures for game stage elements.
    */
   void loadGameStageTextures();
-
-  /**
-   * @brief Getter for default game stage floor height
-   */
-  float getGameStageFloorHeight() const;
 };
 
 }  // namespace cave_mummies::core
 
-#endif  // TEXTURE_MANAGER_HPP
+#endif  // CAVE_MUMMIES_CORE_TEXTURE_MANAGER_HPP

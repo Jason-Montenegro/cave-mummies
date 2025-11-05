@@ -1,7 +1,7 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
-#ifndef GAME_STATE_HPP
-#define GAME_STATE_HPP
+#ifndef CAVE_MUMMIES_CORE_GAME_STATE_HPP
+#define CAVE_MUMMIES_CORE_GAME_STATE_HPP
 
 #include "raylib.h"
 
@@ -12,7 +12,6 @@ namespace cave_mummies::core {
 namespace cave_mummies::core {
 
 /**
- * @enum GameStateID
  * @brief Set of identifiers for every game state available.
  */
 enum class GameStateID {
@@ -26,60 +25,62 @@ enum class GameStateID {
 };
 
 /**
- * @brief Abstract game state interface. Sets game states API.
+ * @brief Abstract game state interface.
  */
 class GameState {
- protected:
-  /// @brief State identifier
-  GameStateID stateID{GameStateID::Null};
-  /// @brief Main menu background texture
-  Texture2D background;
-  /// @brief Is state currently loaded
-  bool loaded{false};
-  /// @brief Game controller object
-  cave_mummies::core::Game& game;
-
+  // Public API
  public:
   /**
-   * @brief Constructor
+   * @brief Construct a new Game State object.
+   * @param game Game controller.
    */
   GameState(cave_mummies::core::Game& game);
 
   /**
-   * @brief Destructor
+   * @brief Destroy the Game State object.
    */
   virtual ~GameState() = default;
 
   /**
-   * @brief Getter of state id
-   * @return this state id
+   * @brief Gets the identifier of this game state.
+   * @return State identifier.
    */
   GameStateID getStateID() const;
 
   /**
-   * @brief Updates its internal object state
-   * @return Next state that this game state transitions to
-   * @note If no transition is required, return this state id
+   * @brief Updates the internal state logic.
+   * @return The next state to transition to.
+   * @note If no transition is required, returns this state's ID.
    */
   virtual GameStateID update();
 
   /**
-   * @brief Initializes this game state
+   * @brief Initializes the game state.
    */
   virtual void init() { }
 
   /**
-   * @brief Draws its internal object state to window
+   * @brief Draws the current state to the window.
    */
   virtual void draw() = 0;
 
+  // Protected members
  protected:
+   /// @brief State identifier.
+  GameStateID stateID{GameStateID::Null};
+  /// @brief Background texture for this state.
+  Texture2D background;
+  /// @brief Indicates whether this state is currently loaded.
+  bool loaded{false};
+  /// @brief Reference to the game controller.
+  cave_mummies::core::Game& game;
+
   /**
-   * @brief Draws background image to state screen
+   * @brief Draws the background image for this state.
    */
   virtual void drawBackground();
 };
 
 }  // namespace cave_mummies::core
 
-#endif  // GAME_STATE_HPP
+#endif  // CAVE_MUMMIES_CORE_GAME_STATE_HPP

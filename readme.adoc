@@ -28,12 +28,12 @@ survive to see his owner again. Wil discovers they only perform
 **melee attacks**, therefore he must take advantage of his ranged weapon.
 
 == Game Specification
-Cave Mummies is a single-player desktop video game which is built on C++ and
-NASM (x86_64 Assembly). It utilizes Raylib as its base graphics library, and
-relies on it for all graphic and input actions in the game. The game features
-code implementations in assembly, compilable only with NASM compiler. These
-code implementations are only for Linux-based systems. The game is made fully
-with C++ in its Mac release.
+Cave Mummies is a single-player desktop video game which is built on 
+_Cpass:[++]_ and _NASM_ (x86_64 Assembly). It utilizes Raylib as its base 
+graphics library, and relies on it for all graphic and input actions in the
+game. The game features code implementations in assembly, compilable only with 
+NASM compiler. These code implementations are only for Linux-based systems. 
+The game is made fully with _Cpass:[++]_ in its Mac release.
 
 The core mechanic of the game is time-based survival with score progression.
 The player is intended to survive as long as possible. The player will
@@ -55,7 +55,8 @@ image:doc-assets/gameplay_preview_one.png[Gameplay preview, align=center]
 At first, the player must navigate through the presented main menu. 
 The player can navigate the menu utilizing `W` / `ARROW_UP` keys for going
 **upward**, and `S` / `ARROW_DOWN` keys for going **downward**.
-The player can select an  option by pressing the `RETURN` key or using the `MOUSE_LEFT_CLICK` key anywhere on the screen.
+The player can select an  option by pressing the `RETURN` key or using the 
+`MOUSE_LEFT_CLICK` key anywhere on the screen.
 
 These navigation instructions apply to all menus presented during the
 game's lifetime. Following these navigation instructions, the player
@@ -288,7 +289,7 @@ implemented in the game.
 To compile the game utilizing its build features, the following dependencies
 must be present on your machine:
 
-- gpass:[++] compiler
+- gpass:[++] compiler (C++ compiler)
 - NASM (ASM compiler for Linux-based systems)
 - Git (version control tool)
 - Make (Build tool)

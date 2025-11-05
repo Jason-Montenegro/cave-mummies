@@ -32,8 +32,8 @@ void AboutMenuState::init() {
 void AboutMenuState::buildAboutTextBox() {
   const float screenW{static_cast<float>(GetScreenWidth())};
   const float screenH{static_cast<float>(GetScreenHeight())};
-  // Literals are for relative sizing
-  const int32_t fontSize{static_cast<int32_t>(screenH * 0.0024f * 16.0f)};
+  // 0.032f is an arbitrary constant for sizing
+  const int32_t fontSize{static_cast<int32_t>(screenH * 0.032f)};
 
   // Define box sizing: floating values represent a margin percentage relative
   // to the side of the screen
