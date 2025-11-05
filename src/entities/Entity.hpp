@@ -115,7 +115,7 @@ class Entity {
   /// @brief Base velocity reference value.
   float baseVelocity{1.0f};
   /// @brief Frame counter used for sprite display.
-  int32_t gameFrameCounter{0.0};
+  int32_t gameFrameCounter{0};
   /// @brief Current sprite frame.
   int32_t currentSpriteFrame{0};
   /// @brief Total sprite frames.
