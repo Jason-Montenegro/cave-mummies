@@ -1,6 +1,7 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
 #include "TextureManager.hpp"
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include "Enemy.hpp"
