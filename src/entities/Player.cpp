@@ -1,11 +1,9 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
-#include <string>
-
-#include <stdexcept>
-
-#include "Game.hpp"
 #include "Player.hpp"
+#include <stdexcept>
+#include <string>
+#include "Game.hpp"
 #include "InputHandler.hpp"
 #include "TextureManager.hpp"
 
@@ -145,8 +143,8 @@ void Player::draw() {
     sourceRec.width *= -1;
     sourceRec.x += frameWidth;
   }
-  Rectangle destRec{this->bounds.x, this->bounds.y, frameWidth * characterScale,
-    frameHeight * characterScale
+  Rectangle destRec{this->bounds.x, this->bounds.y, frameWidth * characterScale
+    , frameHeight * characterScale
   };
 
   DrawTexturePro(this->texture, sourceRec, destRec, (Vector2){0, 0}, 0.0f

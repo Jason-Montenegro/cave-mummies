@@ -15,16 +15,13 @@ namespace cave_mummies::handlers {
 }
 
 namespace cave_mummies::core {
-  class TextureManager;
-};
 
-namespace cave_mummies::core {
+class TextureManager;
 
 /**
  * @brief Game controller which contains the game loop.
  */
 class Game : public cave_mummies::core::Application {
-  // Public API
  public:
   /**
    * @brief Construct a new Game object.
@@ -79,13 +76,13 @@ class Game : public cave_mummies::core::Application {
 
   /**
    * @brief Sets the current game score.
-   * @param score New score value (negative values converted to positive).
+   * @param score New score value (negative values are converted to positive).
    */
   void setCurrentGameScore(int64_t score);
 
   /**
    * @brief Sets the highest recorded game score.
-   * @param score New score value (negative values converted to positive).
+   * @param score New score value (negative values are converted to positive).
    */
   void setHighestGameScore(int64_t score);
 
@@ -101,7 +98,6 @@ class Game : public cave_mummies::core::Application {
    */
   uint64_t getHighestGameScore() const;
 
-  // Private data
  private:
   /// @brief Default window title.
   static constexpr const char* const defaultWindowTitle{"Cave Mummies"};
@@ -127,7 +123,7 @@ class Game : public cave_mummies::core::Application {
   uint64_t currentGameScore{0};
 
   /**
-   * @brief Initializes all game dependencies.
+   * @brief Initializes all game resources.
    */
   void init() override;
 

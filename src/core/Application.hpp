@@ -9,7 +9,6 @@ namespace cave_mummies::core {
  * @brief Abstract application interface.
  */
 class Application {
-  // Public API
  public:
   /**
    * @brief Destroy the Application object.
@@ -22,7 +21,6 @@ class Application {
    */
   virtual int run() = 0;
 
-  // Protected members
  protected:
   /**
    * @brief Initializes application.
@@ -31,8 +29,7 @@ class Application {
 
   /**
    * @brief Updates state of application.
-   * @return true if an update was possible, otherwise false (close
-   * application).
+   * @return true if an update was possible, otherwise false.
    */
   virtual bool update() = 0;
 
@@ -42,7 +39,7 @@ class Application {
   virtual void draw() = 0;
 
   /**
-   * @brief Cleans initialized objects of application.
+   * @brief Cleans application resources.
    */
   virtual void cleanup() = 0;
 };

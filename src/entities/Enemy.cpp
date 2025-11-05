@@ -1,11 +1,10 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
+#include "Enemy.hpp"
 #include <stdexcept>
 #include <string>
-
-#include "Enemy.hpp"
-#include "Player.hpp"
 #include "Game.hpp"
+#include "Player.hpp"
 #include "TextureManager.hpp"
 
 namespace cave_mummies::entities {
@@ -75,8 +74,8 @@ void Enemy::draw() {
     sourceRec.width *= -1;
     sourceRec.x += frameWidth;
   }
-  Rectangle destRec{this->bounds.x, this->bounds.y, frameWidth * characterScale,
-    frameHeight * characterScale
+  Rectangle destRec{this->bounds.x, this->bounds.y, frameWidth * characterScale
+    , frameHeight * characterScale
   };
 
   DrawTexturePro(this->texture, sourceRec, destRec, (Vector2){0, 0}, 0.0f
@@ -94,6 +93,8 @@ void Enemy::setVelocity(EnemyDifficulty type) {
   case EnemyDifficulty::Hard:
     this->velocity = this->baseVelocity = 3.0f;
     break;
+  default:
+    this->velocity = this->baseVelocity = 2.0f;
   }
 }
 
@@ -108,6 +109,8 @@ void Enemy::setSpeed(EnemyDifficulty type) {
   case EnemyDifficulty::Hard:
     this->setCurrentSpeed(1.6f);
     break;
+  default:
+    this->setCurrentSpeed(1.2f);
   }
 }
 
@@ -122,8 +125,9 @@ void Enemy::setAttackTolerance(EnemyDifficulty type) {
   case EnemyDifficulty::Hard:
     this->attackTolerance = 2;
     break;
+  default:
+    this->attackTolerance = 1;
   }
 }
-
 
 }  // namespace cave_mummies::entities

@@ -27,7 +27,6 @@ enum class TextureID {
  * @brief Texture manager which holds all loaded assets in the game.
  */
 class TextureManager {
-  // Public API
  public:
   /**
    * @brief Construct a new Texture Manager object.
@@ -54,7 +53,6 @@ class TextureManager {
   const Texture2D& getEnemyTexture(cave_mummies::entities::EnemyDifficulty
     diff);
 
-  // Private data
  private:
   /// @brief Map of loaded textures indexed by TextureID.
   std::map<TextureID, Texture2D> textures;

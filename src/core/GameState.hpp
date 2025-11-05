@@ -6,10 +6,8 @@
 #include "raylib.h"
 
 namespace cave_mummies::core {
-  class Game;
-};
 
-namespace cave_mummies::core {
+class Game;
 
 /**
  * @brief Set of identifiers for every game state available.
@@ -28,7 +26,6 @@ enum class GameStateID {
  * @brief Abstract game state interface.
  */
 class GameState {
-  // Public API
  public:
   /**
    * @brief Construct a new Game State object.
@@ -64,15 +61,14 @@ class GameState {
    */
   virtual void draw() = 0;
 
-  // Protected members
  protected:
-   /// @brief State identifier.
+  /// @brief State identifier.
   GameStateID stateID{GameStateID::Null};
   /// @brief Background texture for this state.
   Texture2D background;
   /// @brief Indicates whether this state is currently loaded.
   bool loaded{false};
-  /// @brief Reference to the game controller.
+  /// @brief Game controller reference.
   cave_mummies::core::Game& game;
 
   /**
