@@ -3,6 +3,7 @@
 #ifndef CAVE_MUMMIES_STATES_MENU_MENU_STATE_UTILS_HPP
 #define CAVE_MUMMIES_STATES_MENU_MENU_STATE_UTILS_HPP
 
+#include <string>
 #include "raylib.h"
 #include "GameState.hpp"
 
@@ -75,31 +76,14 @@ struct TextBox {
  * @param flag Highlight flag.
  * @return Raylib color.
  */
-Color pickOutlineColor(MenuElementFlag flag) {
-  switch (flag) {
-  case MenuElementFlag::Highlight1: return DARKGREEN;
-  case MenuElementFlag::Highlight2: return LIME;
-  default: return WHITE;
-  }
-}
-
-/**
- * @brief Returns the outline thickness based on the element type.
- */
+Color pickOutlineColor(MenuElementFlag flag);
 
 /**
  * @brief Picks an outline thickness based on an element type.
  * @param tag Semantic tag.
  * @return Outline thickness value.
  */
-int pickOutlineThickness(MenuElementTag tag) {
-  switch (tag) {
-  case MenuElementTag::h1: return 8;  // Thick outline
-  case MenuElementTag::h2: return 5;  // Medium-thickness outline
-  case MenuElementTag::li: return 3;  // Thin outline
-  default: return 1;                  // Default outline value
-  }
-}
+int32_t pickOutlineThickness(MenuElementTag tag);
 
 }  // namespace namespace cave_mummies::states::menu
 

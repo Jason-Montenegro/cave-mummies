@@ -89,7 +89,7 @@ void MainMenuState::buildMenuOptions() {
     {"Quit", GameStateID::QuitGame}
   };
 
-  for (int32_t i = 0; i < options.size(); ++i) {
+  for (size_t i = 0; i < options.size(); ++i) {
     // Measure text size relative to screen
     Vector2 textSize{MeasureTextEx(this->menuBuilder.getLoadedFont(),
       options[i].first.c_str(), fontSize, 1.0f)};

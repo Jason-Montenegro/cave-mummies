@@ -390,7 +390,7 @@ void StageOneState::randomizeEnemySpawn(uint32_t enemyCount
     return GetScreenWidth() * (side + this->xDis(gen) * 0.10f);
   };
 
-  for (int32_t count = 0; count < enemyCount; ++count) {
+  for (size_t count = 0; count < enemyCount; ++count) {
     const float xCoord{randomX()};
     auto enemy{std::make_shared<cave_mummies::entities::Enemy>(this->game
       , *this->player, enemyDifficulty)};
