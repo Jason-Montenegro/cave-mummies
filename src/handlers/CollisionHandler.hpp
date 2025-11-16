@@ -11,7 +11,9 @@
  * @return true if rectangles are collinding, otherwise false.
  * @note This assembly function assumes arguments are always valid.
  */
-extern "C" bool checkCollisionRecs(const Rectangle* a, const Rectangle* b);
+extern "C" bool checkCollisionRecs(bool* result, float rec1x, float rec1y
+  , float rec1width, float rec1height, float rec2x, float rec2y
+  , float rec2width, float rec2height);
 #endif
 
 namespace cave_mummies::handlers {
@@ -29,7 +31,10 @@ class CollisionHandler {
    */
   inline bool checkCollision(const Rectangle& a, const Rectangle& b) const {
     #ifdef __linux__
-    return checkCollisionRecs(&a, &b);
+    bool result{false};
+    checkCollisionRecs(&result, a.x, a.y, a.width, a.height, b.x, b.y, b.width
+      , b.height);
+    return result;
     #else
     return CheckCollisionRecs(a, b);
     #endif

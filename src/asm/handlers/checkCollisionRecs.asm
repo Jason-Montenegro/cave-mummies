@@ -1,51 +1,48 @@
 ;-------------------------------------------------------------------------------
 ; Checks collision between rectangles using AABB.
 ; Receives:
-;     RDI holds Rectangle pointer
-;   , RSI holds Rectangle pointer
-; Returns: true if rectangles are colliding, otherwise false.
-; C struct reference from raylib API:
-; struct Rectangle {
-;     float x;                // Rectangle top-left corner position x
-;     float y;                // Rectangle top-left corner position y
-;     float width;            // Rectangle width
-;     float height;           // Rectangle height
-; } Rectangle;
+;     RDI holds bool* result pointer
+;   , XMM0 holds rectangle 1 x coordinate
+;   , XMM1 holds rectangle 1 y coordinate
+;   , XMM2 holds rectangle 1 width
+;   , XMM3 holds rectangle 1 height
+;   , XMM4 holds rectangle 2 x coordinate
+;   , XMM5 holds rectangle 2 y coordinate
+;   , XMM6 holds rectangle 2 width
+;   , XMM7 holds rectangle 2 height
+; Returns: nothing, modifies result pointer.
 ;-------------------------------------------------------------------------------
 section .text
 global checkCollisionRecs:
-
+; Adapted from Google Gemini. Date: Sunday 16 November 2025
+; prompt: raylib CheckCollisionRecs implementation
 checkCollisionRecs:
   push rbp
   mov rbp, rsp
 
- ; a.x + a.width < b.x
-  movss xmm0, [rdi]      ; a.x
-  addss xmm0, [rdi + 8]  ; a.width
-  movss xmm1, [rsi]      ; b.x
-  ucomiss xmm0, xmm1
-  jl setFalse
+  ; rec1.x >= (rec2.x + rec2.width)
+  movss xmm8, xmm4
+  addss xmm8, xmm6
+  ucomiss xmm0, xmm8
+  jge setFalse
 
-  ; a.y + a.height < b.y
-  movss xmm0, [rdi + 4]  ; a.y
-  addss xmm0, [rdi + 12] ; a.height
-  movss xmm1, [rsi + 4]  ; b.y
-  ucomiss xmm0, xmm1
-  jl setFalse
+  ; (rec1.x + rec1.width) <= rec2.x
+  movss xmm8, xmm0
+  addss xmm8, xmm2
+  ucomiss xmm8, xmm4
+  jle setFalse
 
-  ; b.x + b.width < a.x
-  movss xmm0, [rsi]      ; b.x
-  addss xmm0, [rsi + 8]  ; b.width
-  movss xmm1, [rdi]      ; a.x
-  ucomiss xmm0, xmm1
-  jl setFalse
+  ; rec1.y >= (rec2.y + rec2.height)
+  movss xmm8, xmm5
+  addss xmm8, xmm7
+  ucomiss xmm1, xmm8
+  jge setFalse
 
-  ; b.y + b.height < a.y
-  movss xmm0, [rsi + 4]  ; b.y
-  addss xmm0, [rsi + 12] ; b.height
-  movss xmm1, [rdi + 4]  ; a.y
-  ucomiss xmm0, xmm1
-  jl setFalse
+  ; (rec1.y + rec1.height) <= rec2.y
+  movss xmm8, xmm1
+  addss xmm8, xmm3
+  ucomiss xmm8, xmm5
+  jle setFalse
 
   ; return true
   mov rax, 1
@@ -57,4 +54,5 @@ setFalse:
 done:
   mov rsp, rbp
   pop rbp
+  mov [rdi], al  ; return result
   ret
