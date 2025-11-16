@@ -20,7 +20,7 @@ updateEnemyLateralMovementStatus:
 
   ; distanceDiff = this->objective.getBounds().x - this->bounds.x
   movss xmm4, xmm2
-  subss xmm4, dword ptr [rdi]
+  subss xmm4, [rdi]
 
   ; (distanceDiff < 0)
   xorps xmm5, xmm5
@@ -29,11 +29,15 @@ updateEnemyLateralMovementStatus:
   jg objectiveIsRight
 
 objectiveIsLeft:
-  subss dword ptr [rdi], xmm3
+  movss xmm6, [rdi]
+  subss xmm6, xmm3
+  movss [rdi], xmm6
   jmp done
 
 objectiveIsRight:
-  addss dword ptr [rdi], xmm3
+  movss xmm6, [rdi]
+  addss xmm6, xmm3
+  movss [rdi], xmm6
 
 done:
   mov rsp, rbp

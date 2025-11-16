@@ -22,12 +22,16 @@ updateLateralMovementStatus:
 checkLeftKeys:
   cmp dil, 0
   je checkRightKeys
-  subss dword ptr [rdx], xmm2
+  movss xmm3, [rdx]
+  subss xmm3, xmm2
+  movss [rdx], xmm3
 
 checkRightKeys:
   cmp sil, 0
   je done
-  addss dword ptr [rdx], xmm2
+  movss xmm3, [rdx]
+  addss xmm3, xmm2
+  movss [rdx], xmm3
 
 done:
   mov rsp, rbp

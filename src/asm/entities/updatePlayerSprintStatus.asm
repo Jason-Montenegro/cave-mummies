@@ -21,12 +21,12 @@ checkKeyDown:
   movss xmm2, xmm0
   mulss xmm2, xmm1
   addss xmm2, xmm0
-  movss dword ptr [rsi], xmm2
+  movss [rsi], xmm2
 
 checkKeyReleased:
   cmp dl, 0
   je done
-  movss dword ptr [rsi], xmm0
+  movss [rsi], xmm0
 
 done:
   mov rsp, rbp

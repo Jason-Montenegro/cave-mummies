@@ -18,23 +18,25 @@ updatePlayerJumpStatus:
   push rbp
   mov rbp, rsp
 
-  cmp byte ptr [rdi], 1
+  cmp byte [rdi], 1
   jne done
 
   ; newPosition = this->bounds.y + this->jumpVelocity
-  movss xmm2, dword ptr [rsi]
-  addss xmm2, dword ptr [rdx]
+  movss xmm2, [rsi]
+  addss xmm2, [rdx]
   ; this->jumpVelocity += gravity;
-  movss xmm3, [gravity]
-  addss dword ptr [rdx], xmm3
+  movss xmm4, [rdx]
+  movss xmm3, [rel gravity]
+  addss xmm4, xmm3
+  movss [rdx], xmm4
 
 belowFloorLevel:
   ; (newPosition < 0.0f)
   xorps xmm3, xmm3
   ucomiss xmm2, xmm3
   jge atFloorLevel
-  xor dword ptr [rsi], dword ptr [rsi]
-  xor dword ptr [rdx], dword ptr [rdx]
+  mov dword [rsi], 0
+  mov dword [rdx], 0
   jmp done
 
 atFloorLevel:
@@ -44,15 +46,15 @@ atFloorLevel:
   ucomiss xmm2, xmm3
   jl aboveFloorLevel
 
-  movss dword ptr [rsi], xmm3
-  xor dword ptr [rdx], dword ptr [rdx]
-  xor dword ptr [rcx], dword ptr [rcx]
-  xor byte ptr [rdi], byte ptr [rdi]
+  movss [rsi], xmm3
+  mov dword [rdx], 0
+  mov dword [rcx], 0
+  mov byte [rdi], 0
   jmp done
 
 aboveFloorLevel:
   ; this->bounds.y = newPosition;
-  movss dword ptr [rsi], xmm2
+  movss [rsi], xmm2
 
 done:
   mov rsp, rbp

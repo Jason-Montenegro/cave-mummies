@@ -11,7 +11,7 @@ global updateWallWrapAroundBehviour
 updateWallWrapAroundBehviour:
   push rbp
   mov rbp, rsp
-  mov xmm2, dword ptr [rdi]  ; &this->bounds.x
+  movss xmm2, [rdi]  ; &this->bounds.x
 
 wrapAroundRightWall:
   ; Walks on right wall, appears on left wall
@@ -21,7 +21,7 @@ wrapAroundRightWall:
   ; this->bounds.x = -this->bounds.width;
   xorps xmm3, xmm3
   subss xmm3, xmm1
-  movss dword ptr [rdi], xmm3
+  movss [rdi], xmm3
 
 wrapAroundLeftWall:
   ; Walks on left wall, appears on right wall
@@ -32,7 +32,7 @@ wrapAroundLeftWall:
   ucomiss xmm3, xmm4
   jge done
   ; this->bounds.x = screenWidth;
-  movss dword ptr [rdi], xmm0
+  movss [rdi], xmm0
 
 done:
   mov rsp, rbp

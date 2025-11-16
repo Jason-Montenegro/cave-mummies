@@ -8,7 +8,6 @@
 ; Returns: nothing
 ;-------------------------------------------------------------------------------
 section .rodata
-  gravity:      dd 1.5
   jumpStrength: dd 30.0
   maxJumps:     dd 2
 section .text
@@ -21,16 +20,17 @@ consumePlayerJump:
   ; (jumpKeyDown && this->jumpCount < maxJumps)
   cmp dil, 1
   jne done
-  mov eax, [maxJumps]
-  cmp dword ptr [rsi], eax
+
+  mov eax, [rel maxJumps]
+  cmp dword [rsi], eax
   jge done
 
-  mov byte ptr [rdx], 1
-  movss xmm0, [jumpStrength]
+  mov byte [rdx], 1
+  movss xmm0, [rel jumpStrength]
   xorps xmm1, xmm1
   subss xmm1, xmm0
-  movss dword ptr [rcx], xmm1
-  inc dword ptr [rsi]
+  movss [rcx], xmm1
+  inc dword [rsi]
 
 done:
   mov rsp, rbp
