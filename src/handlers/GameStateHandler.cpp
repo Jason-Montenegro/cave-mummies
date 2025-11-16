@@ -2,12 +2,11 @@
 
 #include <memory>
 #include <utility>
-
 #include "GameStateHandler.hpp"
-#include "Game.hpp"
-#include "MainMenuState.hpp"
 #include "AboutMenuState.hpp"
+#include "Game.hpp"
 #include "GameOverState.hpp"
+#include "MainMenuState.hpp"
 #include "PausedMenuGameState.hpp"
 #include "StageOneState.hpp"
 
@@ -16,26 +15,22 @@ namespace cave_mummies::handlers {
 GameStateHandler::GameStateHandler(cave_mummies::core::Game& game)
   : game(game) { }
 
-void GameStateHandler::setCurrentState(GameStateID stateID) {
-  if (this->states.find(stateID) != this->states.end()) {
-    this->currentState = this->states[stateID];
-    this->initCurrentState();
+bool GameStateHandler::update() {
+  const GameStateID nextState{this->currentState->update()};
+  const GameStateID currentState{this->currentState->getStateID()};
+
+  if (nextState == GameStateID::QuitGame) {
+    return false;
+  } else if (nextState != currentState) {
+    this->setCurrentState(nextState);
   }
+  return true;
 }
 
-bool GameStateHandler::initCurrentState() {
+void GameStateHandler::draw() {
   if (this->currentState) {
-    this->currentState->init();
-    return true;
+    this->currentState->draw();
   }
-  return false;
-}
-
-GameStateID GameStateHandler::getCurrentState() const {
-  if (this->currentState) {
-    return this->currentState->getStateID();
-  }
-  return GameStateID::Null;
 }
 
 void GameStateHandler::registerState(GameStateID stateID) {
@@ -64,18 +59,11 @@ void GameStateHandler::registerState(GameStateID stateID) {
         std::make_shared<cave_mummies::states::StageOneState>(this->game);
       break;
     default:
-        return;
+      // No state should be created.
+      return;
     }
     this->states[stateID] = std::move(newState);
   }
-}
-
-void GameStateHandler::cleanStates() {
-  for (auto& pair : this->states) {
-    pair.second.reset();
-  }
-  this->states.clear();
-  this->currentState = nullptr;
 }
 
 void GameStateHandler::removeState(GameStateID stateID) {
@@ -84,23 +72,32 @@ void GameStateHandler::removeState(GameStateID stateID) {
   }
 }
 
-void GameStateHandler::draw() {
-  if (this->currentState) {
-    this->currentState->draw();
+void GameStateHandler::setCurrentState(GameStateID stateID) {
+  if (this->states.find(stateID) != this->states.end()) {
+    this->currentState = this->states[stateID];
+    this->initCurrentState();
   }
 }
 
-bool GameStateHandler::update() {
-  GameStateID nextState{this->currentState->update()};
-
-  // Close game
-  if (nextState == GameStateID::QuitGame) {
-    return false;
-  } else if (nextState != this->currentState->getStateID()) {
-    this->setCurrentState(nextState);
+bool GameStateHandler::initCurrentState() {
+  if (this->currentState) {
+    this->currentState->init();
+    return true;
   }
+  return false;
+}
 
-  return true;
+GameStateID GameStateHandler::getCurrentState() const {
+  return (this->currentState)
+    ? this->currentState->getStateID() : GameStateID::Null;
+}
+
+void GameStateHandler::cleanStates() {
+  for (auto& statePair : this->states) {
+    statePair.second.reset();
+  }
+  this->states.clear();
+  this->currentState = nullptr;
 }
 
 }  // namespace cave_mummies::handlers
