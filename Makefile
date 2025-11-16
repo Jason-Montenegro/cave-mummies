@@ -46,11 +46,13 @@ CPP_OBJ := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(CPP_SRC))
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Compile assembly files
+# Adapted from ChatGPT
+# prompt: como incluyo compilacion de archivos asm nasm 64 bits en mi makefile
 ifeq ($(UNAME_S), Linux)
 # Fetch all .asm files
-  ASM_SRC := $(wildcard $(ASM_DIR)/*.asm)
+  ASM_SRC := $(shell find $(ASM_DIR) -type f -name '*.asm')
 # Convert .asm to .o files
-  ASM_OBJ := $(patsubst $(ASM_DIR)/%.asm, $(BUILD_DIR)/asm/%.o, $(ASM_SRC))
+  ASM_OBJ := $(patsubst $(ASM_DIR)/%, $(BUILD_DIR)/asm/%, $(ASM_SRC:.asm=.o))
 # Compile .asm files
   $(BUILD_DIR)/asm/%.o: $(ASM_DIR)/%.asm
 	@mkdir -p $(dir $@)
@@ -59,7 +61,7 @@ endif
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Combine all object files
-OBJ := $(CPP_OBJ)
+OBJ := $(CPP_OBJ) $(ASM_OBJ)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Default target (debug build)
@@ -71,12 +73,6 @@ all: debug
 .PHONY: release
 release: CXXFLAGS += -O3 -DNDEBUG
 release: raylib $(BIN_DIR)/$(BINNAME)
-
-# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
-# Compile release build for joystick movement controls
-.PHONY: release_joystick
-release_joystick: CXXFLAGS += -DJOYSTICK_CONTROLLER
-release_joystick: raylib $(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Debug build (no optimizations)
@@ -119,6 +115,8 @@ doc:
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Clone and build raylib dependency
+# Adapted from ChatGPT
+# prompt: como clono el repo de raylib en un target para mi makefile
 .PHONY: raylib
 raylib: $(RAYLIB_READY)
 
@@ -143,7 +141,6 @@ help:
 	@echo "  make                    : Default build (builds in debug mode as default)"
 	@echo "  make run                : Compiles if needed, and runs the program"
 	@echo "  make release            : Compiles a release version"
-	@echo "  make release_joystick   : Compiles a release version for joystick movement control"
 	@echo "  make debug              : Compiles with debug symbols"
 	@echo "  make raylib             : Clones and builds raylib dependency"
 	@echo "  make lint               : Checks linting warnings with Cpplint"
