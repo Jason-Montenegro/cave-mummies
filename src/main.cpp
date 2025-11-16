@@ -1,16 +1,7 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
 #include "Game.hpp"
-
-#ifdef JOYSTICK_CONTROLLER
-#include "JoystickSource.hpp"
-#else
-#include "KeyboardSource.hpp"
-#endif
-
 #include "Log.hpp"
-
-using Game = cave_mummies::core::Game;
 
 /**
  * @brief Callback to allow Raylib to redirect its log messages to a logger.
@@ -29,18 +20,12 @@ void traceLogCallback(int /* logType */, const char* raylibMsg
 int main() {
   cave_mummies::utils::Log::getInstance().start("cave_mummies.log");
   SetTraceLogCallback(traceLogCallback);
-
   try {
-    #ifdef JOYSTICK_CONTROLLER
-    Game game(cave_mummies::handlers::InputSourceType::Joystick);
-    #else
-    Game game(cave_mummies::handlers::InputSourceType::Keyboard);
-    #endif
+    cave_mummies::core::Game game;
     game.run();
   } catch (const std::exception& e) {
-    cave_mummies::utils::Log::append(cave_mummies::utils::Log::ERROR
-      , "Main", e.what());
-    return EXIT_FAILURE;
+    cave_mummies::utils::Log::append(cave_mummies::utils::Log::ERROR, "Main"
+      , e.what());
   }
   cave_mummies::utils::Log::getInstance().stop();
   return EXIT_SUCCESS;

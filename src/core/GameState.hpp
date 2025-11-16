@@ -26,6 +26,16 @@ enum class GameStateID {
  * @brief Abstract game state interface.
  */
 class GameState {
+ protected:
+  /// @brief This object game state ID.
+  GameStateID stateID{GameStateID::Null};
+  /// @brief Background texture for this state.
+  Texture2D background;
+  /// @brief Indicates whether this state is currently loaded.
+  bool loaded{false};
+  /// @brief Game controller.
+  cave_mummies::core::Game& game;
+
  public:
   /**
    * @brief Construct a new Game State object.
@@ -47,14 +57,14 @@ class GameState {
   /**
    * @brief Updates the internal state logic.
    * @return The next state to transition to.
-   * @note If no transition is required, returns this state's ID.
+   * @note If no transition is required, it returns this state's ID.
    */
   virtual GameStateID update();
 
   /**
    * @brief Initializes the game state.
    */
-  virtual void init() { }
+  virtual void init() = 0;
 
   /**
    * @brief Draws the current state to the window.
@@ -62,15 +72,6 @@ class GameState {
   virtual void draw() = 0;
 
  protected:
-  /// @brief State identifier.
-  GameStateID stateID{GameStateID::Null};
-  /// @brief Background texture for this state.
-  Texture2D background;
-  /// @brief Indicates whether this state is currently loaded.
-  bool loaded{false};
-  /// @brief Game controller reference.
-  cave_mummies::core::Game& game;
-
   /**
    * @brief Draws the background image for this state.
    */

@@ -1,39 +1,27 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
-#include "Game.hpp"
 #include <exception>
 #include <memory>
 #include <string>
+#include "raylib.h"
+#include "Game.hpp"
 #include "CollisionHandler.hpp"
 #include "GameStateHandler.hpp"
 #include "InputHandler.hpp"
-#include "InputSource.hpp"
-#include "Log.hpp"
 #include "MainMenuState.hpp"
 #include "TextureManager.hpp"
-#include "raylib.h"
 
 using InputSourceType = cave_mummies::handlers::InputSourceType;
 
 namespace cave_mummies::core {
 
-Game::Game(InputSourceType inputType)
+Game::Game()
   : gameStateHandler(std::make_unique
       <cave_mummies::handlers::GameStateHandler>(*this))
   , inputHandler(std::make_unique
-      <cave_mummies::handlers::InputHandler>(inputType))
+      <cave_mummies::handlers::InputHandler>())
   , collisionHandler(std::make_unique
-      <cave_mummies::handlers::CollisionHandler>())
-  , textureManager(nullptr)
-  , loadedGame(false) {
-  this->setInputSource(inputType);
-  this->gameStateHandler->registerState(GameStateID::MainMenu);
-}
-
-void Game::setInputSource(InputSourceType type) {
-  this->inputHandler = std::make_unique
-    <cave_mummies::handlers::InputHandler>(type);
-}
+      <cave_mummies::handlers::CollisionHandler>()) { }
 
 Game::~Game() {
   if (this->loadedGame) {
@@ -54,16 +42,18 @@ void Game::init() {
   InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), Game::defaultWindowTitle);
   #endif
   SetExitKey(0);  // Deactive Esc key as exit program key
-  SetMousePosition(GetScreenWidth()/2, GetScreenHeight()/2);
+  SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
   InitAudioDevice();
   SetMasterVolume(1.0f);  // 1.0 = 100%
   const char* basePath{GetApplicationDirectory()};
-  this->backgroundSoundtrack = LoadMusicStream((std::string(basePath)
-    + std::string(this->soundtrackPath)).c_str());
-  this->loadedGame = true;
+  std::string filename{basePath};
+  filename += this->soundtrackPath;
+  this->backgroundSoundtrack = LoadMusicStream(filename.c_str());
+  this->gameStateHandler->registerState(GameStateID::MainMenu);
   this->gameStateHandler->setCurrentState(GameStateID::MainMenu);
   // Initialize all game textures
   this->textureManager = std::make_unique<cave_mummies::core::TextureManager>();
+  this->loadedGame = true;
 }
 
 cave_mummies::handlers::GameStateHandler& Game::getGameStateHandler() {
@@ -83,7 +73,7 @@ cave_mummies::core::TextureManager& Game::getTextureManager() {
 }
 
 float Game::getGameStageFloorHeight() const {
-  return (GetScreenHeight() / 2) + GetScreenHeight() * 0.3f;
+  return (GetScreenHeight() / 2.0f) + GetScreenHeight() * 0.3f;
 }
 
 void Game::setCurrentGameScore(int64_t score) {
@@ -115,7 +105,6 @@ int Game::run() {
     UpdateMusicStream(this->backgroundSoundtrack);
     this->draw();
   }
-  this->cleanup();
   return EXIT_SUCCESS;
 }
 
@@ -124,13 +113,13 @@ bool Game::update() {
 }
 
 void Game::updateSoundtrackStatus() {
-  if (this->inputHandler->keyboardIsPressed(KEY_M)) {
-    if (this->musicPaused) {
+  if (this->inputHandler->isPressed(KEY_M)) {
+    if (this->isMusicPaused) {
       ResumeMusicStream(this->backgroundSoundtrack);
-      this->musicPaused = false;
+      this->isMusicPaused = false;
     } else {
       PauseMusicStream(this->backgroundSoundtrack);
-      this->musicPaused = true;
+      this->isMusicPaused = true;
     }
   }
 }
@@ -139,10 +128,6 @@ void Game::draw() {
   BeginDrawing();
   this->gameStateHandler->draw();
   EndDrawing();
-}
-
-void Game::cleanup() {
-  // No implementation
 }
 
 }  // namespace cave_mummies::core
