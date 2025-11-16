@@ -4,7 +4,7 @@
 ;     RDI holds float* xCoordinate pointer
 ;   , XMM0 holds float screenWidth
 ;   , XMM1 holds float playerWidth
-; Returns: nothing
+; Returns: nothing, modifies xCoordinate
 ;-------------------------------------------------------------------------------
 section .text
 global updateWallWrapAroundBehviour

@@ -6,7 +6,7 @@
 ;   , RDX holds bool isKeyReleased(KEY_LEFT_SHIFT)
 ;   , XMM0 holds float baseVelocity
 ;   , XMM1 holds float sprintVelocityBoost
-; Returns: nothing
+; Returns: nothing, modifies velocity
 ;-------------------------------------------------------------------------------
 section .text
 global updatePlayerSprintStatus

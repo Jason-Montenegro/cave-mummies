@@ -5,7 +5,7 @@
 ;   , RSI holds int32_t* jumpCount pointer
 ;   , RDX holds bool* isJumping pointer
 ;   , RCX holds float* jumpVelocity pointer
-; Returns: nothing,  modifies jumpCount, isJumping, and jumpVelocity
+; Returns: nothing, modifies jumpCount, isJumping, and jumpVelocity
 ;-------------------------------------------------------------------------------
 section .rodata
   jumpStrength: dd 30.0

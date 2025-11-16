@@ -6,7 +6,7 @@
 ;   , RDX holds float* xCoordinate pointer
 ;   , XMM0 holds float velocity
 ;   , XMM1 holds float currentSpeed
-; Returns: nothing
+; Returns: nothing, modifies xCoordinate
 ;-------------------------------------------------------------------------------
 section .text
 global updateLateralMovementStatus

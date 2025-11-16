@@ -5,7 +5,7 @@
 ;   , XMM0 holds float currentSpeed
 ;   , XMM1 holds float velocity
 ;   , XMM2 holds float objectiveX
-; Returns: nothing
+; Returns: nothing, modifies enemyX
 ;-------------------------------------------------------------------------------
 section .text
 global updateEnemyLateralMovementStatus

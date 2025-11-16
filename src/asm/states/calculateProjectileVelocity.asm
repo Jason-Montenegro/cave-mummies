@@ -28,14 +28,14 @@ calculateProjectileVelocity:
   ; const float length{sqrtf(dir.x * dir.x + dir.y * dir.y)};
   movss xmm7, xmm5
   mulss xmm7, xmm7
-  movss xmm0, xmm6
-  mulss xmm0, xmm0
-  addss xmm7, xmm0
+  movss xmm8, xmm6
+  mulss xmm8, xmm8
+  addss xmm7, xmm8
   sqrtss xmm7, xmm7
 
   ; Normalization of vector coordinates
-  xorps xmm0, xmm0
-  ucomiss xmm7, xmm0
+  xorps xmm8, xmm8
+  ucomiss xmm7, xmm8
   je amplifyProjectileSpeed
   divss xmm5, xmm7
   divss xmm6, xmm7

@@ -4,7 +4,7 @@
 ;     RDI holds int32_t* gameFrameCounter pointer
 ;   , RSI holds int32_t totalSpriteFrameCount
 ;   , RDX holds int32_t* currentSpriteFrame pointer
-; Returns: nothing
+; Returns: nothing, modifies gameFrameCounter and currentSpriteFrame
 ;-------------------------------------------------------------------------------
 section .text
 global updateSpriteFrameStatus
