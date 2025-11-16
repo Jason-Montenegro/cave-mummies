@@ -46,7 +46,7 @@ CPP_OBJ := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(CPP_SRC))
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Compile assembly files
-# Adapted from ChatGPT
+# Adapted from ChatGPT. Date: Sunday 16 November 2025
 # prompt: como incluyo compilacion de archivos asm nasm 64 bits en mi makefile
 ifeq ($(UNAME_S), Linux)
 # Fetch all .asm files
@@ -115,7 +115,7 @@ doc:
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Clone and build raylib dependency
-# Adapted from ChatGPT
+# Adapted from ChatGPT. Date: Sunday 16 November 2025
 # prompt: como clono el repo de raylib en un target para mi makefile
 .PHONY: raylib
 raylib: $(RAYLIB_READY)

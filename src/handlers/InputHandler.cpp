@@ -11,7 +11,7 @@ namespace cave_mummies::handlers {
 InputHandler::InputHandler() {
   #ifdef __linux__
   this->setKeyBindings();
-  // Adapted from ChatGPT
+  // Adapted from ChatGPT. Date: Saturday 15 November 2025
   // Prompt:how to connect arduino in unix systems for receiving joystick signal
   this->arduinoFileDescriptor = open("/dev/ttyACM0", O_RDONLY | O_NOCTTY
     | O_NONBLOCK);
@@ -39,7 +39,7 @@ InputHandler::InputHandler() {
 
 InputHandler::~InputHandler() {
   #ifdef __linux__
-  // Adapted from ChatGPT
+  // Adapted from ChatGPT. Date: Saturday 15 November 2025
   // Prompt:how to connect arduino in unix systems for receiving joystick signal
   if (this->arduinoFileDescriptor >= 0) {
     tcsetattr(this->arduinoFileDescriptor, TCSANOW, &this->oldConfiguration);

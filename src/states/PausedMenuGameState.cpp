@@ -1,8 +1,8 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 #include "PausedMenuGameState.hpp"
 #include "Game.hpp"
 #include "GameStateHandler.hpp"
@@ -15,7 +15,8 @@ using GameStateID = cave_mummies::core::GameStateID;
 namespace cave_mummies::states {
 
 PausedMenuGameState::PausedMenuGameState(cave_mummies::core::Game& game)
-  : GameState(game), menuBuilder(game, GameStateID::PausedMenu) {
+  : GameState(game)
+  , menuBuilder(game, GameStateID::PausedMenu) {
   this->stateID = GameStateID::PausedMenu;
 }
 
@@ -88,7 +89,7 @@ void PausedMenuGameState::buildMenuOptions() {
     {"Save and quit", GameStateID::MainMenu},
   };
 
-  for (size_t i{0}; i < options.size(); ++i) {
+  for (int32_t i = 0; i < options.size(); ++i) {
     // Measure text size relative to screen
     Vector2 textSize{MeasureTextEx(this->menuBuilder.getLoadedFont(),
       options[i].first.c_str(), fontSize, 1.0f)};
@@ -105,7 +106,7 @@ void PausedMenuGameState::buildMenuOptions() {
 }
 
 cave_mummies::core::GameStateID PausedMenuGameState::update() {
-  auto newState{this->menuBuilder.update()};
+  GameStateID newState{this->menuBuilder.update()};
   if (newState == GameStateID::MainMenu) {
     this->updateHighestGameScore();
     this->game.setCurrentGameScore(0);

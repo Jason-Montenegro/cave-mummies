@@ -209,6 +209,14 @@ class Player : public Entity {
     return this->gunShotSFX;
   }
 
+  /**
+   * @brief Get the reloading speed in seconds.
+   * @return Reloading speed in seconds.
+   */
+  inline constexpr uint32_t getReloadingSpeedInSeconds() {
+    return this->reloadingSpeedInSeconds;
+  }
+
  protected:
   /**
    * @brief Calculates jump height and updates position.

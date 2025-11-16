@@ -2,7 +2,6 @@
 
 #include <string>
 #include <utility>
-
 #include "AboutMenuState.hpp"
 #include "AboutText.hpp"
 
@@ -14,7 +13,8 @@ using GameStateID = cave_mummies::core::GameStateID;
 namespace cave_mummies::states {
 
 AboutMenuState::AboutMenuState(cave_mummies::core::Game& game)
-  : GameState(game), menuBuilder(game, GameStateID::AboutMenu) {
+  : GameState(game)
+  , menuBuilder(game, GameStateID::AboutMenu) {
   this->stateID = GameStateID::AboutMenu;
 }
 
@@ -35,7 +35,7 @@ void AboutMenuState::buildAboutTextBox() {
   // 0.032f is an arbitrary constant for sizing
   const int32_t fontSize{static_cast<int32_t>(screenH * 0.032f)};
 
-  // Define box sizing: floating values represent a margin percentage relative
+  // Box sizing: floating values represent a margin percentage relative
   // to the side of the screen
   Rectangle boxSizing{ .x = screenW * 0.05f, .y = screenH * 0.1f
     , .width = screenW * 0.9f, .height = screenH * 0.8f};
@@ -45,7 +45,6 @@ void AboutMenuState::buildAboutTextBox() {
     , .scrollY = 0.0f, .fontSize = fontSize, .focused = true
     , .drawContainer = false, .containerColor = WHITE
     , .containerBorderColor = WHITE};
-
   this->menuBuilder.insertTextBox(textBox);
 }
 

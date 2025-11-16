@@ -1,7 +1,7 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
-#ifndef ABOUT_TEXT_HPP
-#define ABOUT_TEXT_HPP
+#ifndef CAVE_MUMMIES_STATES_ABOUT_TEXT_HPP
+#define CAVE_MUMMIES_STATES_ABOUT_TEXT_HPP
 
 namespace cave_mummies::states::menu {
 
@@ -51,4 +51,4 @@ constexpr const char* const aboutText{
 
 }  // namespace cave_mummies::states::menu
 
-#endif
+#endif  // CAVE_MUMMIES_STATES_ABOUT_TEXT_HPP

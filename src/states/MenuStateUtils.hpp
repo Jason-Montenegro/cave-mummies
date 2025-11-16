@@ -1,9 +1,7 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
-#ifndef MENU_STATE_UTILS_HPP
-#define MENU_STATE_UTILS_HPP
-
-#include <string>
+#ifndef CAVE_MUMMIES_STATES_MENU_MENU_STATE_UTILS_HPP
+#define CAVE_MUMMIES_STATES_MENU_MENU_STATE_UTILS_HPP
 
 #include "raylib.h"
 #include "GameState.hpp"
@@ -11,80 +9,98 @@
 namespace cave_mummies::states::menu {
 
 /**
- * @enum MenuElementFlag
  * @brief Visual state flags for each menu option.
  */
 enum class MenuElementFlag {
   Highlight1,  ///< Primary highlight
   Highlight2,  ///< Secondary highlight
-  None  ///< No effect
+  None         ///< No effect
 };
 
 /**
- * @enum MenuElementTag
  * @brief Types of elements that can be displayed in the menu.
  */
 enum class MenuElementTag {
   h1,  ///< Main title
   h2,  ///< Secondary title
-  li  ///< List item
+  li   ///< List item
 };
 
 /**
- * @brief Represents an element in a menu state
- * 
- * Stores the text, highlight state, type, and color information
- * needed to render and interact with a menu item
+ * @brief Represents an element in a menu state. Stores the text, 
+ * highlight state, type, and color information needed to render and interact 
+ * with a menu item.
  */
 struct MenuElement {
-  /// @brief Displayed text
+  /// @brief Displayed text.
   std::string text;
-  /// @brief Base text color
+  /// @brief Base text color.
   Color color;
-  /// @brief Highlight state
+  /// @brief Highlight state.
   MenuElementFlag flag;
-  /// @brief Element type
+  /// @brief Element type.
   MenuElementTag tag;
-  /// @brief Font size
+  /// @brief Font size.
   float fontSize;
-  /// @brief Screen position
+  /// @brief Screen position.
   Vector2 position;
-  /// @brief Game state to which it corresponds
+  /// @brief Game state to which it corresponds.
   cave_mummies::core::GameStateID gameState;
 };
 
 /**
- * @brief Represents a text box in a menu state
+ * @brief Represents a text box in a menu state.
  */
 struct TextBox {
-  /// @brief Box element
+  /// @brief Box element.
   Rectangle rect;
-  /// @brief Content
+  /// @brief Content.
   std::string text;
-  /// @brief Scroll degree
+  /// @brief Scroll degree.
   float scrollY{0};
-  /// @brief Text font size
+  /// @brief Text font size.
   int32_t fontSize{20};
-  /// @brief Focus flag
+  /// @brief Focus flag.
   bool focused{false};
-  /// @brief Box container condition
+  /// @brief Box container condition.
   bool drawContainer{false};
-  /// @brief Container color
+  /// @brief Container color.
   Color containerColor;
-  /// @brief Container border color
+  /// @brief Container border color.
   Color containerBorderColor;
 };
 
 /**
- * @brief Returns the outline color based on the highlight flag.
+ * @brief Picks an outline color based on a highlight flag.
+ * @param flag Highlight flag.
+ * @return Raylib color.
  */
-Color pickOutlineColor(MenuElementFlag flag);
+Color pickOutlineColor(MenuElementFlag flag) {
+  switch (flag) {
+  case MenuElementFlag::Highlight1: return DARKGREEN;
+  case MenuElementFlag::Highlight2: return LIME;
+  default: return WHITE;
+  }
+}
 
 /**
  * @brief Returns the outline thickness based on the element type.
  */
-int pickOutlineThickness(MenuElementTag tag);
+
+/**
+ * @brief Picks an outline thickness based on an element type.
+ * @param tag Semantic tag.
+ * @return Outline thickness value.
+ */
+int pickOutlineThickness(MenuElementTag tag) {
+  switch (tag) {
+  case MenuElementTag::h1: return 8;  // Thick outline
+  case MenuElementTag::h2: return 5;  // Medium-thickness outline
+  case MenuElementTag::li: return 3;  // Thin outline
+  default: return 1;                  // Default outline value
+  }
+}
 
 }  // namespace namespace cave_mummies::states::menu
 
-#endif  // MENU_STATE_UTILS_HPP
+#endif  // CAVE_MUMMIES_STATES_MENU_MENU_STATE_UTILS_HPP
