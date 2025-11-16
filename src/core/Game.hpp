@@ -6,6 +6,10 @@
 #include <memory>
 #include "raylib.h"
 #include "Application.hpp"
+#include "CollisionHandler.hpp"
+#include "GameStateHandler.hpp"
+#include "InputHandler.hpp"
+#include "TextureManager.hpp"
 
 namespace cave_mummies::handlers {
   class GameStateHandler;
@@ -52,10 +56,8 @@ class Game : public cave_mummies::core::Application {
  public:
   /**
    * @brief Construct a new Game object.
-   * @throw std::runtime_error if a game texture image could not be loaded.
-   * @throw std::bad_alloc if a handler could not be initialized.
    */
-  explicit Game();
+  explicit Game() = default;
 
   /**
    * @brief Destroy the Game object and releases resources.
@@ -65,6 +67,8 @@ class Game : public cave_mummies::core::Application {
   /**
    * @brief Starts and maintains the main game loop.
    * @throw std::bad_alloc if there was an initialization error.
+   * @throw std::runtime_error if a game texture image could not be loaded.
+   * @throw std::bad_alloc if a handler could not be initialized.
    * @return EXIT_SUCCESS if successful, otherwise EXIT_FAILURE.
    */
   int run() override;
@@ -127,6 +131,8 @@ class Game : public cave_mummies::core::Application {
   /**
    * @brief Initializes all game resources.
    * @throw std::bad_alloc if there was an initialization error.
+   * @throw std::runtime_error if a game texture image could not be loaded.
+   * @throw std::bad_alloc if a handler could not be initialized.
    */
   void init() override;
 

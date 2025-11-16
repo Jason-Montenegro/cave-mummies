@@ -29,19 +29,20 @@ class GameState {
  protected:
   /// @brief This object game state ID.
   GameStateID stateID{GameStateID::Null};
-  /// @brief Background texture for this state.
-  Texture2D background;
-  /// @brief Indicates whether this state is currently loaded.
-  bool loaded{false};
   /// @brief Game controller.
   cave_mummies::core::Game& game;
+  /// @brief Background texture for this state.
+  const Texture2D& background;
+  /// @brief Indicates whether this state is currently loaded.
+  bool loaded{false};
 
  public:
   /**
    * @brief Construct a new Game State object.
    * @param game Game controller.
+   * @param background State background.
    */
-  GameState(cave_mummies::core::Game& game);
+  GameState(cave_mummies::core::Game& game, const Texture2D& background);
 
   /**
    * @brief Destroy the Game State object.

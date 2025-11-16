@@ -5,26 +5,19 @@
 #include <string>
 #include "raylib.h"
 #include "Game.hpp"
-#include "CollisionHandler.hpp"
-#include "GameStateHandler.hpp"
-#include "InputHandler.hpp"
 #include "MainMenuState.hpp"
-#include "TextureManager.hpp"
 
 using InputSourceType = cave_mummies::handlers::InputSourceType;
 
 namespace cave_mummies::core {
 
-Game::Game()
-  : gameStateHandler(std::make_unique
-    <cave_mummies::handlers::GameStateHandler>(*this))
-  , inputHandler(std::make_unique
-    <cave_mummies::handlers::InputHandler>())
-  , collisionHandler(std::make_unique
-    <cave_mummies::handlers::CollisionHandler>()) { }
-
 Game::~Game() {
   if (this->loadedGame) {
+    this->textureManager->unloadTextures();
+    this->inputHandler.reset();
+    this->collisionHandler.reset();
+    this->gameStateHandler.reset();
+    this->textureManager.reset();
     UnloadMusicStream(this->backgroundSoundtrack);
     CloseAudioDevice();
     CloseWindow();
@@ -45,14 +38,19 @@ void Game::init() {
   SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
   InitAudioDevice();
   SetMasterVolume(1.0f);  // 1.0 = 100%
-  const char* basePath{GetApplicationDirectory()};
-  std::string filename{basePath};
+  std::string filename{GetApplicationDirectory()};
   filename += this->soundtrackPath;
   this->backgroundSoundtrack = LoadMusicStream(filename.c_str());
-  this->gameStateHandler->registerState(GameStateID::MainMenu);
-  this->gameStateHandler->setCurrentState(GameStateID::MainMenu);
   // Initialize all game textures
   this->textureManager = std::make_unique<cave_mummies::core::TextureManager>();
+  this->gameStateHandler = std::make_unique
+    <cave_mummies::handlers::GameStateHandler>(*this);
+  this->collisionHandler = std::make_unique
+    <cave_mummies::handlers::CollisionHandler>();
+  this->gameStateHandler->registerState(GameStateID::MainMenu);
+  this->gameStateHandler->setCurrentState(GameStateID::MainMenu);
+  this->inputHandler = std::make_unique
+    <cave_mummies::handlers::InputHandler>();
   this->loadedGame = true;
 }
 

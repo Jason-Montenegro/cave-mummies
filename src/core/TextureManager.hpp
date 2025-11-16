@@ -3,6 +3,7 @@
 #ifndef CAVE_MUMMIES_CORE_TEXTURE_MANAGER_HPP
 #define CAVE_MUMMIES_CORE_TEXTURE_MANAGER_HPP
 
+#include <string>
 #include <map>
 #include "raylib.h"
 
@@ -20,7 +21,9 @@ enum class TextureID {
   EnemyEasySprite, 
   EnemyModerateSprite, 
   EnemyHardSprite,
-  FloorTile
+  FloorTile,
+  GameBackground,
+  BlankDarkBackground
 };
 
 /**
@@ -29,7 +32,7 @@ enum class TextureID {
 class TextureManager {
  private:
   /// @brief Loaded textures indexed by TextureID.
-  std::map<TextureID, Texture2D> textures{};
+  std::map<TextureID, Texture2D> textures{{}};
   /// @brief Base path for texture assets.
   const char* basePath{nullptr};
   /// @brief Paths to enemy texture assets relative to this->basePath.
@@ -44,6 +47,10 @@ class TextureManager {
   /// @brief Path to the floor tile texture relative to this->basePath.
   static constexpr const char* const floorTileAssetPath
     {"../assets/textures/scene/floor_tile.png"};
+  static constexpr const char* const gameBackground
+    {"../assets/background/game_bg.png"};
+  static constexpr const char* const blankDarkBackground
+      {"../assets/background/blank_dark_bg.png"};
 
  public:
   /**
@@ -53,9 +60,16 @@ class TextureManager {
   explicit TextureManager();
 
   /**
-   * @brief Destroy the Texture Manager object.
+   * @brief Destroy the Texture Manager object. Does not invoke
+   * unloadTextures(). Client must invoke unloadTextures() before destructor
+   * to avoid memory leakage.
    */
-  ~TextureManager();
+  ~TextureManager() = default;
+
+  /**
+   * @brief Unloads all loaded textures.
+   */
+  void unloadTextures();
 
   /**
    * @brief Gets a texture by its identifier.

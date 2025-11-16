@@ -101,7 +101,7 @@ $(BIN_DIR)/$(BINNAME): $(OBJ) | $(RAYLIB_READY)
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Lint C++ code
 INPUTFC := $(CPP_SRC)
-LINTC := +whitespace/braces,+runtime/explicit,-build/include_subdir,-build/header_guard
+LINTC := +whitespace/braces,+runtime/explicit,-build/include_subdir,-build/header_guard,-build/c++11,-whitespace/indent_namespace
 .PHONY: lint
 lint: ## Check code style conformance using Cpplint
 	@-cpplint --filter=$(LINTC) $(INPUTFC)

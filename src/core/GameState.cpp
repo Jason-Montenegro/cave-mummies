@@ -4,8 +4,9 @@
 
 namespace cave_mummies::core {
 
-GameState::GameState(cave_mummies::core::Game& game)
-  : game(game) { }
+GameState::GameState(cave_mummies::core::Game& game
+  , const Texture2D& background)
+  : game(game), background(background) { }
 
 GameStateID GameState::getStateID() const {
   return this->stateID;

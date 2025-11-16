@@ -14,15 +14,14 @@ using GameStateID = cave_mummies::core::GameStateID;
 namespace cave_mummies::states {
 
 MainMenuState::MainMenuState(cave_mummies::core::Game& game)
-  : GameState(game)
+  : GameState(game, game.getTextureManager().getTexture(
+    cave_mummies::core::TextureID::GameBackground))
   , menuBuilder(game, GameStateID::MainMenu) {
   this->stateID = GameStateID::MainMenu;
 }
 
 void MainMenuState::init() {
   const char* basePath{GetApplicationDirectory()};
-  this->background = LoadTexture((std::string(basePath)
-    + "../assets/background/game_bg.png").c_str());
   // Build interface with builder
   this->menuBuilder.loadFont((std::string(basePath)
     + "../assets/fonts/PixelOperatorMono-Bold.ttf").c_str());

@@ -10,15 +10,19 @@ namespace cave_mummies::core {
 
 TextureManager::TextureManager()
   : basePath(GetApplicationDirectory()) {
-  this->loadPlayerTexture();
-  this->loadEnemyTextures();
-  this->loadGameStageTextures();
+  if (!basePath) {
+    basePath = "";
+  } else {
+    this->loadPlayerTexture();
+    this->loadEnemyTextures();
+    this->loadGameStageTextures();
+  }
 }
 
-TextureManager::~TextureManager() {
-  for (auto& texturePair : this->textures) {
-    if (texturePair.second.id != 0) {
-      UnloadTexture(texturePair.second);
+void TextureManager::unloadTextures() {
+  for (auto& [id, texture] : this->textures) {
+    if (texture.id != 0) {
+      UnloadTexture(texture);
     }
   }
 }
@@ -55,9 +59,12 @@ void TextureManager::loadTextureAndScale(TextureID id
 }
 
 void TextureManager::loadGameStageTextures() {
-  std::string filename{this->basePath};
-  filename += this->floorTileAssetPath;
-  this->textures[TextureID::FloorTile] = LoadTexture(filename.c_str());
+  this->textures[TextureID::GameBackground] = LoadTexture(
+    (this->basePath + std::string(this->gameBackground)).c_str());
+  this->textures[TextureID::BlankDarkBackground] = LoadTexture(
+    (this->basePath + std::string(this->blankDarkBackground)).c_str());
+  this->textures[TextureID::FloorTile] = LoadTexture(
+    (this->basePath + std::string(this->floorTileAssetPath)).c_str());
 }
 
 const Texture2D& TextureManager::getTexture(TextureID id) {

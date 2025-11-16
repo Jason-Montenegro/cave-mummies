@@ -25,7 +25,8 @@ using TextureID = cave_mummies::core::TextureID;
 namespace cave_mummies::states {
 
 StageOneState::StageOneState(cave_mummies::core::Game& game)
-  : GameState(game)
+  : GameState(game, game.getTextureManager().getTexture(
+    TextureID::GameBackground))
   , floorTile(game.getTextureManager().getTexture(TextureID::FloorTile)) {
   this->stateID = cave_mummies::core::GameStateID::StageOne;
 }
@@ -33,7 +34,6 @@ StageOneState::StageOneState(cave_mummies::core::Game& game)
 StageOneState::~StageOneState() {
   if (this->loaded) {
     // Unload all loaded game assets
-    UnloadTexture(this->background);
     UnloadFont(this->textFont);
     this->loaded = false;
   }
@@ -43,8 +43,6 @@ void StageOneState::init() {
   if (!this->loaded) {
     // Load all game assets
     const char* basePath{GetApplicationDirectory()};
-    this->background = LoadTexture((std::string(basePath)
-    + "../assets/background/game_bg.png").c_str());
     this->textFont = LoadFont((std::string(basePath)
       + "../assets/fonts/PixelOperatorMono-Bold.ttf").c_str());
     this->player = std::make_unique<cave_mummies::entities::Player>(this->game);
