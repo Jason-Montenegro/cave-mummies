@@ -1,0 +1,38 @@
+;-------------------------------------------------------------------------------
+; Updates the wall wrap around behaviour for player.
+; Receives: 
+;     RDI holds bool jumpKeyDown
+;   , RSI holds int32_t* jumpCount pointer
+;   , RDX holds bool* isJumping pointer
+;   , RCX holds float* jumpVelocity pointer
+; Returns: nothing
+;-------------------------------------------------------------------------------
+section .rodata
+  gravity:      dd 1.5
+  jumpStrength: dd 30.0
+  maxJumps:     dd 2
+section .text
+global consumePlayerJump
+
+consumePlayerJump:
+  push rbp
+  mov rbp, rsp
+
+  ; (jumpKeyDown && this->jumpCount < maxJumps)
+  cmp dil, 1
+  jne done
+  mov eax, [maxJumps]
+  cmp dword ptr [rsi], eax
+  jge done
+
+  mov byte ptr [rdx], 1
+  movss xmm0, [jumpStrength]
+  xorps xmm1, xmm1
+  subss xmm1, xmm0
+  movss dword ptr [rcx], xmm1
+  inc dword ptr [rsi]
+
+done:
+  mov rsp, rbp
+  pop rbp
+  ret

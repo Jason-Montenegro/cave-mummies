@@ -17,11 +17,11 @@ namespace cave_mummies::core {
 
 Game::Game()
   : gameStateHandler(std::make_unique
-      <cave_mummies::handlers::GameStateHandler>(*this))
+    <cave_mummies::handlers::GameStateHandler>(*this))
   , inputHandler(std::make_unique
-      <cave_mummies::handlers::InputHandler>())
+    <cave_mummies::handlers::InputHandler>())
   , collisionHandler(std::make_unique
-      <cave_mummies::handlers::CollisionHandler>()) { }
+    <cave_mummies::handlers::CollisionHandler>()) { }
 
 Game::~Game() {
   if (this->loadedGame) {

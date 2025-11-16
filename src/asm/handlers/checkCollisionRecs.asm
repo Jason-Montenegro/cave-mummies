@@ -1,6 +1,8 @@
 ;-------------------------------------------------------------------------------
 ; Checks collision between rectangles using AABB.
-; Receives: RDI holds Rectangle pointer, RSI holds Rectangle pointer.
+; Receives:
+;     RDI holds Rectangle pointer
+;   , RSI holds Rectangle pointer
 ; Returns: true if rectangles are colliding, otherwise false.
 ; C struct reference from raylib API:
 ; struct Rectangle {
@@ -14,8 +16,8 @@ section .text
 global checkCollisionRecs:
 
 checkCollisionRecs:
-  push ebp
-  mov ebp, esp
+  push rbp
+  mov rbp, rsp
 
  ; a.x + a.width < b.x
   movss xmm0, [rdi]      ; a.x
@@ -53,6 +55,6 @@ setFalse:
   mov rax, 0  ; return false
 
 done:
-  mov esp, ebp
-  pop ebp
+  mov rsp, rbp
+  pop rbp
   ret

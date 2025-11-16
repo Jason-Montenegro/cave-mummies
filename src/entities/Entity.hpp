@@ -26,6 +26,28 @@ enum class Direction {
  * @brief Abstract entity interface.
  */
 class Entity {
+ protected:
+  /// @brief Entity bounds (x, y, width, height).
+  Rectangle bounds{};
+  /// @brief Current entity speed.
+  float currentSpeed{1.0f};
+  /// @brief Current velocity value.
+  float velocity{1.0f};
+  /// @brief Base velocity reference value.
+  float baseVelocity{1.0f};
+  /// @brief Frame counter used for sprite display.
+  int32_t gameFrameCounter{0};
+  /// @brief Current sprite frame.
+  int32_t currentSpriteFrame{0};
+  /// @brief Total sprite frames.
+  const int32_t totalSpriteFrameCount{4};
+  /// @brief Game controller.
+  cave_mummies::core::Game& game;
+  /// @brief Default sprite width in pixels.
+  static constexpr float defaultSpritePixelWidth{32.0};
+  /// @brief Current sprite direction.
+  Direction currentDirection{Direction::Right};
+
  public:
   /**
    * @brief Construct a new Entity object.
@@ -40,12 +62,12 @@ class Entity {
   virtual ~Entity() { }
 
   /**
-   * @brief Updates the entity state.
+   * @brief Updates this entity state.
    */
   virtual void update() = 0;
 
   /**
-   * @brief Draws the entity.
+   * @brief Draws this entity to screen.
    */
   virtual void draw() = 0;
 
@@ -96,36 +118,6 @@ class Entity {
   inline Direction getDirection() const {
     return this->currentDirection;
   }
-
-  /**
-   * @brief Sets the spritesheet frame count.
-   * @param count Number of frames in the spritesheet.
-   */
-  inline void setTextureFrameCount(int32_t count) {
-    this->spriteFrameCount = count;
-  }
-
- protected:
-  /// @brief Entity rectangle (x, y, width, height).
-  Rectangle bounds{0, 0, 0, 0};
-  /// @brief Current entity speed.
-  float currentSpeed{1.0f};
-  /// @brief Current velocity value.
-  float velocity{1.0f};
-  /// @brief Base velocity reference value.
-  float baseVelocity{1.0f};
-  /// @brief Frame counter used for sprite display.
-  int32_t gameFrameCounter{0};
-  /// @brief Current sprite frame.
-  int32_t currentSpriteFrame{0};
-  /// @brief Total sprite frames.
-  int32_t spriteFrameCount{4};
-  /// @brief Game controller reference.
-  cave_mummies::core::Game& game;
-  /// @brief Default sprite width in pixels.
-  static constexpr float defaultSpritePixelWidth{32.0};
-  /// @brief Current sprite direction.
-  Direction currentDirection{Direction::Right};
 };
 
 }  // namespace cave_mummies::entities

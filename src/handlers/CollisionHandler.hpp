@@ -9,7 +9,7 @@
 /**
  * @brief Checks collision between rectangles using AABB.
  * @return true if rectangles are collinding, otherwise false.
- * @note The function assumes arguments are always valid.
+ * @note This assembly function assumes arguments are always valid.
  */
 extern "C" bool checkCollisionRecs(Rectangle* a, Rectangle* b);
 #endif
