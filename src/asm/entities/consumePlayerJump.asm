@@ -5,11 +5,12 @@
 ;   , RSI holds int32_t* jumpCount pointer
 ;   , RDX holds bool* isJumping pointer
 ;   , RCX holds float* jumpVelocity pointer
-; Returns: nothing
+; Returns: nothing,  modifies jumpCount, isJumping, and jumpVelocity
 ;-------------------------------------------------------------------------------
 section .rodata
   jumpStrength: dd 30.0
   maxJumps:     dd 2
+
 section .text
 global consumePlayerJump
 

@@ -8,6 +8,7 @@
 ;-------------------------------------------------------------------------------
 section .text
 global updateSpriteFrameStatus
+
 updateSpriteFrameStatus:
   push rbp
   mov rbp, rsp
@@ -18,8 +19,8 @@ updateSpriteFrameStatus:
   mov eax, [rdi]  ; gameFrameCounter
   add eax, esi  ; + totalSpriteFrameCount
   cdq
-  mov ecx, 60  ; 60 because the game runs on 60 fps
-  idiv ecx  ; Remainder is in EDX
+  mov ebx, 60  ; 60 because the game runs on 60 fps
+  idiv ebx  ; Remainder is in EDX
   mov [rdi], edx
 
   cmp edx, 0
@@ -29,8 +30,8 @@ updateSpriteFrameStatus:
   mov eax, [r8]  ; currentSpriteFrame
   inc eax
   cdq
-  mov ecx, esi  ; totalSpriteFrameCount
-  idiv ecx  ; Remainder is in edx
+  mov ebx, esi  ; totalSpriteFrameCount
+  idiv ebx  ; Remainder is in edx
   mov [r8], edx
 
 done:

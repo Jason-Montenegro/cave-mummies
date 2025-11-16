@@ -14,6 +14,7 @@
 ;-------------------------------------------------------------------------------
 section .text
 global checkCollisionRecs:
+
 ; Adapted from Google Gemini. Date: Sunday 16 November 2025
 ; prompt: raylib CheckCollisionRecs implementation
 checkCollisionRecs:

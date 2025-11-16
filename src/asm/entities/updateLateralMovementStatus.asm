@@ -3,9 +3,9 @@
 ; Receives:
 ;     RDI holds bool leftDirection keys condition
 ;   , RSI holds bool rightDirection keys condition
+;   , RDX holds float* xCoordinate pointer
 ;   , XMM0 holds float velocity
 ;   , XMM1 holds float currentSpeed
-;   , RDX holds float* xCoordinate pointer
 ; Returns: nothing
 ;-------------------------------------------------------------------------------
 section .text

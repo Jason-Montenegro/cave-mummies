@@ -1,10 +1,10 @@
 ;-------------------------------------------------------------------------------
 ; Updates enemy horizontal movement toward its objective.
 ; Receives:
-;     XMM0 holds float currentSpeed
+;     RDI holds float* enemyX pointer
+;   , XMM0 holds float currentSpeed
 ;   , XMM1 holds float velocity
 ;   , XMM2 holds float objectiveX
-;   , RDI holds float* enemyX pointer
 ; Returns: nothing
 ;-------------------------------------------------------------------------------
 section .text
@@ -26,7 +26,7 @@ updateEnemyLateralMovementStatus:
   xorps xmm5, xmm5
   ucomiss xmm4, xmm5
   je done
-  jg objectiveIsRight
+  ja objectiveIsRight
 
 objectiveIsLeft:
   movss xmm6, [rdi]

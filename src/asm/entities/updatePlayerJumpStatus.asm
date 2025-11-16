@@ -4,13 +4,14 @@
 ;     RDI holds bool* isJumping pointer
 ;   , RSI holds float* yCoordinate pointer
 ;   , RDX holds float* jumpVelocity pointer
+;   , RCX holds int32_t* jumpCount pointer
 ;   , XMM0 holds float groundY
 ;   , XMM1 holds float playerHeight
-;   , RCX holds int32_t* jumpCount pointer
-; Returns: nothing
+; Returns: nothing, modifies isJumping, yCoordinate, jumpVelocity, and jumpCount
 ;-------------------------------------------------------------------------------
 section .rodata
   gravity: dd 1.5
+
 section .text
 global updatePlayerJumpStatus
 
@@ -25,16 +26,16 @@ updatePlayerJumpStatus:
   movss xmm2, [rsi]
   addss xmm2, [rdx]
   ; this->jumpVelocity += gravity;
-  movss xmm4, [rdx]
-  movss xmm3, [rel gravity]
-  addss xmm4, xmm3
-  movss [rdx], xmm4
+  movss xmm3, [rdx]
+  movss xmm4, [rel gravity]
+  addss xmm3, xmm4
+  movss [rdx], xmm3
 
 belowFloorLevel:
   ; (newPosition < 0.0f)
   xorps xmm3, xmm3
   ucomiss xmm2, xmm3
-  jge atFloorLevel
+  jae atFloorLevel
   mov dword [rsi], 0
   mov dword [rdx], 0
   jmp done
@@ -44,7 +45,7 @@ atFloorLevel:
   movss xmm3, xmm0
   subss xmm3, xmm1
   ucomiss xmm2, xmm3
-  jl aboveFloorLevel
+  jb aboveFloorLevel
 
   movss [rsi], xmm3
   mov dword [rdx], 0
