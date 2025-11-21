@@ -1,6 +1,5 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
-#include <iostream>
 #include <fcntl.h>
 #include <unistd.h>
 #include <memory>
@@ -10,14 +9,18 @@
 namespace cave_mummies::handlers {
 
 InputHandler::InputHandler() {
+  #ifdef __linux__
   this->setKeyBindings();
   this->openArduinoFile();
+  #endif
 }
 
 void InputHandler::setKeyBindings() {
   // Set all available key bindings for arduino joystick
   this->buttonState[KEY_W] = false;
   this->buttonState[KEY_UP] = false;
+  this->buttonState[KEY_S] = false;
+  this->buttonState[KEY_DOWN] = false;
   this->buttonState[KEY_SPACE] = false;
   this->buttonState[KEY_A] = false;
   this->buttonState[KEY_LEFT] = false;
@@ -65,45 +68,66 @@ InputHandler::~InputHandler() {
 }
 
 void InputHandler::update() {
+  #ifdef __linux__
+  this->buttonState[KEY_S] = false;
+  this->buttonState[KEY_DOWN] = false;
+  if (!this->arduinoInputAvailable) {
+    this->openArduinoFile();
+  }
   if (this->arduinoInputAvailable) {
-    char buffer = 0;
-    write(this->arduinoFileDescriptor, &buffer, 1);
-    this->previousButtonState = this->buttonState;
-    for (auto& [key, condition] : this->buttonState) {
-      condition = false;
-    }
     char movement{'\0'};
-    const ssize_t n{read(arduinoFileDescriptor, &movement, 1)};
-    if (n >= 0) {
-      std::cout << static_cast<int>(movement) << std::endl;
-      if (movement & 1) {
+    const ssize_t n{read(this->arduinoFileDescriptor, &movement, 1)};
+    if (n > 0) {
+      if (movement == 'd') {
         this->buttonState[KEY_D] = true;
         this->buttonState[KEY_RIGHT] = true;
-      }
-      if ((movement >> 1) & 1) {
+        this->buttonState[KEY_A] = false;
+        this->buttonState[KEY_LEFT] = false;        
+      } else if (movement == 'a') {
         this->buttonState[KEY_A] = true;
         this->buttonState[KEY_LEFT] = true;
+        this->buttonState[KEY_D] = false;
+        this->buttonState[KEY_RIGHT] = false;
+      } else if (movement == 'c') {
+        this->buttonState[KEY_A] = false;
+        this->buttonState[KEY_LEFT] = false;
+        this->buttonState[KEY_D] = false;
+        this->buttonState[KEY_RIGHT] = false;
       }
-      if ((movement >> 2) & 1) {
+      if (movement == 'w') {
         this->buttonState[KEY_W] = true;
         this->buttonState[KEY_UP] = true;
         this->buttonState[KEY_SPACE] = true;
+      } else if (movement == 'e') {
+        this->buttonState[KEY_W] = false;
+        this->buttonState[KEY_UP] = false;
+        this->buttonState[KEY_SPACE] = false;
       }
-      if ((movement >> 3) & 1) {
-        this->buttonState[KEY_LEFT_SHIFT] = true;
-      } else {
-        this->buttonState[KEY_LEFT_SHIFT] = false;
+      if (movement == 's') {
+        this->buttonState[KEY_S] = true;
+        this->buttonState[KEY_DOWN] = true;
       }
+      if (movement == 'z') {
+        if (this->buttonState[KEY_LEFT_SHIFT]) {
+          this->buttonState[KEY_LEFT_SHIFT] = false;
+        } else {
+          this->buttonState[KEY_LEFT_SHIFT] = true;
+        }
+      }
+    } else if (n == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+      return;
     } else {
       this->arduinoInputAvailable = false;
+      close(this->arduinoFileDescriptor);
     }
   }
+  #endif
 }
 
 bool InputHandler::checkArduinoQuery(int key) const {
   return key == KEY_W || key == KEY_UP || key == KEY_SPACE || key == KEY_A
     || key == KEY_LEFT || key == KEY_D || key == KEY_RIGHT
-    || key == KEY_LEFT_SHIFT;
+    || key == KEY_LEFT_SHIFT || key == KEY_S || key == KEY_DOWN ;
 }
 
 bool InputHandler::isPressed(int key) const {

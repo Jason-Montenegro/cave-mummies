@@ -147,11 +147,11 @@ class InputHandler {
    * @brief Opens arduino file descriptor for joystick input.
    */
   void openArduinoFile();
-
+  
   /**
-   * @brief Checks if the passed argument is an arduino key query.
-   * @return true if it is, otherwise false.
-   */
+  * @brief Checks if the passed argument is an arduino key query.
+  * @return true if it is, otherwise false.
+  */
   bool checkArduinoQuery(int key) const;
 };
 
