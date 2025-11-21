@@ -1,5 +1,6 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
+#include <iostream>
 #include <fcntl.h>
 #include <unistd.h>
 #include <memory>
@@ -9,8 +10,24 @@
 namespace cave_mummies::handlers {
 
 InputHandler::InputHandler() {
-  #ifdef __linux__
   this->setKeyBindings();
+  this->openArduinoFile();
+}
+
+void InputHandler::setKeyBindings() {
+  // Set all available key bindings for arduino joystick
+  this->buttonState[KEY_W] = false;
+  this->buttonState[KEY_UP] = false;
+  this->buttonState[KEY_SPACE] = false;
+  this->buttonState[KEY_A] = false;
+  this->buttonState[KEY_LEFT] = false;
+  this->buttonState[KEY_D] = false;
+  this->buttonState[KEY_RIGHT] = false;
+  this->buttonState[KEY_LEFT_SHIFT] = false;
+  this->previousButtonState = this->buttonState;
+}
+
+void InputHandler::openArduinoFile() {
   // Adapted from ChatGPT. Date: Saturday 15 November 2025
   // Prompt:how to connect arduino in unix systems for receiving joystick signal
   this->arduinoFileDescriptor = open("/dev/ttyACM0", O_RDONLY | O_NOCTTY
@@ -19,6 +36,7 @@ InputHandler::InputHandler() {
     cave_mummies::utils::Log::append(
       cave_mummies::utils::Log::MessageType::ERROR, "Arduino Joystick"
       , "could not open arduino port.");
+    this->arduinoInputAvailable = false;
   } else {
     // Save current configuration
     tcgetattr(this->arduinoFileDescriptor, &this->oldConfiguration);
@@ -33,83 +51,63 @@ InputHandler::InputHandler() {
     this->newConfiguration.c_cflag |= (CLOCAL | CREAD);
     // Applies new configuration
     tcsetattr(this->arduinoFileDescriptor, TCSANOW, &this->newConfiguration);
+    this->arduinoInputAvailable = true;
   }
-  #endif
 }
 
 InputHandler::~InputHandler() {
-  #ifdef __linux__
   // Adapted from ChatGPT. Date: Saturday 15 November 2025
   // Prompt:how to connect arduino in unix systems for receiving joystick signal
-  if (this->arduinoFileDescriptor >= 0) {
+  if (this->arduinoInputAvailable) {
     tcsetattr(this->arduinoFileDescriptor, TCSANOW, &this->oldConfiguration);
     close(this->arduinoFileDescriptor);
   }
-  #endif
-}
-
-void InputHandler::setKeyBindings() {
-  // Set all available key bindings for arduino joystick
-  #ifdef __linux__
-  this->buttonState[KEY_W] = false;
-  this->buttonState[KEY_UP] = false;
-  this->buttonState[KEY_SPACE] = false;
-  this->buttonState[KEY_A] = false;
-  this->buttonState[KEY_LEFT] = false;
-  this->buttonState[KEY_D] = false;
-  this->buttonState[KEY_RIGHT] = false;
-  this->buttonState[KEY_LEFT_SHIFT] = false;
-  this->previousButtonState = this->buttonState;
-  #endif
 }
 
 void InputHandler::update() {
-  #ifdef __linux__
-  if (this->arduinoFileDescriptor >= 0) {
+  if (this->arduinoInputAvailable) {
+    char buffer = 0;
+    write(this->arduinoFileDescriptor, &buffer, 1);
     this->previousButtonState = this->buttonState;
-    for (auto &keyBinding : this->buttonState) {
-      keyBinding.second = false;
+    for (auto& [key, condition] : this->buttonState) {
+      condition = false;
     }
     char movement{'\0'};
     const ssize_t n{read(arduinoFileDescriptor, &movement, 1)};
-    if (n == 1) {
-      switch (movement) {
-      case 'w':  // Jump player movement
+    if (n >= 0) {
+      std::cout << static_cast<int>(movement) << std::endl;
+      if (movement & 1) {
+        this->buttonState[KEY_D] = true;
+        this->buttonState[KEY_RIGHT] = true;
+      }
+      if ((movement >> 1) & 1) {
+        this->buttonState[KEY_A] = true;
+        this->buttonState[KEY_LEFT] = true;
+      }
+      if ((movement >> 2) & 1) {
         this->buttonState[KEY_W] = true;
         this->buttonState[KEY_UP] = true;
         this->buttonState[KEY_SPACE] = true;
-        break;
-      case 'a':  // Left player movement
-        this->buttonState[KEY_A] = true;
-        this->buttonState[KEY_LEFT] = true;
-        break;
-      case 'd':  // Right player movement
-        this->buttonState[KEY_D] = true;
-        this->buttonState[KEY_RIGHT] = true;
-        break;
-      case 'z':  // Shift movement
-        this->buttonState[KEY_LEFT_SHIFT] = true;
-        break;
-      default:
-        break;
       }
+      if ((movement >> 3) & 1) {
+        this->buttonState[KEY_LEFT_SHIFT] = true;
+      } else {
+        this->buttonState[KEY_LEFT_SHIFT] = false;
+      }
+    } else {
+      this->arduinoInputAvailable = false;
     }
   }
-  #endif
-  // Keyboard input does not need any updating
 }
 
-#ifdef __linux__
 bool InputHandler::checkArduinoQuery(int key) const {
   return key == KEY_W || key == KEY_UP || key == KEY_SPACE || key == KEY_A
     || key == KEY_LEFT || key == KEY_D || key == KEY_RIGHT
     || key == KEY_LEFT_SHIFT;
 }
-#endif
 
 bool InputHandler::isPressed(int key) const {
-  #ifdef __linux__
-  if (this->arduinoFileDescriptor >= 0 && this->checkArduinoQuery(key)) {
+  if (this->arduinoInputAvailable && this->checkArduinoQuery(key)) {
     // Check for joystick input
     // Previous == false && current == true
     auto current{this->buttonState.find(key)};
@@ -120,14 +118,10 @@ bool InputHandler::isPressed(int key) const {
   } else {
     return IsKeyPressed(key);
   }
-  #else
-  return IsKeyPressed(key);
-  #endif
 }
 
 bool InputHandler::isKeyDown(int key) const {
-  #ifdef __linux__
-  if (this->arduinoFileDescriptor >= 0 && this->checkArduinoQuery(key)) {
+  if (this->arduinoInputAvailable && this->checkArduinoQuery(key)) {
     // Check for joystick input
     // current == true
     auto current{this->buttonState.find(key)};
@@ -135,14 +129,10 @@ bool InputHandler::isKeyDown(int key) const {
   } else {
     return IsKeyDown(key);
   }
-  #else
-  return IsKeyDown(key);
-  #endif
 }
 
 bool InputHandler::isKeyReleased(int key) const {
-  #ifdef __linux__
-  if (this->arduinoFileDescriptor >= 0 && this->checkArduinoQuery(key)) {
+  if (this->arduinoInputAvailable && this->checkArduinoQuery(key)) {
     // Check for joystick input
     // Previous == true && current == false
     auto current{this->buttonState.find(key)};
@@ -153,9 +143,6 @@ bool InputHandler::isKeyReleased(int key) const {
   } else {
     return IsKeyReleased(key);
   }
-  #else
-  return IsKeyReleased(key);
-  #endif
 }
 
 bool InputHandler::isMouseLeftPressed() const {

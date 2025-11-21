@@ -16,8 +16,8 @@ namespace cave_mummies::handlers {
  */
 class InputHandler {
  private:
- // Arduino portability implementation is only for Linux-based systems
- #ifdef __linux__
+  /// @brief Arduino joystick input condition
+  bool arduinoInputAvailable{false};
   /// @brief Arduino file descriptor for joystick connection.
   int arduinoFileDescriptor{-1};
   /// @brief Original termios configuration for arduino connection.
@@ -28,7 +28,6 @@ class InputHandler {
   std::unordered_map<int, bool> buttonState{}; 
   /// @brief Key bindings that hold the previous state of the keys for joystick.
   std::unordered_map<int, bool> previousButtonState{};
-  #endif
 
  public:
   /**
@@ -144,13 +143,16 @@ class InputHandler {
    */
   void setKeyBindings();
 
-  #ifdef __linux__
+  /**
+   * @brief Opens arduino file descriptor for joystick input.
+   */
+  void openArduinoFile();
+
   /**
    * @brief Checks if the passed argument is an arduino key query.
    * @return true if it is, otherwise false.
    */
   bool checkArduinoQuery(int key) const;
-  #endif
 };
 
 }  // namespace cave_mummies::handlers
