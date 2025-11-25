@@ -67,11 +67,13 @@ class StageOneState : public cave_mummies::core::GameState {
   /// @brief Game over condition.
   bool isPlayerDead{false};
   /// @brief Paused time difference.
-  std::chrono::time_point<std::chrono::high_resolution_clock> pausedTime;
+  std::chrono::high_resolution_clock::time_point pausedTime{};
+  /// @brief Accumulated total paused time.
+  std::chrono::high_resolution_clock::duration accumulatedPausedTime{0};
   /// @brief Game start time clock.
-  std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
+  std::chrono::high_resolution_clock::time_point startTime{};
   /// @brief Start reload ammunition timestamp.
-  std::chrono::time_point<std::chrono::high_resolution_clock> startReloadAmmo;
+  std::chrono::high_resolution_clock::time_point startReloadAmmo{};
   /// @brief Currently reloading condition.
   bool currentlyReloading{false};
   /// @brief Label font size.

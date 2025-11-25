@@ -45,12 +45,6 @@ class MenuBuilder {
   };
 
   /**
-   * @brief Constructor
-   * @param game Game controller
-   * @param clientState client object state that uses this builder
-   */
-
-  /**
    * @brief Construct a new Menu Builder object.
    * @param game Game controller
    * @param clientState Client object state that uses this builder.

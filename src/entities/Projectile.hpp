@@ -46,6 +46,10 @@ struct Projectile {
    * @brief Draws this projectile on the screen.
    */
   inline void draw() const {
+    #ifdef DEBUG
+    // Draws hitbox
+    DrawCircleV(this->position, this->radius + 2.0f, GOLD);
+    #endif
     DrawCircleV(this->position, this->radius, this->color);
   }
 

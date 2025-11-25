@@ -29,7 +29,7 @@ void Game::init() {
   SetTargetFPS(60);
   #ifdef DEBUG
   SetConfigFlags(FLAG_BORDERLESS_WINDOWED_MODE);
-  InitWindow(1400, 800, Game::defaultWindowTitle);
+  InitWindow(1280, 720, Game::defaultWindowTitle);
   #else
   SetConfigFlags(FLAG_FULLSCREEN_MODE);
   InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), Game::defaultWindowTitle);

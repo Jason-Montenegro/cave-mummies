@@ -82,7 +82,7 @@ void InputHandler::update() {
         this->buttonState[KEY_D] = true;
         this->buttonState[KEY_RIGHT] = true;
         this->buttonState[KEY_A] = false;
-        this->buttonState[KEY_LEFT] = false;        
+        this->buttonState[KEY_LEFT] = false;
       } else if (movement == 'a') {
         this->buttonState[KEY_A] = true;
         this->buttonState[KEY_LEFT] = true;
@@ -127,7 +127,7 @@ void InputHandler::update() {
 bool InputHandler::checkArduinoQuery(int key) const {
   return key == KEY_W || key == KEY_UP || key == KEY_SPACE || key == KEY_A
     || key == KEY_LEFT || key == KEY_D || key == KEY_RIGHT
-    || key == KEY_LEFT_SHIFT || key == KEY_S || key == KEY_DOWN ;
+    || key == KEY_LEFT_SHIFT || key == KEY_S || key == KEY_DOWN;
 }
 
 bool InputHandler::isPressed(int key) const {

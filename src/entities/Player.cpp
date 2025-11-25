@@ -172,12 +172,22 @@ void Player::draw() {
     , frameHeight};
   if (this->currentDirection == cave_mummies::entities::Direction::Left) {
     sourceRec.width *= -1.0f;
-    sourceRec.x += frameWidth;
   }
   Rectangle destRec{this->bounds.x, this->bounds.y, frameWidth * characterScale
     , frameHeight * characterScale
   };
+  if (this->currentDirection == cave_mummies::entities::Direction::Left) {
+    // Adjusts texture when its flipped to the left
+    // A percentage is used because the used width reduction is -30.0f
+    // In StageOneState.cpp in line 58
+    destRec.x -= frameWidth * 0.2;
+  }
   DrawTexturePro(this->texture, sourceRec, destRec, {0.0f, 0.0f}, 0.0f, WHITE);
+  #ifdef DEBUG
+  // Draws hitbox
+  DrawRectangleLines(this->bounds.x, this->bounds.y, this->bounds.width,
+    this->bounds.height, RED);
+  #endif
 }
 
 }  // namespace cave_mummies::entities

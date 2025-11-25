@@ -66,7 +66,7 @@ OBJ := $(CPP_OBJ) $(ASM_OBJ)
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Default target (debug build)
 .PHONY: all
-all: debug
+all: $(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Compile release build
@@ -138,7 +138,7 @@ clean:
 .PHONY: help
 help:
 	@echo "Available actions:"
-	@echo "  make                    : Default build (builds in debug mode as default)"
+	@echo "  make                    : Default build"
 	@echo "  make run                : Compiles if needed, and runs the program"
 	@echo "  make release            : Compiles a release version"
 	@echo "  make debug              : Compiles with debug symbols"
@@ -149,8 +149,8 @@ help:
 	@echo "  make help               : Shows this action list"
 	@echo ""
 	@echo "Dependencies:"
-	@echo "  - NASM (ASM compiler for Linux-based systems)"
 	@echo "  - g++ (C++ compiler)"
+	@echo "  - NASM (ASM compiler for Linux-based systems)"
 	@echo "  - Git (version control tool)"
 	@echo "  - Make (Build tool)"
 	@echo "  - Cpplint (Linting tool required for 'make lint')"

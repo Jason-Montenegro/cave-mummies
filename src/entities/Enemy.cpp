@@ -24,10 +24,10 @@ void Enemy::setVelocity(EnemyDifficulty type) {
     this->velocity = this->baseVelocity = 2.0f;
     break;
   case EnemyDifficulty::Moderate:
-    this->velocity = this->baseVelocity = 2.5f;
+    this->velocity = this->baseVelocity = 2.3f;
     break;
   case EnemyDifficulty::Hard:
-    this->velocity = this->baseVelocity = 3.0f;
+    this->velocity = this->baseVelocity = 2.5f;
     break;
   default:
     this->velocity = this->baseVelocity = 2.0f;
@@ -43,7 +43,7 @@ void Enemy::setSpeed(EnemyDifficulty type) {
     this->setCurrentSpeed(1.4f);
     break;
   case EnemyDifficulty::Hard:
-    this->setCurrentSpeed(1.6f);
+    this->setCurrentSpeed(1.5f);
     break;
   default:
     this->setCurrentSpeed(1.2f);
@@ -125,12 +125,20 @@ void Enemy::draw() {
     , frameHeight};
   if (this->currentDirection == cave_mummies::entities::Direction::Left) {
     sourceRec.width *= -1.0f;
-    sourceRec.x += frameWidth;
   }
   Rectangle destRec{this->bounds.x, this->bounds.y, frameWidth * characterScale
     , frameHeight * characterScale
   };
+  if (this->currentDirection == cave_mummies::entities::Direction::Left) {
+    // Adjusts texture when its flipped to the left
+    destRec.x -= frameWidth / 2;
+  }
   DrawTexturePro(this->texture, sourceRec, destRec, {0.0f, 0.0f}, 0.0f, WHITE);
+  #ifdef DEBUG
+  // Draws hitbox
+  DrawRectangleLines(this->bounds.x, this->bounds.y, this->bounds.width,
+    this->bounds.height, RED);
+  #endif
 }
 
 }  // namespace cave_mummies::entities

@@ -1,3 +1,4 @@
+#include <iostream>
 // Copyright 2025 Jason Montenegro-Navarro
 
 #include <algorithm>
@@ -54,10 +55,13 @@ void StageOneState::init() {
     const float y{game.getGameStageFloorHeight() - playerTexture.height};
     const float playerW{static_cast<float>(playerTexture.width / 4.0f)};
     const float playerH{static_cast<float>(playerTexture.height)};
-    this->player->setBounds({.x = x, .y = y, .width = playerW
+    // -30.0f is the hitbox reduction that removes the gun from the hitbox
+    this->player->setBounds({.x = x, .y = y, .width = playerW - 30.0f
       , .height = playerH});
     // Setup level settings
     this->startTime = std::chrono::high_resolution_clock::now();
+    this->accumulatedPausedTime =
+      std::chrono::high_resolution_clock::duration{0};
     this->fontSize = screenW * 0.04f;  // 4% relative to screen width
     // "A" is a sample text for measuring the font
     this->textHeight = MeasureTextEx(this->textFont, "A", this->fontSize
@@ -92,9 +96,7 @@ cave_mummies::core::GameStateID StageOneState::update() {
 
 void StageOneState::continueGameTime() {
   auto now{std::chrono::high_resolution_clock::now()};
-  auto pausedDuration{std::chrono::duration_cast<
-    std::chrono::high_resolution_clock::duration>(now - this->pausedTime)};
-  this->startTime += pausedDuration;
+  this->accumulatedPausedTime += now - pausedTime;
   this->isGamePaused = false;
 }
 
@@ -218,7 +220,8 @@ void StageOneState::updateGameScore() {
 
   // Time score
   const auto now{std::chrono::high_resolution_clock::now()};
-  const std::chrono::duration<double> elapsed{now - this->startTime};
+  const std::chrono::duration<double> elapsed{(now - this->startTime)
+    - this->accumulatedPausedTime};
   const uint32_t totalSeconds{static_cast<uint32_t>(elapsed.count())};
   if (totalSeconds > this->lastSecond) {
     gameScore += (totalSeconds - this->lastSecond);  // +1 per elapsed second
@@ -297,8 +300,9 @@ void StageOneState::drawScore() {
 }
 
 void StageOneState::drawClock() {
-  const auto end{std::chrono::high_resolution_clock::now()};
-  const std::chrono::duration<double> elapsed{end - this->startTime};
+  const auto now{std::chrono::high_resolution_clock::now()};
+  const std::chrono::duration<double> elapsed{(now - this->startTime)
+    - this->accumulatedPausedTime};
   const uint32_t totalSeconds{static_cast<uint32_t>(elapsed.count())};
   const uint32_t seconds{totalSeconds % 60};
   const uint32_t minutes{(totalSeconds % 3600) / 60};
@@ -343,7 +347,8 @@ void StageOneState::spawnEnemies() {
 void StageOneState::generateEnemies() {
   // Calculate time elapsed in the game
   const auto end{std::chrono::high_resolution_clock::now()};
-  const std::chrono::duration<double> elapsed{end - this->startTime};
+  const std::chrono::duration<double> elapsed{(end - this->startTime)
+    - this->accumulatedPausedTime};
   const uint32_t totalSeconds{static_cast<uint32_t>(elapsed.count())};
   const uint32_t minutesElapsed{(totalSeconds % 3600) / 60};
 
@@ -398,9 +403,11 @@ void StageOneState::randomizeEnemySpawn(uint32_t enemyCount
     const float height{static_cast<float>(enemy->getTexture().height)};
     // 4 indicates the sprite texture frame count
     const float width{static_cast<float>(enemy->getTexture().width / 4)};
-
-    enemy->setBounds(Rectangle{.x = xCoord, .y = enemyY, .width = width
-      , .height = height});
+    // Reduce hitbox for better gameplay
+    const float originalWidth{width};
+    const float newWidth{width - 60.0f};
+    enemy->setBounds(Rectangle{.x = xCoord + (originalWidth - newWidth) / 2.0f
+      , .y = enemyY, .width = newWidth, .height = height});
     this->enemyCollection.push_back(enemy);
   }
 }
