@@ -6,7 +6,7 @@
 :toc:
 :xrefstyle: short
 
-image:doc-assets/game_main_menu.png[Cave mummies main menu, align=center]
+image:doc-assets/game_main_menu.png[Cave mummies main menu, align=center, width=600]
 
 [[Game-lore]]
 == Game Lore
@@ -49,7 +49,7 @@ is running. Game scores are not saved or stored when the program is closed.
 - Minimalistic menu interface
 
 == How to Play
-image:doc-assets/gameplay_preview_one.png[Gameplay preview, align=center]
+image:doc-assets/gameplay_preview_one.png[Gameplay preview, align=center, width=600]
 
 At first, the player must navigate through the presented main menu. 
 The player can navigate the menu utilizing `W` / `ARROW_UP` keys for going
@@ -115,29 +115,29 @@ current game score if its the highest achieved while the game is running.
 == Game Assets
 
 === Main Menu Screen
-image::doc-assets/game_main_menu.png[Game main menu, align=center]
+image::doc-assets/game_main_menu.png[Game main menu, align=center, width=600]
 
 === About Screen
-image::doc-assets/about_screen.png[About screen, align=center]
+image::doc-assets/about_screen.png[About screen, align=center, width=600]
 
 === Gameplay Example
-image::doc-assets/gameplay_preview_two.png[Gameplay preview, align=center]
+image::doc-assets/gameplay_preview_two.png[Gameplay preview, align=center, width=600]
 
 === Paused Game Screen
-image::doc-assets/paused_game_screen.png[Paused game screen, align=center]
+image::doc-assets/paused_game_screen.png[Paused game screen, align=center, width=600]
 
 === Game Over Screen
-image::doc-assets/game_over_screen.png[Paused game screen, align=center]
+image::doc-assets/game_over_screen.png[Paused game screen, align=center, width=600]
 
 === Player Character
-image::doc-assets/wil_skin.png[main player character, width=200, align=center]
+image::doc-assets/wil_skin.png[main player character, align=center, width=150]
 
 === Enemy Set
 ==== Easy-Moderate Difficulty Enemy
-image::doc-assets/easy_enemy_skin.png[Easy-moderate difficulty enemy character, width=200, align=center]
+image::doc-assets/easy_enemy_skin.png[Easy-moderate difficulty enemy character, align=center, width=150]
 
 ==== Hard Difficulty Enemy
-image::doc-assets/hard_enemy_skin.png[Hard difficulty enemy character, width=200, align=center]
+image::doc-assets/hard_enemy_skin.png[Hard difficulty enemy character, align=center, width=150]
 
 [[design]]
 == Architectural game design
