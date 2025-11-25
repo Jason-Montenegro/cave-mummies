@@ -9,10 +9,8 @@
 namespace cave_mummies::handlers {
 
 InputHandler::InputHandler() {
-  #ifdef __linux__
   this->setKeyBindings();
   this->openArduinoFile();
-  #endif
 }
 
 void InputHandler::setKeyBindings() {
@@ -33,8 +31,13 @@ void InputHandler::setKeyBindings() {
 void InputHandler::openArduinoFile() {
   // Adapted from ChatGPT. Date: Saturday 15 November 2025
   // Prompt:how to connect arduino in unix systems for receiving joystick signal
-  this->arduinoFileDescriptor = open("/dev/ttyACM0", O_RDONLY | O_NOCTTY
-    | O_NONBLOCK);
+  #ifdef __linux__
+  this->arduinoFileDescriptor = open("/dev/ttyACM0", O_RDONLY
+    | O_NOCTTY | O_NONBLOCK);
+  #elif __APPLE__
+  this->arduinoFileDescriptor = open("/dev/cu.usbmodem1401", O_RDONLY
+    | O_NOCTTY | O_NONBLOCK);
+  #endif
   if (this->arduinoFileDescriptor < 0) {
     cave_mummies::utils::Log::append(
       cave_mummies::utils::Log::MessageType::ERROR, "Arduino Joystick"
@@ -67,8 +70,11 @@ InputHandler::~InputHandler() {
   }
 }
 
+bool InputHandler::isArduinoConnected() {
+  return this->arduinoInputAvailable;
+}
+
 void InputHandler::update() {
-  #ifdef __linux__
   this->buttonState[KEY_S] = false;
   this->buttonState[KEY_DOWN] = false;
   if (!this->arduinoInputAvailable) {
@@ -102,17 +108,19 @@ void InputHandler::update() {
         this->buttonState[KEY_W] = false;
         this->buttonState[KEY_UP] = false;
         this->buttonState[KEY_SPACE] = false;
+        this->buttonState[KEY_A] = false;
+        this->buttonState[KEY_LEFT] = false;
+        this->buttonState[KEY_D] = false;
+        this->buttonState[KEY_RIGHT] = false;
       }
       if (movement == 's') {
         this->buttonState[KEY_S] = true;
         this->buttonState[KEY_DOWN] = true;
       }
       if (movement == 'z') {
-        if (this->buttonState[KEY_LEFT_SHIFT]) {
-          this->buttonState[KEY_LEFT_SHIFT] = false;
-        } else {
-          this->buttonState[KEY_LEFT_SHIFT] = true;
-        }
+        this->buttonState[KEY_LEFT_SHIFT] = true;
+      } else if (movement == 'x') {
+        this->buttonState[KEY_LEFT_SHIFT] = false;
       }
     } else if (n == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
       return;
@@ -121,7 +129,6 @@ void InputHandler::update() {
       close(this->arduinoFileDescriptor);
     }
   }
-  #endif
 }
 
 bool InputHandler::checkArduinoQuery(int key) const {
@@ -207,6 +214,14 @@ int InputHandler::getMouseX() const {
 
 int InputHandler::getMouseY() const {
   return GetMousePosition().y;
+}
+
+void InputHandler::resetPlayerMovement() {
+  this->buttonState[KEY_A] = false;
+  this->buttonState[KEY_LEFT] = false;
+  this->buttonState[KEY_D] = false;
+  this->buttonState[KEY_RIGHT] = false;
+  this->buttonState[KEY_LEFT_SHIFT] = false;
 }
 
 }  // namespace cave_mummies::handlers

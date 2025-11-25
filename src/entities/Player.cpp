@@ -42,19 +42,30 @@ void Player::update() {
 
 void Player::updatePlayerSprint() {
   auto& input{this->game.getInputHandler()};
-  #ifdef __linux__
-  updatePlayerSprintStatus(input.isKeyDown(KEY_LEFT_SHIFT), &this->velocity
-    , this->baseVelocity, this->sprintVelocityBoost
-    , input.isKeyReleased(KEY_LEFT_SHIFT));
-  #else
-  if (input.isKeyDown(KEY_LEFT_SHIFT)) {
-    this->velocity = this->baseVelocity
-      + this->baseVelocity * this->sprintVelocityBoost;
+  if (input.isArduinoConnected()) {
+    #ifdef __linux__
+    updatePlayerSprintStatus(!this->isRunning && input.isPressed(KEY_LEFT_SHIFT)
+      , &this->velocity, this->baseVelocity, this->sprintVelocityBoost
+      , this->isRunning && input.isPressed(KEY_LEFT_SHIFT));
+    #else
+    if (!this->isRunning && input.isPressed(KEY_LEFT_SHIFT)) {
+      this->velocity = this->baseVelocity
+        + this->baseVelocity * this->sprintVelocityBoost;
+      this->isRunning = true;
+    } else if (this->isRunning && input.isPressed(KEY_LEFT_SHIFT)) {
+      this->velocity = this->baseVelocity;
+      this->isRunning = false;
+    }
+    #endif
+  } else {
+    if (input.isKeyDown(KEY_LEFT_SHIFT)) {
+      this->velocity = this->baseVelocity
+        + this->baseVelocity * this->sprintVelocityBoost;
+    }
+    if (input.isKeyReleased(KEY_LEFT_SHIFT)) {
+      this->velocity = this->baseVelocity;
+    }
   }
-  if (input.isKeyReleased(KEY_LEFT_SHIFT)) {
-    this->velocity = this->baseVelocity;
-  }
-  #endif
 }
 
 void Player::updateLateralMovement() {

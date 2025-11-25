@@ -46,6 +46,12 @@ class InputHandler {
   void update();
 
   /**
+   * @brief Checks if an arduino device is connected.
+   * @return true if its connected, otherwise false.
+   */
+  bool isArduinoConnected();
+
+  /**
    * @brief Queries whether a specific key/button is pressed once
    * @param key Key/button identifier.
    * @return true if pressed, otherwise false.
@@ -136,6 +142,11 @@ class InputHandler {
    * @note Special method for computer mouse.
    */
   int getMouseY() const;
+
+  /**
+   * @brief Resets the player movement to him stand still.
+   */
+  void resetPlayerMovement();
 
  private:
   /**

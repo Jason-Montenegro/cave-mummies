@@ -10,15 +10,15 @@
 extern "C" {
   /**
    * @brief Updates player sprinting status based on input.
-   * @param isKeyDown Is key currently down condition.
+   * @param startRunning Start running condition.
    * @param velocity Player velocity attribute pointer.
    * @param baseVelocity Player base velocity attribute.
    * @param sprintVelocityBoost Player sprint velocity boost attribute.
-   * @param isKeyReleased Is key released condition.
+   * @param stopRunning Stop running condition.
    * @note This assembly function assumes arguments are always valid.
    */
-  void updatePlayerSprintStatus(bool isKeyDown, float* velocity
-    , float baseVelocity, float sprintVelocityBoost, bool isKeyReleased);
+  void updatePlayerSprintStatus(bool startRunning, float* velocity
+    , float baseVelocity, float sprintVelocityBoost, bool stopRunning);
 
   /**
    * @brief Updates player lateral movement based on input.
@@ -110,6 +110,8 @@ class Player : public Entity {
   int32_t jumpCount{0};
   /// @brief Vertical velocity during jump.
   float jumpVelocity{0.0f};
+  /// @brief Is running condition
+  bool isRunning{false};
 
  public:
   /**

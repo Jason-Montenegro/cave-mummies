@@ -1,4 +1,3 @@
-#include <iostream>
 // Copyright 2025 Jason Montenegro-Navarro
 
 #include <algorithm>
@@ -67,6 +66,7 @@ void StageOneState::init() {
     this->textHeight = MeasureTextEx(this->textFont, "A", this->fontSize
       , 1.0f).y;
     this->loaded = true;
+    game.getInputHandler().resetPlayerMovement();
   }
 }
 
