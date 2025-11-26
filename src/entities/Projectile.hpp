@@ -13,13 +13,13 @@ namespace cave_mummies::entities {
 struct Projectile {
  public:
   /// @brief Projectile position on the screen.
-  Vector2 position;
+  Vector2 position{};
   /// @brief Projectile velocity vector.
-  Vector2 velocity;
+  Vector2 velocity{};
   /// @brief Projectile radius in pixels.
   float radius{1.0f};
   /// @brief Projectile display color.
-  Color color;
+  Color color{};
 
   /**
    * @brief Construct a new Projectile object.
@@ -46,11 +46,15 @@ struct Projectile {
    * @brief Draws this projectile on the screen.
    */
   inline void draw() const {
+    #ifdef DEBUG
+    // Draws hitbox
+    DrawCircleV(this->position, this->radius + 2.0f, GOLD);
+    #endif
     DrawCircleV(this->position, this->radius, this->color);
   }
 
   /**
-   * @brief Gets the bounding rectangle of this projectile.
+   * @brief Gets the bounds of this projectile.
    * @return Rectangle representing this projectile bounds.
    */
   inline Rectangle getBounds() const {

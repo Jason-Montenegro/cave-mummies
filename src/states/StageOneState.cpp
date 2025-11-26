@@ -5,27 +5,28 @@
 #include <memory>
 #include <string>
 #include <vector>
-
 #include "StageOneState.hpp"
-#include "Game.hpp"
 #include "CollisionHandler.hpp"
+#include "Enemy.hpp"
+#include "Game.hpp"
 #include "GameStateHandler.hpp"
+#include "InputHandler.hpp"
 #include "MainMenuState.hpp"
 #include "PausedMenuGameState.hpp"
 #include "Player.hpp"
-#include "Enemy.hpp"
 #include "Projectile.hpp"
-#include "InputHandler.hpp"
 #include "TextureManager.hpp"
 
 using Direction = cave_mummies::entities::Direction;
 using GameStateID = cave_mummies::core::GameStateID;
 using EnemyDifficulty = cave_mummies::entities::EnemyDifficulty;
 using TextureID = cave_mummies::core::TextureID;
+
 namespace cave_mummies::states {
 
 StageOneState::StageOneState(cave_mummies::core::Game& game)
-  : GameState(game)
+  : GameState(game, game.getTextureManager().getTexture(
+    TextureID::GameBackground))
   , floorTile(game.getTextureManager().getTexture(TextureID::FloorTile)) {
   this->stateID = cave_mummies::core::GameStateID::StageOne;
 }
@@ -33,7 +34,6 @@ StageOneState::StageOneState(cave_mummies::core::Game& game)
 StageOneState::~StageOneState() {
   if (this->loaded) {
     // Unload all loaded game assets
-    UnloadTexture(this->background);
     UnloadFont(this->textFont);
     this->loaded = false;
   }
@@ -43,27 +43,30 @@ void StageOneState::init() {
   if (!this->loaded) {
     // Load all game assets
     const char* basePath{GetApplicationDirectory()};
-    this->background = LoadTexture((std::string(basePath)
-    + "../assets/background/game_bg.png").c_str());
     this->textFont = LoadFont((std::string(basePath)
       + "../assets/fonts/PixelOperatorMono-Bold.ttf").c_str());
     this->player = std::make_unique<cave_mummies::entities::Player>(this->game);
     const Texture2D& playerTexture{this->game.getTextureManager().getTexture(
       TextureID::PlayerSprite)};
+    // Set correct bounds to player character
     const float screenW{static_cast<float>(GetScreenWidth())};
     const float x{screenW / 2.0f - playerTexture.width / 2.0f};
     const float y{game.getGameStageFloorHeight() - playerTexture.height};
     const float playerW{static_cast<float>(playerTexture.width / 4.0f)};
     const float playerH{static_cast<float>(playerTexture.height)};
-    this->player->setBounds({.x = x, .y = y, .width = playerW
+    // -30.0f is the hitbox reduction that removes the gun from the hitbox
+    this->player->setBounds({.x = x, .y = y, .width = playerW - 30.0f
       , .height = playerH});
     // Setup level settings
     this->startTime = std::chrono::high_resolution_clock::now();
+    this->accumulatedPausedTime =
+      std::chrono::high_resolution_clock::duration{0};
     this->fontSize = screenW * 0.04f;  // 4% relative to screen width
-    // "A" is a sample text for measuring
+    // "A" is a sample text for measuring the font
     this->textHeight = MeasureTextEx(this->textFont, "A", this->fontSize
       , 1.0f).y;
     this->loaded = true;
+    game.getInputHandler().resetPlayerMovement();
   }
 }
 
@@ -78,23 +81,23 @@ cave_mummies::core::GameStateID StageOneState::update() {
   this->updateProjectilesShot();
   this->updateKilledEnemies();
   this->updateGameScore();
-
-  // Destroy all stranded projectiles that crossed the screen borders
-  this->projectileCollection.erase(std::remove_if(
-    this->projectileCollection.begin(), this->projectileCollection.end(),
-    [] (const auto& p) {
-      return p->position.x < 0 || p->position.x > GetScreenWidth();
-    }), this->projectileCollection.end());
-
-  cave_mummies::core::GameStateID newState{this->stateID};
+  this->destroyStrandedProjectiles();
+  // Check state ID to return
+  GameStateID newState{this->stateID};
   if (this->game.getInputHandler().isPressed(KEY_ESCAPE)) {
     this->pauseGameTime();
     this->game.getGameStateHandler().registerState(GameStateID::PausedMenu);
-    newState = cave_mummies::core::GameStateID::PausedMenu;
+    newState = GameStateID::PausedMenu;
   } else {
     newState = this->checkDeadPlayer();
   }
   return newState;
+}
+
+void StageOneState::continueGameTime() {
+  auto now{std::chrono::high_resolution_clock::now()};
+  this->accumulatedPausedTime += now - pausedTime;
+  this->isGamePaused = false;
 }
 
 void StageOneState::checkProjectileShot() {
@@ -110,7 +113,14 @@ void StageOneState::checkProjectileShot() {
     const float xCoord{(this->player->getDirection() == Direction::Right)
       ? playerBounds.x + playerBounds.width : playerBounds.x};
     Vector2 startPosition{xCoord, yCoord};
+    Vector2 projectileVelocity{};
+    const float bulletSpeed{50.0f};
 
+    #ifdef __linux__
+    calculateProjectileVelocity(&projectileVelocity.x, &projectileVelocity.y
+      , mousePosition.x, mousePosition.y, startPosition.x, startPosition.y
+      , bulletSpeed);
+    #else
     // Direction to mouse coordinate
     Vector2 dir{.x = (mousePosition.x - startPosition.x)
       , .y = mousePosition.y - startPosition.y};
@@ -121,20 +131,21 @@ void StageOneState::checkProjectileShot() {
       dir.y /= length;
     }
     // Amplifies the bullet speed
-    const float bulletSpeed{50.0f};
-    Vector2 velocity{.x = (dir.x * bulletSpeed), .y = (dir.y * bulletSpeed)};
-    auto p{std::make_shared<cave_mummies::entities::Projectile>(startPosition
-      , velocity, 6.0f, RED)};
-    this->projectileCollection.push_back(p);
-    // TODO(Jason): add asm function
+    projectileVelocity.x = (dir.x * bulletSpeed);
+    projectileVelocity.y = (dir.y * bulletSpeed);
+    #endif
+
+    this->projectileCollection.push_back(std::make_shared
+      <cave_mummies::entities::Projectile>(startPosition, projectileVelocity
+      , 6.0f, RED));
   }
 }
 
 void StageOneState::reloadPlayerAmmunition() {
   auto& input{this->game.getInputHandler()};
-  // Gun reloading is only allowed with the R key
   auto now{std::chrono::high_resolution_clock::now()};
-
+  // Reloading should be done when no ammo is available and the reload key is
+  // pressed
   if ((input.isPressed(KEY_R) || input.isMouseLeftPressed())
     && !this->currentlyReloading
     && (this->player->getRemainingAmmunition() == 0)) {
@@ -146,13 +157,12 @@ void StageOneState::reloadPlayerAmmunition() {
     auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
       now - this->startReloadAmmo);
     // Calculates a 2 seconds timer for reloading
-    if (elapsed.count() >= 2) {
+    if (elapsed.count() >= this->player->getReloadingSpeedInSeconds()) {
       PlaySound(this->player->getReloadSoundEffect());
       this->player->reloadAmmunition();
       this->currentlyReloading = false;
     }
   }
-  // TODO(Jason): set up asm function
 }
 
 void StageOneState::updateProjectilesShot() {
@@ -167,7 +177,7 @@ void StageOneState::updateKilledEnemies() {
     impactedProjectiles;
   for (auto& enemy : this->enemyCollection) {
     enemy->update();
-    // Checks if the player collisioned with an enemy: he dies for that
+    // Checks if the player collisioned with an enemy: he dies beucase of that
     if (this->game.getCollisionHandler().checkCollision(
       this->player->getBounds(), enemy->getBounds())) {
       this->isPlayerDead = true;
@@ -200,24 +210,37 @@ void StageOneState::updateKilledEnemies() {
 
 void StageOneState::updateGameScore() {
   uint64_t gameScore{this->game.getCurrentGameScore()};
+
   // Kill count score
   const uint64_t currentKills{this->player->getKillCount()};
   if (currentKills > this->lastKillCount) {
     gameScore += (currentKills - this->lastKillCount) * 10;  // +10 per kill
     this->lastKillCount = currentKills;
   }
+
   // Time score
   const auto now{std::chrono::high_resolution_clock::now()};
-  const std::chrono::duration<double> elapsed{now - this->startTime};
+  const std::chrono::duration<double> elapsed{(now - this->startTime)
+    - this->accumulatedPausedTime};
   const uint32_t totalSeconds{static_cast<uint32_t>(elapsed.count())};
   if (totalSeconds > this->lastSecond) {
     gameScore += (totalSeconds - this->lastSecond);  // +1 per elapsed second
     this->lastSecond = totalSeconds;
   }
+
   // Update game scores
   this->player->setCurrentScore(gameScore);
   this->game.setCurrentGameScore(gameScore);
-  // TODO(Jason): set up asm function
+}
+
+void StageOneState::destroyStrandedProjectiles() {
+  // Destroy all stranded projectiles that crossed the screen borders
+  this->projectileCollection.erase(std::remove_if(
+    this->projectileCollection.begin(), this->projectileCollection.end(),
+    [] (const std::shared_ptr<cave_mummies::entities::Projectile>& p) -> bool {
+      return p->position.x < 0 || p->position.x > GetScreenWidth()
+        || p->position.y < 0 || p->position.y > GetScreenHeight();
+    }), this->projectileCollection.end());
 }
 
 cave_mummies::core::GameStateID StageOneState::checkDeadPlayer() {
@@ -233,14 +256,6 @@ cave_mummies::core::GameStateID StageOneState::checkDeadPlayer() {
 void StageOneState::pauseGameTime() {
   this->pausedTime = std::chrono::high_resolution_clock::now();
   this->isGamePaused = true;
-}
-
-void StageOneState::continueGameTime() {
-  auto now{std::chrono::high_resolution_clock::now()};
-  auto pausedDuration{std::chrono::duration_cast<
-    std::chrono::high_resolution_clock::duration>(now - this->pausedTime)};
-  this->startTime += pausedDuration;
-  isGamePaused = false;
 }
 
 void StageOneState::draw() {
@@ -264,8 +279,7 @@ void StageOneState::drawFloor() {
   const float scaleFactor{(screenWidth * 0.15f) / floorTile.width};
   const float coordIncrement{tileSize * scaleFactor};
   float yCoord{static_cast<float>(this->game.getGameStageFloorHeight())};
-  // Draws as many tiles as possible until no more tiles fit are seen on the
-  // screen
+  // Draws as many tiles as possible until no more tiles are seen on the screen
   for (; yCoord < static_cast<float>(screenHeight); yCoord += coordIncrement) {
     float xCoord{0.0f};
     for (; xCoord < static_cast<float>(screenWidth); xCoord += coordIncrement) {
@@ -286,8 +300,9 @@ void StageOneState::drawScore() {
 }
 
 void StageOneState::drawClock() {
-  const auto end{std::chrono::high_resolution_clock::now()};
-  const std::chrono::duration<double> elapsed{end - this->startTime};
+  const auto now{std::chrono::high_resolution_clock::now()};
+  const std::chrono::duration<double> elapsed{(now - this->startTime)
+    - this->accumulatedPausedTime};
   const uint32_t totalSeconds{static_cast<uint32_t>(elapsed.count())};
   const uint32_t seconds{totalSeconds % 60};
   const uint32_t minutes{(totalSeconds % 3600) / 60};
@@ -332,7 +347,8 @@ void StageOneState::spawnEnemies() {
 void StageOneState::generateEnemies() {
   // Calculate time elapsed in the game
   const auto end{std::chrono::high_resolution_clock::now()};
-  const std::chrono::duration<double> elapsed{end - this->startTime};
+  const std::chrono::duration<double> elapsed{(end - this->startTime)
+    - this->accumulatedPausedTime};
   const uint32_t totalSeconds{static_cast<uint32_t>(elapsed.count())};
   const uint32_t minutesElapsed{(totalSeconds % 3600) / 60};
 
@@ -377,7 +393,7 @@ void StageOneState::randomizeEnemySpawn(uint32_t enemyCount
     return GetScreenWidth() * (side + this->xDis(gen) * 0.10f);
   };
 
-  for (size_t count{0}; count < enemyCount; ++count) {
+  for (size_t count = 0; count < enemyCount; ++count) {
     const float xCoord{randomX()};
     auto enemy{std::make_shared<cave_mummies::entities::Enemy>(this->game
       , *this->player, enemyDifficulty)};
@@ -387,9 +403,11 @@ void StageOneState::randomizeEnemySpawn(uint32_t enemyCount
     const float height{static_cast<float>(enemy->getTexture().height)};
     // 4 indicates the sprite texture frame count
     const float width{static_cast<float>(enemy->getTexture().width / 4)};
-
-    enemy->setBounds(Rectangle{.x = xCoord, .y = enemyY, .width = width
-      , .height = height});
+    // Reduce hitbox for better gameplay
+    const float originalWidth{width};
+    const float newWidth{width - 60.0f};
+    enemy->setBounds(Rectangle{.x = xCoord + (originalWidth - newWidth) / 2.0f
+      , .y = enemyY, .width = newWidth, .height = height});
     this->enemyCollection.push_back(enemy);
   }
 }

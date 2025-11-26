@@ -46,11 +46,13 @@ CPP_OBJ := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(CPP_SRC))
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Compile assembly files
+# Adapted from ChatGPT. Date: Sunday 16 November 2025
+# prompt: como incluyo compilacion de archivos asm nasm 64 bits en mi makefile
 ifeq ($(UNAME_S), Linux)
 # Fetch all .asm files
-  ASM_SRC := $(wildcard $(ASM_DIR)/*.asm)
+  ASM_SRC := $(shell find $(ASM_DIR) -type f -name '*.asm')
 # Convert .asm to .o files
-  ASM_OBJ := $(patsubst $(ASM_DIR)/%.asm, $(BUILD_DIR)/asm/%.o, $(ASM_SRC))
+  ASM_OBJ := $(patsubst $(ASM_DIR)/%, $(BUILD_DIR)/asm/%, $(ASM_SRC:.asm=.o))
 # Compile .asm files
   $(BUILD_DIR)/asm/%.o: $(ASM_DIR)/%.asm
 	@mkdir -p $(dir $@)
@@ -59,24 +61,18 @@ endif
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Combine all object files
-OBJ := $(CPP_OBJ)
+OBJ := $(CPP_OBJ) $(ASM_OBJ)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Default target (debug build)
 .PHONY: all
-all: debug
+all: $(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Compile release build
 .PHONY: release
 release: CXXFLAGS += -O3 -DNDEBUG
 release: raylib $(BIN_DIR)/$(BINNAME)
-
-# -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
-# Compile release build for joystick movement controls
-.PHONY: release_joystick
-release_joystick: CXXFLAGS += -DJOYSTICK_CONTROLLER
-release_joystick: raylib $(BIN_DIR)/$(BINNAME)
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Debug build (no optimizations)
@@ -105,7 +101,7 @@ $(BIN_DIR)/$(BINNAME): $(OBJ) | $(RAYLIB_READY)
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Lint C++ code
 INPUTFC := $(CPP_SRC)
-LINTC := +whitespace/braces,+runtime/explicit,-build/include_subdir,-build/header_guard
+LINTC := +whitespace/braces,+runtime/explicit,-build/include_subdir,-build/header_guard,-build/c++11,-whitespace/indent_namespace
 .PHONY: lint
 lint: ## Check code style conformance using Cpplint
 	@-cpplint --filter=$(LINTC) $(INPUTFC)
@@ -119,6 +115,8 @@ doc:
 
 # -*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*-
 # Clone and build raylib dependency
+# Adapted from ChatGPT. Date: Sunday 16 November 2025
+# prompt: como clono el repo de raylib en un target para mi makefile
 .PHONY: raylib
 raylib: $(RAYLIB_READY)
 
@@ -140,10 +138,9 @@ clean:
 .PHONY: help
 help:
 	@echo "Available actions:"
-	@echo "  make                    : Default build (builds in debug mode as default)"
+	@echo "  make                    : Default build"
 	@echo "  make run                : Compiles if needed, and runs the program"
 	@echo "  make release            : Compiles a release version"
-	@echo "  make release_joystick   : Compiles a release version for joystick movement control"
 	@echo "  make debug              : Compiles with debug symbols"
 	@echo "  make raylib             : Clones and builds raylib dependency"
 	@echo "  make lint               : Checks linting warnings with Cpplint"
@@ -152,8 +149,8 @@ help:
 	@echo "  make help               : Shows this action list"
 	@echo ""
 	@echo "Dependencies:"
-	@echo "  - NASM (ASM compiler for Linux-based systems)"
 	@echo "  - g++ (C++ compiler)"
+	@echo "  - NASM (ASM compiler for Linux-based systems)"
 	@echo "  - Git (version control tool)"
 	@echo "  - Make (Build tool)"
 	@echo "  - Cpplint (Linting tool required for 'make lint')"

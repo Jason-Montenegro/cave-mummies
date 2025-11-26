@@ -1,11 +1,10 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
-#ifndef GAME_STATE_CONTROLLER_HPP
-#define GAME_STATE_CONTROLLER_HPP
+#ifndef CAVE_MUMMIES_HANDLERS_GAME_STATE_HANDLER_HPP
+#define CAVE_MUMMIES_HANDLERS_GAME_STATE_HANDLER_HPP
 
 #include <map>
 #include <memory>
-
 #include "GameState.hpp"
 
 namespace cave_mummies::core {
@@ -21,29 +20,57 @@ namespace cave_mummies::handlers {
  */
 class GameStateHandler {
  private:
-  /// @brief All states collection
-  std::map<GameStateID, std::shared_ptr<cave_mummies::core::GameState>> states;
-  /// @brief Current loaded state
-  std::shared_ptr<cave_mummies::core::GameState> currentState;
-  /// @brief Game controller
+  /// @brief Created mapped states.
+  std::map<GameStateID, std::shared_ptr<cave_mummies::core::GameState>>
+    states{};
+  /// @brief Currently loaded state.
+  std::shared_ptr<cave_mummies::core::GameState> currentState{nullptr};
+  /// @brief Game controller.
   cave_mummies::core::Game& game;
-
 
  public:
   /**
-   * @brief Constructor
-   * @param game Game controller
+   * @brief Construct a new Game State Handler object.
+   * @param game Game controller.
    */
   explicit GameStateHandler(cave_mummies::core::Game& game);
 
   /**
-   * @brief Destructor
+   * @brief Destroy the Game State Handler object
    */
   ~GameStateHandler() = default;
 
   /**
-   * @brief Sets the current state to stateID.
-   * @param stateID New state to set
+   * @brief Updates the current game state.
+   * @return true if a game state update was possible, otherwise false.
+   * @note If no game state update was possible, the game should close as no
+   * other updates will be possible further on. Closing the game should be done
+   * by the caller.
+   */
+  bool update();
+
+  /**
+   * @brief Draws the current game state.
+   */
+  void draw();
+
+  /**
+   * @brief Registers a new game state into the collection of states, only if
+   * the state does not exist yet.
+   * @param stateID New state ID.
+   * @throw std::bad_alloc if the state could not be initialized.
+   */
+  void registerState(GameStateID stateID);
+
+  /**
+   * @brief Removes a state from the registered states.
+   * @param stateID Game state to remove.
+   */
+  void removeState(GameStateID stateID);
+
+  /**
+   * @brief Sets the current game state.
+   * @param stateID New state ID.
    */
   void setCurrentState(GameStateID stateID);
 
@@ -54,42 +81,18 @@ class GameStateHandler {
   GameStateID getCurrentState() const;
 
   /**
-   * @brief Registers a new GameState object into the collection of states,
-   * only if the state does not exist yet
-   * @param stateID Unique state identifier
-   */
-  void registerState(GameStateID stateID);
-
-  /**
-   * @brief Cleans all stored states from memory.
+   * @brief Cleans all created and currently stored states.
    */
   void cleanStates();
 
-  /**
-   * @brief Removes a state from the registered states
-   * @param stateID State identifier to remove
-   */
-  void removeState(GameStateID stateID);
-
-  /**
-   * @brief Commands that the current state draws its state.
-   */
-  void draw();
-
-  /**
-   * @brief Commands that the current state updates its state
-   * @return true if a game update was possible, otherwise false (close program)
-   */
-  bool update();
-
  private:
   /**
-   * @brief Initializes current state.
-   * @return true if the state was initialized, false otherwise
+   * @brief Initializes current game state.
+   * @return true if the game state was initialized, otherwise false.
    */
   bool initCurrentState();
 };
 
 }  // cave_mummies::handlers
 
-#endif  // GAME_STATE_CONTROLLER_HPP
+#endif  // CAVE_MUMMIES_HANDLERS_GAME_STATE_HANDLER_HPP

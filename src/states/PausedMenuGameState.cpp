@@ -1,8 +1,8 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 #include "PausedMenuGameState.hpp"
 #include "Game.hpp"
 #include "GameStateHandler.hpp"
@@ -15,14 +15,14 @@ using GameStateID = cave_mummies::core::GameStateID;
 namespace cave_mummies::states {
 
 PausedMenuGameState::PausedMenuGameState(cave_mummies::core::Game& game)
-  : GameState(game), menuBuilder(game, GameStateID::PausedMenu) {
+  : GameState(game, game.getTextureManager().getTexture(
+    cave_mummies::core::TextureID::BlankDarkBackground))
+  , menuBuilder(game, GameStateID::PausedMenu) {
   this->stateID = GameStateID::PausedMenu;
 }
 
 void PausedMenuGameState::init() {
   const char* basePath{GetApplicationDirectory()};
-  this->background = LoadTexture((std::string(basePath)
-    + "../assets/background/game_bg.png").c_str());
   // Build interface with builder
   this->menuBuilder.loadFont((std::string(basePath)
     + "../assets/fonts/PixelOperatorMono-Bold.ttf").c_str());
@@ -88,7 +88,7 @@ void PausedMenuGameState::buildMenuOptions() {
     {"Save and quit", GameStateID::MainMenu},
   };
 
-  for (size_t i{0}; i < options.size(); ++i) {
+  for (size_t i = 0; i < options.size(); ++i) {
     // Measure text size relative to screen
     Vector2 textSize{MeasureTextEx(this->menuBuilder.getLoadedFont(),
       options[i].first.c_str(), fontSize, 1.0f)};
@@ -105,7 +105,7 @@ void PausedMenuGameState::buildMenuOptions() {
 }
 
 cave_mummies::core::GameStateID PausedMenuGameState::update() {
-  auto newState{this->menuBuilder.update()};
+  GameStateID newState{this->menuBuilder.update()};
   if (newState == GameStateID::MainMenu) {
     this->updateHighestGameScore();
     this->game.setCurrentGameScore(0);

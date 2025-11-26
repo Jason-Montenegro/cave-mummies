@@ -37,11 +37,6 @@ class Application {
    * @brief Draws application to screen.
    */
   virtual void draw() = 0;
-
-  /**
-   * @brief Cleans application resources.
-   */
-  virtual void cleanup() = 0;
 };
 
 }  // namespace cave_mummies::core

@@ -26,8 +26,7 @@
  * @namespace cave_mummies::entities
  * @brief Game entities such as players, enemies, and projectiles.
  *
- * Contains classes representing playable and non-playable objects,
- * including their data and behavior.
+ * Contains classes representing playable and non-playable objects.
  *
  * Key classes:
  * - Enemy
@@ -48,17 +47,14 @@
  * - CollisionHandler
  * - GameStateHandler
  * - InputHandler
- * - InputSource
- * - JoystickSource
- * - KeyboardSource
  */
 
 /**
  * @namespace cave_mummies::states
  * @brief Concrete game states inheriting from GameState.
  *
- * Contains the different application states such as menus,
- * gameplay screen, and pause screen, each implementing its own logic.
+ * Contains the different application states such as the about menu screen,
+ * game over screen, main menu screen, pause screen and gameplay screen.
  *
  * Key classes:
  * - AboutMenuState

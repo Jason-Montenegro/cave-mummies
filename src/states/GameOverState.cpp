@@ -1,9 +1,8 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
 #include <string>
-#include <vector>
 #include <utility>
-
+#include <vector>
 #include "GameOverState.hpp"
 #include "Game.hpp"
 #include "GameStateHandler.hpp"
@@ -16,14 +15,14 @@ using GameStateID = cave_mummies::core::GameStateID;
 namespace cave_mummies::states {
 
 GameOverState::GameOverState(cave_mummies::core::Game& game)
-  : GameState(game), menuBuilder(game, GameStateID::GameOver) {
+  : GameState(game, game.getTextureManager().getTexture(
+    cave_mummies::core::TextureID::GameBackground))
+  , menuBuilder(game, GameStateID::GameOver) {
   this->stateID = GameStateID::GameOver;
 }
 
 void GameOverState::init() {
   const char* basePath{GetApplicationDirectory()};
-  this->background = LoadTexture((std::string(basePath)
-    + "../assets/background/game_bg.png").c_str());
   // Build interface with builder
   this->menuBuilder.loadFont((std::string(basePath)
     + "../assets/fonts/PixelOperatorMono-Bold.ttf").c_str());
@@ -57,7 +56,6 @@ void GameOverState::buildMainTitle() {
 void GameOverState::buildScoreTitle() {
   std::string scoreTitle{"Final score: "};
   scoreTitle += std::to_string(this->game.getCurrentGameScore());
-
   // Calculate the location where to place the title
   const float screenW{static_cast<float>(GetScreenWidth())};
   const float screenH{static_cast<float>(GetScreenHeight())};
@@ -80,7 +78,7 @@ void GameOverState::buildMenuOptions() {
   const float screenH{static_cast<float>(GetScreenHeight())};
   const float spacing{screenH * 0.08f};
   const float fontSize{screenH * 0.06f};  // 6% relative height of the screen
-  // 2 because that's the size of the menu option list
+  // 2 because that's how many options are in the menu option list
   const float totalHeight{2 * spacing};
   const float startY{(screenH / 2.0f - totalHeight / 2.0f) + 100};
 
@@ -89,7 +87,7 @@ void GameOverState::buildMenuOptions() {
     {"Save and quit", GameStateID::MainMenu},
   };
 
-  for (size_t i{0}; i < options.size(); ++i) {
+  for (size_t i = 0; i < options.size(); ++i) {
     // Measure text size relative to screen
     Vector2 textSize{MeasureTextEx(this->menuBuilder.getLoadedFont(),
       options[i].first.c_str(), fontSize, 1.0f)};
@@ -106,7 +104,7 @@ void GameOverState::buildMenuOptions() {
 }
 
 cave_mummies::core::GameStateID GameOverState::update() {
-  auto newState{this->menuBuilder.update()};
+  GameStateID newState{this->menuBuilder.update()};
   this->updateHighestGameScore();
   this->game.setCurrentGameScore(0);
   if (newState == GameStateID::StageOne) {

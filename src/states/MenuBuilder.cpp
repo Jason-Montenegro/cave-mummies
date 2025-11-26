@@ -1,16 +1,12 @@
 // Copyright 2025 Jason Montenegro-Navarro
 
 #include <algorithm>
-#include <memory>
-#include <string>
-
 #include "raylib.h"
-
-#include "Game.hpp"
 #include "MenuBuilder.hpp"
-#include "InputHandler.hpp"
 #include "CollisionHandler.hpp"
+#include "Game.hpp"
 #include "GameStateHandler.hpp"
+#include "InputHandler.hpp"
 #include "StageOneState.hpp"
 
 using MenuOptionFlag = cave_mummies::states::menu::MenuElementFlag;
@@ -21,7 +17,8 @@ namespace cave_mummies::states::menu {
 
 MenuBuilder::MenuBuilder(cave_mummies::core::Game& game
   , cave_mummies::core::GameStateID clientState)
-  : game(game), clientState(clientState) { }
+  : game(game)
+  , clientState(clientState) { }
 
 MenuBuilder::~MenuBuilder() {
   // Unload all loaded game assets
@@ -97,10 +94,6 @@ cave_mummies::core::GameStateID MenuBuilder::update() {
 void MenuBuilder::updateOptionListHighlight() {
   auto& input{this->game.getInputHandler()};
   const int32_t optionQuantity{static_cast<int32_t>(this->menuOptions.size())};
-  // No registerd options
-  if (optionQuantity == 0) {
-    return;
-  }
   // Check what direction should the option selector move
   int32_t direction{0};  // -1 = up, +1 = down
   if (input.isPressed(KEY_W) || input.isPressed(KEY_UP)
@@ -112,7 +105,7 @@ void MenuBuilder::updateOptionListHighlight() {
   }
   // Update the option highlighting
   if (direction != 0) {
-    for (int32_t index{0}; index < optionQuantity; ++index) {
+    for (int32_t index = 0; index < optionQuantity; ++index) {
       if (this->menuOptions[index].flag == MenuOptionFlag::Highlight2) {
         // Changes the highlighting to the next option selected
         this->menuOptions[index].flag = MenuOptionFlag::None;
@@ -135,7 +128,7 @@ void MenuBuilder::updateTextBoxBehaviour() {
     , .height = 1.0f};
   const int32_t wheelMove{input.getCurrentMouseWheelMove()};
 
-  for (auto& box : this->textBoxes) {
+  for (menu::TextBox& box : this->textBoxes) {
     if (input.isMouseLeftPressed()) {
       box.focused = this->game.getCollisionHandler().checkCollision(mousePos
         , box.rect);
@@ -147,7 +140,8 @@ void MenuBuilder::updateTextBoxBehaviour() {
       // Limit content to show on text box
       Vector2 textSize{MeasureTextEx(this->menuOptionFont, box.text.c_str(),
         static_cast<float>(box.fontSize), 1.0f)};
-      const float maxScroll{std::max(0.0f, textSize.y - box.rect.height + 10)};
+      const float maxScroll{std::max(0.0f
+        , textSize.y - box.rect.height + 10.0f)};
       box.scrollY = std::clamp<float>(box.scrollY, 0.0f, maxScroll);
     }
   }
@@ -159,7 +153,7 @@ cave_mummies::core::GameStateID MenuBuilder::listenToOptionListSelection() {
     // Perform state change on user behaviour depending on the current
     // menu option selected
     PlaySound(this->submitMenuOptionSFX);
-    for (const auto& option : this->menuOptions) {
+    for (const menu::MenuElement& option : this->menuOptions) {
       if (option.flag == MenuOptionFlag::Highlight2) {
         this->game.getGameStateHandler().removeState(this->clientState);
         this->game.getGameStateHandler().registerState(option.gameState);
@@ -177,14 +171,14 @@ void MenuBuilder::draw() {
 }
 
 void MenuBuilder::drawTitles() {
-  for (const auto& option : this->menuTitles) {
+  for (const menu::MenuElement& option : this->menuTitles) {
     this->drawMenuOption(option, Vector2{option.position.x
       , option.position.y}, option.fontSize);
   }
 }
 
 void MenuBuilder::drawOptionList() {
-  for (const auto& option : this->menuOptions) {
+  for (const menu::MenuElement& option : this->menuOptions) {
     this->drawMenuOption(option, Vector2{option.position.x
       , option.position.y}, option.fontSize);
   }
@@ -199,8 +193,8 @@ void MenuBuilder::drawMenuOption(const menu::MenuElement& option
       Color outlineColor{menu::pickOutlineColor(option.flag)};
       const int32_t outlineThickness{menu::pickOutlineThickness(option.tag)};
       // Draw the same text to simulate an outline effect on texts
-      for (int32_t x{-outlineThickness}; x <= outlineThickness; ++x) {
-        for (int32_t y{-outlineThickness}; y <= outlineThickness; ++y) {
+      for (int32_t x = -outlineThickness; x <= outlineThickness; ++x) {
+        for (int32_t y = -outlineThickness; y <= outlineThickness; ++y) {
           if (x != 0 || y != 0) {
             DrawTextEx(this->menuOptionFont, option.text.data(),
               {pos.x + x, pos.y + y}, fontSize, 1.0f, outlineColor);
@@ -215,13 +209,14 @@ void MenuBuilder::drawMenuOption(const menu::MenuElement& option
 }
 
 void MenuBuilder::drawTextBoxes() {
-  for (const auto& box : this->textBoxes) {
+  for (const menu::TextBox& box : this->textBoxes) {
     if (box.drawContainer) {
       DrawRectangleRec(box.rect, Fade(box.containerColor, 0.6f));
-      DrawRectangleLinesEx(box.rect, 2, box.containerBorderColor);
+      DrawRectangleLinesEx(box.rect, 2.0f, box.containerBorderColor);
     }
     // Update box position relative to the current scroll level
-    Vector2 textPos{.x = box.rect.x + 10, .y = box.rect.y + 10 - box.scrollY};
+    Vector2 textPos{.x = box.rect.x + 10.0f
+      , .y = box.rect.y + 10.0f - box.scrollY};
     DrawTextEx(this->menuOptionFont, box.text.c_str(), textPos
       , static_cast<float>(box.fontSize), 1.0f, RAYWHITE);
   }
