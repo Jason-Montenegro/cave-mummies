@@ -4,6 +4,7 @@
 #define CAVE_MUMMIES_CORE_GAME_HPP
 
 #include <memory>
+#include <cstdint>
 #include "raylib.h"
 #include "Application.hpp"
 #include "CollisionHandler.hpp"
