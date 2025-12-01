@@ -131,7 +131,7 @@ void Enemy::draw() {
   };
   if (this->currentDirection == cave_mummies::entities::Direction::Left) {
     // Adjusts texture when its flipped to the left
-    destRec.x -= frameWidth / 2;
+    destRec.x -= frameWidth * 0.35f;
   }
   DrawTexturePro(this->texture, sourceRec, destRec, {0.0f, 0.0f}, 0.0f, WHITE);
   #ifdef DEBUG
