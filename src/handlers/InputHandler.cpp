@@ -4,7 +4,10 @@
 #include <unistd.h>
 #include <memory>
 #include "InputHandler.hpp"
+
+#ifdef DEBUG
 #include "Log.hpp"
+#endif
 
 namespace cave_mummies::handlers {
 
@@ -39,9 +42,11 @@ void InputHandler::openArduinoFile() {
     | O_NOCTTY | O_NONBLOCK);
   #endif
   if (this->arduinoFileDescriptor < 0) {
+    #ifdef DEBUG
     cave_mummies::utils::Log::append(
       cave_mummies::utils::Log::MessageType::ERROR, "Arduino Joystick"
       , "could not open arduino port.");
+    #endif
     this->arduinoInputAvailable = false;
   } else {
     // Save current configuration

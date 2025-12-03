@@ -54,8 +54,8 @@ void StageOneState::init() {
     const float y{game.getGameStageFloorHeight() - playerTexture.height};
     const float playerW{static_cast<float>(playerTexture.width / 4.0f)};
     const float playerH{static_cast<float>(playerTexture.height)};
-    // -30.0f is the hitbox reduction that removes the gun from the hitbox
-    this->player->setBounds({.x = x, .y = y, .width = playerW - 30.0f
+    // 20% hitbox reduction
+    this->player->setBounds({.x = x, .y = y, .width = playerW - playerW * 0.2f
       , .height = playerH});
     // Setup level settings
     this->startTime = std::chrono::high_resolution_clock::now();
@@ -405,7 +405,7 @@ void StageOneState::randomizeEnemySpawn(uint32_t enemyCount
     const float width{static_cast<float>(enemy->getTexture().width / 4)};
     // Reduce hitbox for better gameplay
     const float originalWidth{width};
-    const float newWidth{width - 60.0f};
+    const float newWidth{width - width * 0.3f};
     enemy->setBounds(Rectangle{.x = xCoord + (originalWidth - newWidth) / 2.0f
       , .y = enemyY, .width = newWidth, .height = height});
     this->enemyCollection.push_back(enemy);

@@ -5,3 +5,5 @@ doc/
 .vscode
 cave_mummies.log
 libs/
+CaveMummies.app
+icon.iconset

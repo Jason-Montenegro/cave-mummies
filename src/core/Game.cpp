@@ -27,15 +27,19 @@ Game::~Game() {
 
 void Game::init() {
   SetTargetFPS(60);
-  #ifdef DEBUG
-  SetConfigFlags(FLAG_BORDERLESS_WINDOWED_MODE);
-  InitWindow(1280, 720, Game::defaultWindowTitle);
-  #else
-  SetConfigFlags(FLAG_FULLSCREEN_MODE);
-  InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), Game::defaultWindowTitle);
-  #endif
+  SetConfigFlags(FLAG_WINDOW_MAXIMIZED | FLAG_WINDOW_RESIZABLE
+    | FLAG_WINDOW_TOPMOST);
+  InitWindow(0, 0, Game::defaultWindowTitle);
+  ClearWindowState(FLAG_WINDOW_HIGHDPI);
+  const float screenW{static_cast<float>(GetScreenWidth())};
+  const float screenH{static_cast<float>(GetScreenHeight())};
+  const float newScreenW{screenW - screenW * 0.05f};
+  const float newScreenH{screenH - screenH * 0.05f};
+  SetWindowSize(newScreenW, newScreenH);
+  SetWindowMinSize(newScreenW, newScreenH);
+  SetWindowMaxSize(screenW, screenH);
   SetExitKey(0);  // Deactive Esc key as exit program key
-  SetMousePosition(GetScreenWidth() / 2, GetScreenHeight() / 2);
+  SetMousePosition(screenW / 2, screenH / 2);
   InitAudioDevice();
   SetMasterVolume(1.0f);  // 1.0 = 100%
   std::string filename{GetApplicationDirectory()};

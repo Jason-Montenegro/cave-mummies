@@ -51,8 +51,10 @@ void TextureManager::loadTextureAndScale(TextureID id
   if (!img.data) {
     throw std::runtime_error("Failed to load texture: " + filename);
   }
-  const int32_t newWidth{static_cast<int32_t>(img.width * 0.1f)};
-  const int32_t newHeight{static_cast<int32_t>(img.height * 0.1f)};
+  // 19200 refers to a base resolution of 1920 x 1080 and division by 10
+  const float scale{GetScreenWidth() / 19200.0f};
+  const int32_t newWidth{static_cast<int32_t>(img.width * scale)};
+  const int32_t newHeight{static_cast<int32_t>(img.height * scale)};
   ImageResize(&img, newWidth, newHeight);
   this->textures[id] = LoadTextureFromImage(img);
   UnloadImage(img);
